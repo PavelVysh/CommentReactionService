@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS likes(
 id INTEGER PRIMARY KEY,
 user_id INTEGER,
 entity_id INTEGER,
-entity_type ENUM("comment", "reply", "post", "repost")
+entity_type ENUM('comment', 'reply', 'post', 'repost')
 );
 
 CREATE TABLE IF NOT EXISTS dislikes(
 id INTEGER PRIMARY KEY,
 user_id INTEGER,
 entity_id INTEGER,
-entity_type ENUM("comment", "reply", "post", "repost")
+entity_type ENUM('comment', 'reply', 'post', 'repost')
 );
