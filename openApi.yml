@@ -1,0 +1,742 @@
+openapi: 3.0.3
+info:
+  title: SocialNetwork - Comments and Reactions Service
+  description: |-
+    This is a service that works with Comments and Reactions (Like, Dislikes) in GridDynamics Java Intern Social Network
+    
+    It can create and store comments for posts, supports deletion and retreiving of existing comments. Works with Reply entity for the Comments, same way as Comments relate to a Post.
+    Applies and removes likes/dislikes for Comments and Replies.
+  contact:
+    name: "Pavel Vyshnvetskyi"
+    email: pvyshnevetskyi@griddynamics.com
+  version: 0.0.1-SNAPSHOT
+externalDocs:
+  description: Requirements for whole project
+  url: https://docs.google.com/document/d/1BS_1_tlDmZyro4wBHFRCnCMi5xFaEEDAKYL9ugGQzkk/edit
+servers:
+  - url: https://localhost:8080/
+tags:
+  - name: comments
+    description: comments endpoints
+  - name: replies
+    description: replies endpoints
+  - name: likes
+    description: likes endpoints
+  - name: dislikes
+    description: dislikes endpoints
+paths:
+  /comments:
+    post:
+      tags:
+        - comments
+      summary: Create a new comments to existing post
+      operationId: createComment
+      requestBody:
+        description: Create a new comments to existing post
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  type: integer
+                  example: 4567654
+                post_id:
+                  type: integer
+                  example: 567654
+                text:
+                  type: string
+                  minLength: 2
+                  maxLength: 500
+                  example: "i am a comment"
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  commentId:
+                    type: integer
+                    example: 845654
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "message should be between 2 and 500 characters"
+        '403':
+          description: Unauthorized user
+        '404':
+          description: Post not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Post with id - {id} was not found"
+      security:
+        - comments_auth:
+            - write:comments
+  /comments/{commentId}:
+    get:
+      tags:
+        - comments
+      summary: Get a specific comment by its id
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of a comment that is needed
+          required: true
+          schema:
+            type: integer
+            example: 8587
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Comment with such ID not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Comment with id - {commentId} not found"
+    delete:
+      tags:
+        - comments
+      summary: Delete a specific comment by its id
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of a comment that will be deleted
+          required: true
+          schema:
+            type: integer
+            example: 96262
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "text from a deleted comment"
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Curring user can't delet this comment"
+        '404':
+          description: Comment with such ID not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Comment with id - {commentId} not found"
+      security:
+        - comments_auth:
+            - delete:comments
+  /comments/posts/{postId}:
+    get:
+      tags:
+        - comments
+      summary: Get comments for existing post by post_id
+      parameters:
+        - name: postId
+          in: path
+          description: ID of the post which comments we need
+          required: true
+          schema:
+            type: integer
+            example: 846487
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '404':
+          description: post not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: user with id - {id} not found
+
+  /replies:
+    post:
+      tags:
+        - replies
+      summary: Create a reply for existing comment
+      description: Authorized user can post a reply to existing Comment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  type: integer
+                  example: 456765
+                comment_id:
+                  type: integer
+                  example: 123
+                text:
+                  type: string
+                  minLength: 2
+                  maxLength: 500
+                  example: "i am a reply"
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  replyId:
+                    type: integer
+                    example: 485675
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "message should be between 2 and 500 characters"
+        '403':
+          description: Unauthorized user
+      security:
+        - comments_auth:
+            - write:comments
+  /replies/{replyId}:
+    get:
+      tags:
+        - replies
+      summary: Get a specific reply by its id
+      parameters:
+        - name: replyId
+          in: path
+          description: ID of a reply that is needed
+          required: true
+          schema:
+            type: integer
+            example: 546474
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reply'
+        '404':
+          description: Reply with such ID not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Reply with id - {replyId} not found"
+    delete:
+      tags:
+        - replies
+      summary: Delete a specific reply by its id
+      parameters:
+        - name: replyId
+          in: path
+          description: ID of a reply that will be deleted
+          required: true
+          schema:
+            type: integer
+            example: 5746858
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "text from a deleted reply"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Curring user can't delet this reply"
+        '404':
+          description: Comment with such ID not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "Reply with id - {commentId} not found"
+      security:
+        - comments_auth:
+            - user:authorized
+  /replies/comments/{commentId}:
+    get:
+      tags:
+        - replies
+      summary: Get replies for existing comment by comment_id
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of the comment which replies we need
+          required: true
+          schema:
+            type: integer
+            example: 474765
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reply'
+        '404':
+          description: comment not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: comment with id - {id} not found
+  /likes:
+    post:
+      tags:
+        - likes
+      summary: Create a like for existing Post/Repost/Comment/Reply
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  type: integer
+                  example: 5676
+                entity_type:
+                  type: string
+                  enum: [Comment, Post, Reply, Repost]
+                  example: "Comment"
+                entity_id:
+                  type: integer
+                  example: 46537
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  likeId:
+                    type: integer
+                    example: 845654
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized user
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "{entity} with {id} was not found"
+      security:
+        - comments_auth:
+            - user:authorized
+
+  /likes/{entityId}:
+    get:
+      tags:
+        - likes
+      summary: Get likes for a specifit entity(post/repost/comment/reply)
+
+      parameters:
+        - name: entityId
+          in: path
+          description: ID of a entity which likes are needed
+          required: true
+          schema:
+            type: integer
+            example: 12321
+        - name: entityType
+          in: query
+          description: Type of an entity where we add Like
+          required: true
+          schema:
+            type: string
+            enum: [Comment, Post, Reply, Repost]
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Like'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: entity with id - {id} not found
+    delete:
+      tags:
+        - likes
+      summary: Get likes for a specifit entity(post/repost/comment/reply)
+      parameters:
+        - name: entityId
+          in: path
+          description: ID of a entity which likes are needed
+          required: true
+          schema:
+            type: integer
+            example: 84648
+        - name: entityType
+          in: query
+          description: Type of an entity where we add Like
+          required: true
+          schema:
+            type: string
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Like'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: entity with id - {id} not found
+      security:
+        - comments_auth:
+            - user:authorized
+  /likes/user/{userId}:
+    get:
+      tags:
+        - likes
+      summary: Get likes for a specific group (post/repost/comment/reply) by User
+      parameters:
+        - name: userId
+          in: path
+          description: ID of a user which likes are needed
+          required: true
+          schema:
+            type: integer
+            example: 64754
+        - name: entityType
+          in: query
+          description: Type of an entity
+          required: true
+          schema:
+            type: string
+            enum: [Comment, Post, Reply, Repost]
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Like'
+        '404':
+          description: User
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: user with id - {id} not found
+  /dislikes:
+    post:
+      tags:
+        - dislikes
+      summary: Create a dislike for existing Post/Repost/Comment/Reply
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                user_id:
+                  type: integer
+                  example: 565456
+                entity_type:
+                  type: string
+                  enum: [Comment, Post, Reply, Repost]
+                  example: "Comment"
+                entity_id:
+                  type: integer
+                  example: 437486
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  dislikeId:
+                    type: integer
+                    example: 845654
+        '400':
+          description: Invalid input
+        '403':
+          description: Unauthorized user
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  text:
+                    type: string
+                    example: "{entity} with {id} was not found"
+      security:
+        - comments_auth:
+            - user:authorized
+
+  /dislikes/{entityId}:
+    get:
+      tags:
+        - dislikes
+      summary: Get dislikes for a specifit entity(post/repost/comment/reply)
+      parameters:
+        - name: entityId
+          in: path
+          description: ID of a entity which dislikes are needed
+          required: true
+          schema:
+            type: integer
+            example: 7654567
+        - name: entityType
+          in: query
+          description: Type of an entity where we add dislike
+          required: true
+          schema:
+            type: string
+            enum: [Comment, Post, Reply, Repost]
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dislike'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "entity with id - {id} not found"
+    delete:
+      tags:
+        - dislikes
+      summary: Get dislikes for a specifit entity(post/repost/comment/reply)
+      parameters:
+        - name: entityId
+          in: path
+          description: ID of a entity which dislikes are needed
+          required: true
+          schema:
+            type: integer
+            example: 27826
+        - name: entityType
+          in: query
+          description: Type of an entity where we add dislike
+          required: true
+          schema:
+            type: string
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dislike'
+        '404':
+          description: Entity not found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: entity with id - {id} not found
+      security:
+        - comments_auth:
+            - user:authorized
+  /dislikes/user/{userId}:
+    get:
+      tags:
+        - dislikes
+      summary: Get dislikes for a specific group (post/repost/comment/reply) by User
+      parameters:
+        - name: userId
+          in: path
+          description: ID of a user which likes are needed
+          required: true
+          schema:
+            type: integer
+            example: 63638
+        - name: entityType
+          in: query
+          description: Type of an entity
+          required: true
+          schema:
+            type: string
+            enum: [Comment, Post, Reply, Repost]
+            example: "Comment"
+      responses:
+        '200':
+          description: Seccessful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Dislike'
+        '404':
+          description: User
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: user with id - {id} not found
+components:
+  schemas:
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1123
+        user_id:
+          type: integer
+          example: 72628
+        created_at:
+          type: integer
+          example: 6848
+        text:
+          type: string
+          description: message of the comment
+          example: "Hello everybody"
+        likes:
+          type: integer
+          format: int64
+          example: 10
+    Reply:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 56282
+        user_id:
+          type: integer
+          example: 231
+        created_at:
+          type: string
+          format: date-time
+          example: 1989-05-10 12:00
+        text:
+          type: string
+          description: message of the reply
+          example: "I am a reply"
+        likes:
+          type: integer
+          format: int64
+          example: 10
+    Like:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 232
+        entity_id:
+          type: integer
+          example: 546
+    Dislike:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 6818
+        entity_id:
+          type: integer
+          example: 819272
+  securitySchemes:
+    comments_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://localhost:8081
+          scopes:
+            user:authorized: user is authorized
+            write:comments: add comments to existing post
+            delete:comments: delete a comment from a post
