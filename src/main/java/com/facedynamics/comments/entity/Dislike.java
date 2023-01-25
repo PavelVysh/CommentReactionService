@@ -1,0 +1,4 @@
+package com.facedynamics.comments.entity;
+
+public class Dislike {
+}
