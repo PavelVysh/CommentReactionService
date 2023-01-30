@@ -17,16 +17,16 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public void createComment(Comment comment) {
+    public void save(Comment comment) {
         commentRepository.save(comment);
     }
     public Comment findById(int id) {
         return commentRepository.findById(id).orElse(null);
     }
-    public void deleteCommentById(int id) {
+    public void deleteById(int id) {
         commentRepository.deleteById(id);
     }
-    public List<Comment> findAllForPost(int postId) {
+    public List<Comment> findCommentsByPostId(int postId) {
         return commentRepository.findCommentsByPostId(postId);
     }
 }

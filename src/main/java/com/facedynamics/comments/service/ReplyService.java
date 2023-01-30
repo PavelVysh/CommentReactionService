@@ -16,7 +16,7 @@ public class ReplyService {
     public ReplyService(ReplyRepository replyRepository) {
         this.replyRepository = replyRepository;
     }
-    public void create(Reply reply) {
+    public void save(Reply reply) {
         replyRepository.save(reply);
     }
     public Reply findById(int id) {
@@ -25,7 +25,7 @@ public class ReplyService {
     public void deleteById(int id) {
         replyRepository.deleteById(id);
     }
-    public List<Reply> findAllForPost(int commentId) {
+    public List<Reply> findRepliesByCommentId(int commentId) {
         return replyRepository.findRepliesByCommentId(commentId);
     }
 }

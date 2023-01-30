@@ -1,6 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.entity.Like;
+import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.LikeRepository;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class LikeService {
     public LikeService(LikeRepository likeRepository) {
         this.likeRepository = likeRepository;
     }
-    public void createLike(Like like) {
+    public void save(Like like) {
         likeRepository.save(like);
     }
     public List<Like> findLikesForEntity(int entityId) {
@@ -25,7 +26,7 @@ public class LikeService {
     public void deleteById(int likeId) {
         likeRepository.deleteById(likeId);
     }
-    public List<Like> findLikeByUserId(int userId) {
-        return likeRepository.findLikesByUserId(userId);
+    public List<Like> findLikeByUserIdAndEntityType(int userId, EntityType entityType) {
+        return likeRepository.findLikesByUserIdAndEntityType(userId, entityType);
     }
 }
