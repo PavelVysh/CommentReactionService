@@ -10,8 +10,8 @@ import lombok.Data;
 public class Like {
     @Id
     private int id;
-    private int user_id;
-    private int entity_id;
+    private int userId;
+    private int entityId;
     @Enumerated(value = EnumType.STRING)
     private EntityType entityType;
 

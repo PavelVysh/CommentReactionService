@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class Reply {
     @Id
     private int id;
-    private int comment_id;
-    private int user_id;
+    private int commentId;
+    private int userId;
     private LocalDateTime createdAt;
     private String text;
 }
