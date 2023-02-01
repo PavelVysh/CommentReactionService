@@ -1,5 +1,6 @@
 package com.facedynamics.comments.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class Reply {
     @Id
     private int id;
+    @Column(name = "comment_id")
     private int commentId;
     private int userId;
     @CreationTimestamp

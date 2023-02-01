@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "comments")
@@ -22,4 +23,10 @@ public class Comment {
     @CreationTimestamp
     private LocalDateTime createdAt;
     private String text;
+    @Transient
+    private int likes, dislikes;
+    @OneToMany
+    @JoinColumn(name = "comment_id")
+    private List<Reply> replies;
+
 }

@@ -9,4 +9,5 @@ import java.util.List;
 public interface LikeRepository extends JpaRepository<Like, Integer> {
     List<Like> findLikesByEntityId(int entityId);
     List<Like> findLikesByUserIdAndEntityType(int userId, EntityType entityType);
+    int countLikesByEntityIdAndEntityType(int entityId, EntityType entityType);
 }

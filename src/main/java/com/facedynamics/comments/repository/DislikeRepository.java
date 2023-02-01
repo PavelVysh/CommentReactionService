@@ -9,4 +9,5 @@ import java.util.List;
 public interface DislikeRepository extends JpaRepository<Dislike, Integer> {
     List<Dislike> findDislikeByEntityId(int entityId);
     List<Dislike> findDislikeByUserIdAndEntityType(int userId, EntityType entityType);
+    int countDislikesByEntityIdAndEntityType(int entityId, EntityType entityType);
 }
