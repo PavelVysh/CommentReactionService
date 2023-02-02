@@ -1,6 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.DislikeRepository;
@@ -55,6 +56,7 @@ public class CommentService {
                 comment.getId(),
                 EntityType.comment
         ));
+        comment.setReplies(setLikeDislikes(comment.getReplies()));
         return comment;
     }
     public List<Comment> setLikesDislikes(List<Comment> commentList) {
@@ -65,7 +67,19 @@ public class CommentService {
                 x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
                         x.getId(),EntityType.comment
                 ));
+                x.setReplies(setLikeDislikes(x.getReplies()));
             });
         return commentList;
+    }
+    public List<Reply> setLikeDislikes(List<Reply> replies) {
+        replies.forEach(x -> {
+            x.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
+                    x.getId(),EntityType.reply
+            ));
+            x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
+                    x.getId(),EntityType.reply
+            ));
+        });
+        return replies;
     }
 }

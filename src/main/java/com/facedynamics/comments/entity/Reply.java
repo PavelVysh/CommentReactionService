@@ -1,9 +1,6 @@
 package com.facedynamics.comments.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -21,4 +18,7 @@ public class Reply {
     @CreationTimestamp
     private LocalDateTime createdAt;
     private String text;
+    @Transient
+    private int likes, dislikes;
+
 }

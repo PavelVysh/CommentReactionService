@@ -29,7 +29,7 @@ public class LikeController {
         likeService.deleteById(likeId);
     }
     @GetMapping("/user/{userId}")
-    public List<Like> getDislikesByUser(@PathVariable int userId, @RequestParam EntityType entityType) {
+    public List<Like> getLikesByUser(@PathVariable int userId, @RequestParam EntityType entityType) {
         return likeService.findLikeByUserIdAndEntityType(userId, entityType);
     }
 }
