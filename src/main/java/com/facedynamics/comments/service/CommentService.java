@@ -58,17 +58,14 @@ public class CommentService {
         return comment;
     }
     public List<Comment> setLikesDislikes(List<Comment> commentList) {
-        for (Comment comment : commentList) {
-            comment.setDislikes(
-                    dislikeRepository.countDislikesByEntityIdAndEntityType(
-                            comment.getId(),
-                            EntityType.comment
-                    ));
-            comment.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
-                    comment.getId(),
-                    EntityType.comment
-            ));
-        }
+        commentList.forEach(x -> {
+                x.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
+                        x.getId(),EntityType.comment
+                ));
+                x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
+                        x.getId(),EntityType.comment
+                ));
+            });
         return commentList;
     }
 }
