@@ -25,7 +25,7 @@ CREATE TABLE reactions(
                                         entity_type VARCHAR(255),
                                         is_like BOOLEAN
 );
-
+ALTER TABLE reactions ADD CONSTRAINT uniq_only UNIQUE (user_id, entity_id, entity_type);
 INSERT INTO comments(post_id, user_id, text)
 VALUES (1, 1, 'I am the first comment made by a first user'),
        (1, 2, 'I am a comment made by a user number 2 for post number one'),

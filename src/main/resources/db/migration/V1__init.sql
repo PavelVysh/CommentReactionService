@@ -22,3 +22,4 @@ entity_id INTEGER,
 entity_type VARCHAR(255),
 is_like BOOLEAN
 );
+ALTER TABLE reactions ADD CONSTRAINT uniq_only UNIQUE (user_id, entity_id, entity_type);
