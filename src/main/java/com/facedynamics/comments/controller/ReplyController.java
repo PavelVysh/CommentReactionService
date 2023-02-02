@@ -2,6 +2,7 @@ package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.service.ReplyService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class ReplyController {
         replyService.save(reply);
     }
     @GetMapping("/{id}")
-    public Reply findById(@PathVariable int id) {
+    public ResponseEntity<Reply> findById(@PathVariable int id) {
         return replyService.findById(id);
     }
     @DeleteMapping("/{id}")

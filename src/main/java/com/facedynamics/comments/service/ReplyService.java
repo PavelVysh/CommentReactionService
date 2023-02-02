@@ -5,6 +5,8 @@ import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class ReplyService {
     public void save(Reply reply) {
         replyRepository.save(reply);
     }
-    public Reply findById(int id) {
+    public ResponseEntity<Reply> findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
             reply.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
@@ -34,8 +36,10 @@ public class ReplyService {
             reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
                     reply.getId(), EntityType.reply, false
             ));
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return reply;
+        return new ResponseEntity<>(reply, HttpStatus.OK);
     }
     public void deleteById(int id) {
         replyRepository.deleteById(id);
