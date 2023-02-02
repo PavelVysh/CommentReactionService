@@ -2,11 +2,15 @@ package com.facedynamics.comments.entity;
 
 import com.facedynamics.comments.entity.enums.EntityType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "reactions")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Reaction {
     @Id
     private int id;

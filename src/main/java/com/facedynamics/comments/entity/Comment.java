@@ -25,7 +25,7 @@ public class Comment {
     private String text;
     @Transient
     private int likes, dislikes;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "comment_id")
     private List<Reply> replies;
 
