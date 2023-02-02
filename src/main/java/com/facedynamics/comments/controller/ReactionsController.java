@@ -21,8 +21,10 @@ public class ReactionsController {
         reactionsService.save(reaction);
     }
     @GetMapping("/{entityId}")
-    public List<Reaction> getLikesForEntity(@PathVariable int entityId, @RequestParam boolean isLike) {
-        return reactionsService.findReactionsForEntity(entityId, isLike);
+    public List<Reaction> getReactionsForEntity(@PathVariable int entityId,
+                                                @RequestParam EntityType entityType,
+                                                @RequestParam boolean isLike) {
+        return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
     }
     @DeleteMapping("/{reactionId}")
     public void deleteLike(@PathVariable int reactionId) {

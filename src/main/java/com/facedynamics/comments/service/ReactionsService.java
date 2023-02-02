@@ -19,8 +19,8 @@ public class ReactionsService {
     public void save(Reaction reaction) {
         repository.save(reaction);
     }
-    public List<Reaction> findReactionsForEntity(int entityId, boolean type) {
-        return repository.findAllByEntityIdAndLike(entityId, type);
+    public List<Reaction> findReactionsForEntity(int entityId, EntityType entityType,  boolean isLike) {
+        return repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
     }
     public void deleteById(int reactionId) {
         repository.deleteById(reactionId);
