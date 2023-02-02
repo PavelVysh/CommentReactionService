@@ -6,12 +6,14 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "dislikes")
-public class Dislike {
+@Table(name = "reactions")
+public class Reaction {
     @Id
     private int id;
     private int userId;
     private int entityId;
     @Enumerated(value = EnumType.STRING)
     private EntityType entityType;
+    @Column(name = "is_like")
+    private boolean like;
 }

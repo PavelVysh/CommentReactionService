@@ -10,13 +10,13 @@ VALUES (2, 1, 'I am a first reply for second comment'),
        (3, 2, 'I am a second reply made for comment number three by user 2'),
        (5, 11, 'A reply for fifth comment by 11-th user'),
        (2, 11, 'A reply for second comment by 11-th user');
-INSERT INTO dislikes(user_id, entity_id, entity_type)
-VALUES (12, 1, 'comment'), (13, 1, 'comment'), (1, 2, 'comment'),
-       (11, 2, 'comment'), (10, 3, 'comment'), (65, 2, 'comment'),
-       (121, 5, 'comment'), (131, 4, 'comment'), (1, 3, 'comment');
-INSERT INTO likes(user_id, entity_id, entity_type)
-VALUES (1, 1, 'reply'), (2, 2, 'reply'), (3, 1, 'reply'),
-       (1, 2, 'reply'), (2, 3, 'reply'), (3, 4, 'reply'),
-       (11, 1, 'reply'), (22, 2, 'reply'), (33, 4, 'reply'),
-       (111, 3, 'reply'), (222, 2, 'reply'), (333, 2, 'reply');
+INSERT INTO reactions(user_id, entity_id, entity_type, is_like)
+VALUES (12, 1, 'comment', false), (13, 1, 'comment', false), (1, 2, 'comment', false),
+       (11, 2, 'comment', false), (10, 3, 'comment', false), (65, 2, 'comment', false),
+       (121, 5, 'comment', false), (131, 4, 'comment', false), (1, 3, 'comment', false);
+INSERT INTO reactions(user_id, entity_id, entity_type, is_like)
+VALUES (1, 1, 'reply', true), (2, 2, 'reply', true), (3, 1, 'reply', true),
+       (1, 2, 'reply', true), (2, 3, 'reply', true), (3, 4, 'reply', true),
+       (11, 1, 'reply', true), (22, 2, 'reply', true), (33, 4, 'reply', true),
+       (111, 3, 'reply', true), (222, 2, 'reply', true), (333, 2, 'reply', true);
 

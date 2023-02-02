@@ -4,8 +4,7 @@ import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.CommentRepository;
-import com.facedynamics.comments.repository.DislikeRepository;
-import com.facedynamics.comments.repository.LikeRepository;
+import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +15,12 @@ import java.util.List;
 public class CommentService {
 
     private CommentRepository commentRepository;
-    private DislikeRepository dislikeRepository;
-    private LikeRepository likeRepository;
+    private ReactionsRepository reactionsRepository;
 
     public CommentService(CommentRepository commentRepository,
-                          DislikeRepository dislikeRepository,
-                          LikeRepository likeRepository) {
+                          ReactionsRepository reactionsRepository) {
         this.commentRepository = commentRepository;
-        this.dislikeRepository = dislikeRepository;
-        this.likeRepository = likeRepository;
+        this.reactionsRepository = reactionsRepository;
     }
 
     public void save(Comment comment) {
@@ -48,24 +44,26 @@ public class CommentService {
 
     public Comment setLikesDislikes(Comment comment) {
         comment.setDislikes(
-                dislikeRepository.countDislikesByEntityIdAndEntityType(
+                reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
                         comment.getId(),
-                        EntityType.comment
+                        EntityType.comment,
+                        false
                 ));
-        comment.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
+        comment.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
                 comment.getId(),
-                EntityType.comment
+                EntityType.comment,
+                true
         ));
         comment.setReplies(setLikeDislikes(comment.getReplies()));
         return comment;
     }
     public List<Comment> setLikesDislikes(List<Comment> commentList) {
         commentList.forEach(x -> {
-                x.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
-                        x.getId(),EntityType.comment
+                x.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                        x.getId(),EntityType.comment, false
                 ));
-                x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
-                        x.getId(),EntityType.comment
+                x.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                        x.getId(),EntityType.comment, true
                 ));
                 x.setReplies(setLikeDislikes(x.getReplies()));
             });
@@ -73,11 +71,11 @@ public class CommentService {
     }
     public List<Reply> setLikeDislikes(List<Reply> replies) {
         replies.forEach(x -> {
-            x.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
-                    x.getId(),EntityType.reply
+            x.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    x.getId(),EntityType.reply, false
             ));
-            x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
-                    x.getId(),EntityType.reply
+            x.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    x.getId(),EntityType.reply, true
             ));
         });
         return replies;

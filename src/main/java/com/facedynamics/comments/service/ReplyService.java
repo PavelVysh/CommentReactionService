@@ -2,8 +2,7 @@ package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
-import com.facedynamics.comments.repository.DislikeRepository;
-import com.facedynamics.comments.repository.LikeRepository;
+import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -15,15 +14,12 @@ import java.util.List;
 public class ReplyService {
 
     private ReplyRepository replyRepository;
-    private LikeRepository likeRepository;
-    private DislikeRepository dislikeRepository;
+    private ReactionsRepository reactionsRepository;
 
     public ReplyService(ReplyRepository replyRepository,
-                        LikeRepository likeRepository,
-                        DislikeRepository dislikeRepository) {
+                        ReactionsRepository reactionsRepository) {
         this.replyRepository = replyRepository;
-        this.likeRepository = likeRepository;
-        this.dislikeRepository = dislikeRepository;
+        this.reactionsRepository = reactionsRepository;
     }
 
     public void save(Reply reply) {
@@ -32,11 +28,11 @@ public class ReplyService {
     public Reply findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
-            reply.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
-                    reply.getId(), EntityType.reply
+            reply.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    reply.getId(), EntityType.reply, true
             ));
-            reply.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
-                    reply.getId(), EntityType.reply
+            reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    reply.getId(), EntityType.reply, false
             ));
         }
         return reply;
@@ -47,11 +43,11 @@ public class ReplyService {
     public List<Reply> findRepliesByCommentId(int commentId) {
         List<Reply> replies = replyRepository.findRepliesByCommentId(commentId);
         replies.forEach(x -> {
-            x.setDislikes(dislikeRepository.countDislikesByEntityIdAndEntityType(
-                    x.getId(), EntityType.reply
+            x.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    x.getId(), EntityType.reply, false
             ));
-            x.setLikes(likeRepository.countLikesByEntityIdAndEntityType(
-                    x.getId(), EntityType.reply
+            x.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                    x.getId(), EntityType.reply, true
             ));
         });
         return replies;
