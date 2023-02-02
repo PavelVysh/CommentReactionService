@@ -15,16 +15,10 @@ text VARCHAR(500) NOT NULL,
 FOREIGN KEY (comment_id) REFERENCES comments(id)
 );
 
-CREATE TABLE IF NOT EXISTS likes(
+CREATE TABLE IF NOT EXISTS reactions(
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 user_id INTEGER,
 entity_id INTEGER,
-entity_type VARCHAR(255)
-);
-
-CREATE TABLE IF NOT EXISTS dislikes(
-id INTEGER PRIMARY KEY AUTO_INCREMENT,
-user_id INTEGER,
-entity_id INTEGER,
-entity_type VARCHAR(255)
+entity_type VARCHAR(255),
+is_like BOOLEAN
 );
