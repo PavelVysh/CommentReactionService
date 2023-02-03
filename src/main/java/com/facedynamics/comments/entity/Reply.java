@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "replies")
-public class Reply {
+public class Reply implements Likable{
     @Id
     private int id;
     @Column(name = "comment_id")
