@@ -47,5 +47,6 @@ INSERT INTO reactions(user_id, entity_id, entity_type, is_like)
 VALUES (1, 1, 'reply', true), (2, 2, 'reply', true), (3, 1, 'reply', true),
        (1, 2, 'reply', true), (2, 3, 'reply', true), (3, 4, 'reply', true),
        (11, 1, 'reply', true), (22, 2, 'reply', true), (33, 4, 'reply', true),
+       (1111, 1, 'comment', true), (2222, 1, 'comment', true), (3333, 1, 'comment', true),
        (111, 3, 'reply', true), (222, 2, 'reply', true), (333, 2, 'reply', true);
 
