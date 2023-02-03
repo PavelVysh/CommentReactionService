@@ -28,12 +28,7 @@ public class ReplyService {
     public Reply findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
-            reply.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                    reply.getId(), EntityType.reply, true
-            ));
-            reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                    reply.getId(), EntityType.reply, false
-            ));
+            reply = setLikesDislikes(reply);
         }
         return reply;
     }
@@ -42,14 +37,14 @@ public class ReplyService {
     }
     public List<Reply> findRepliesByCommentId(int commentId) {
         List<Reply> replies = replyRepository.findRepliesByCommentId(commentId);
-        replies.forEach(x -> {
-            x.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                    x.getId(), EntityType.reply, false
-            ));
-            x.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                    x.getId(), EntityType.reply, true
-            ));
-        });
+        replies.forEach(this::setLikesDislikes);
         return replies;
+    }
+    public Reply setLikesDislikes(Reply reply) {
+        reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                reply.getId(), EntityType.reply, false));
+        reply.setLikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
+                reply.getId(), EntityType.reply, true));
+        return reply;
     }
 }
