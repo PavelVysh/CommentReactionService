@@ -1,9 +1,7 @@
 package com.facedynamics.comments.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -11,9 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "comments")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 public class Comment implements Likable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +25,5 @@ public class Comment implements Likable{
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "comment_id")
     private List<Reply> replies;
+
 }

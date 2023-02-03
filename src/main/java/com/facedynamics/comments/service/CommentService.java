@@ -5,17 +5,15 @@ import com.facedynamics.comments.entity.Likable;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Data
 @Service
 public class CommentService {
 
-    private CommentRepository commentRepository;
-    private ReactionsRepository reactionsRepository;
+    private final CommentRepository commentRepository;
+    private final ReactionsRepository reactionsRepository;
 
     public CommentService(CommentRepository commentRepository,
                           ReactionsRepository reactionsRepository) {

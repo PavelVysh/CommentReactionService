@@ -3,14 +3,16 @@ package com.facedynamics.comments.entity;
 import com.facedynamics.comments.entity.enums.EntityType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
-@Table(name = "reactions")
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "reactions")
 public class Reaction {
     @Id
     private int id;
@@ -20,4 +22,5 @@ public class Reaction {
     private EntityType entityType;
     @Column(name = "is_like")
     private boolean like;
+
 }

@@ -3,15 +3,13 @@ package com.facedynamics.comments.service;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@Data
 public class ReactionsService {
-    private ReactionsRepository repository;
+    private final ReactionsRepository repository;
 
     public ReactionsService(ReactionsRepository repository) {
         this.repository = repository;

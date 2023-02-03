@@ -4,19 +4,17 @@ import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Data
 @Service
 public class ReplyService {
 
-    private ReplyRepository replyRepository;
-    private ReactionsRepository reactionsRepository;
+    private final ReplyRepository replyRepository;
+    private final ReactionsRepository reactionsRepository;
 
     public ReplyService(ReplyRepository replyRepository,
                         ReactionsRepository reactionsRepository) {

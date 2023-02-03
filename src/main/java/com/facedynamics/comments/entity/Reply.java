@@ -1,14 +1,16 @@
 package com.facedynamics.comments.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
 @Table(name = "replies")
+@Getter
+@Setter
 public class Reply implements Likable{
     @Id
     private int id;
