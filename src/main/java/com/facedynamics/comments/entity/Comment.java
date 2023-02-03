@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class Comment implements Likable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,5 +28,4 @@ public class Comment {
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "comment_id")
     private List<Reply> replies;
-
 }
