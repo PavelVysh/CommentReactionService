@@ -14,9 +14,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -56,5 +56,20 @@ public class CommentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.text", equalTo("two chars")));
+    }
+    @Test
+    void commentControllerDeleteMethodTest() throws Exception {
+        mvc.perform(delete("/comments/{id}", 1))
+                .andExpect(status().isOk());
+
+        mvc.perform(get("/comments/{id}", 1))
+                .andExpect(status().isNoContent());
+    }
+    @Test
+    void commentControllerGetListMethodTest() throws Exception {
+        mvc.perform(get("/comments/posts/{id}", 4))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 }

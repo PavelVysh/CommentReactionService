@@ -31,7 +31,8 @@ VALUES (1, 1, 'I am the first comment made by a first user'),
        (1, 2, 'I am a comment made by a user number 2 for post number one'),
        (2, 5, 'I am a comment for second post made by fifth user'),
        (5, 11, 'I am a comment for fifth post made by 11-th user'),
-       (4, 2, 'I am a comment for fourth post made by second user');
+       (4, 2, 'I am a comment for fourth post made by second user'),
+       (4, 5, 'I am a filler comment');
 
 INSERT INTO replies(comment_id, user_id, text)
 VALUES (2, 1, 'I am a first reply for second comment'),
