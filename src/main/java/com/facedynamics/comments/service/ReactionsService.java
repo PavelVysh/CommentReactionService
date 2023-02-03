@@ -3,7 +3,9 @@ package com.facedynamics.comments.service;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,8 +16,15 @@ public class ReactionsService {
     public ReactionsService(ReactionsRepository repository) {
         this.repository = repository;
     }
+    @Transactional
     public void save(Reaction reaction) {
-        repository.save(reaction);
+        if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
+                reaction.getEntityType(), reaction.getUserId())) {
+            repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
+                    reaction.getUserId(), reaction.isLike());
+        } else {
+            repository.save(reaction);
+        }
     }
     public List<Reaction> findReactionsForEntity(int entityId, EntityType entityType,  boolean isLike) {
         return repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
