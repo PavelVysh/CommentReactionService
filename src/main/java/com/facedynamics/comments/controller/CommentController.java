@@ -2,6 +2,7 @@ package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class CommentController {
         commentService.save(comment);
     }
     @GetMapping("/{id}")
-    public Comment findById(@PathVariable int id) {
+    public ResponseEntity<Comment> findById(@PathVariable int id) {
         return commentService.findById(id);
     }
     @DeleteMapping("/{id}")

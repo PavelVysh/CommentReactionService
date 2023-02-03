@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 public class Comment implements Likable{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int postId;
     private int userId;

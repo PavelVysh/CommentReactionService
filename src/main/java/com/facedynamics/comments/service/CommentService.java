@@ -5,6 +5,8 @@ import com.facedynamics.comments.entity.Likable;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +26,14 @@ public class CommentService {
     public void save(Comment comment) {
         commentRepository.save(comment);
     }
-    public Comment findById(int id) {
+    public ResponseEntity<Comment> findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             comment = setLikesDislikes(comment, EntityType.comment);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return comment;
+        return new ResponseEntity<>(comment, HttpStatus.OK);
     }
     public void deleteById(int id) {
         commentRepository.deleteById(id);

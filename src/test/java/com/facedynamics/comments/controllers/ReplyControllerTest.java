@@ -56,6 +56,8 @@ public class ReplyControllerTest {
                 .accept(MediaType.APPLICATION_JSON));
 
         mvc.perform(get("/replies/{id}", 666))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.text", equalTo("two chars")));
     }
 }
