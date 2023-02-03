@@ -32,7 +32,7 @@ public class ReplyService {
         if (reply != null) {
             reply = setLikesDislikes(reply);
         } else {
-            return new ResponseEntity<>(new Reply(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(reply, HttpStatus.OK);
     }
