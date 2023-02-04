@@ -1,7 +1,10 @@
 package com.facedynamics.comments.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,9 @@ public class Comment implements Likable{
     private int userId;
     @CreationTimestamp
     private LocalDateTime createdAt;
+    @Size(min = 2, message = "Text must be at least 2 characters long")
+    @Size(max = 500, message = "Text should not be longer then 500 characters")
+    @NotNull(message = "You can't save a comment without a text")
     private String text;
     @Transient
     private int likes, dislikes;

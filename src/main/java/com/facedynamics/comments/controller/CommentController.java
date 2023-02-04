@@ -2,6 +2,7 @@ package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class CommentController {
         this.commentService = commentService;
     }
     @PostMapping
-    public void createComment(@RequestBody Comment comment) {
+    public void createComment(@RequestBody @Valid Comment comment) {
         commentService.save(comment);
     }
     @GetMapping("/{id}")
