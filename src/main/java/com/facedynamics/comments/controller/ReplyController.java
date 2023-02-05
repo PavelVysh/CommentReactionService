@@ -21,14 +21,17 @@ public class ReplyController {
     public ReplyDTO createReply(@RequestBody @Valid Reply reply) {
         return replyService.save(reply);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable int id) {
         return replyService.findById(id);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id) {
-         return replyService.deleteById(id);
+        return replyService.deleteById(id);
     }
+
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<?> findRepliesByCommentId(@PathVariable int commentId) {
         return replyService.findRepliesByCommentId(commentId);

@@ -18,6 +18,7 @@ public class ReactionsService {
     public ReactionsService(ReactionsRepository repository) {
         this.repository = repository;
     }
+
     @Transactional
     public void save(Reaction reaction) {
         if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
@@ -28,9 +29,11 @@ public class ReactionsService {
             repository.save(reaction);
         }
     }
-    public List<Reaction> findReactionsForEntity(int entityId, EntityType entityType,  boolean isLike) {
+
+    public List<Reaction> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
         return repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
     }
+
     @Transactional
     public ResponseEntity<?> deleteById(int entityId, EntityType entityType, int userId) {
         if (repository.existsByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId)) {
@@ -41,6 +44,7 @@ public class ReactionsService {
         }
 
     }
+
     public List<Reaction> findAllByUserIdAndType(int userId, EntityType entityType, boolean isLike) {
         return repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike);
     }

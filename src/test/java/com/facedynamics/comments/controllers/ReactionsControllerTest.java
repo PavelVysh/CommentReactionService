@@ -29,21 +29,23 @@ public class ReactionsControllerTest {
     @Test
     void reactionsControllerGetByEntityIdMethodTest() throws Exception {
         mvc.perform(get("/reactions/{entityId}", 1)
-                .param("entityType", "comment")
-                .param("isLike", "true"))
+                        .param("entityType", "comment")
+                        .param("isLike", "true"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(3)));
     }
+
     @Test
     void reactionsControllerGetByUserIDMethodTest() throws Exception {
         mvc.perform(get("/reactions/user/{userId}", 1)
-                .param("isLike", "false")
-                .param("entityType", "comment"))
+                        .param("isLike", "false")
+                        .param("entityType", "comment"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
     }
+
     @Test
     void reactionsControllerDeleteMethodTest() throws Exception {
         mvc.perform(delete("/reactions/{entityId}", 2)
@@ -51,11 +53,12 @@ public class ReactionsControllerTest {
                         .param("entityType", "reply"))
                 .andExpect(status().isOk());
         mvc.perform(get("/reactions/{entityId}", 2)
-                .param("entityType", "reply")
-                .param("isLike", "true"))
+                        .param("entityType", "reply")
+                        .param("isLike", "true"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(4)));
     }
+
     @Test
     void reactionsControllerPostMethodTest() throws Exception {
         Reaction reaction = new Reaction();
@@ -76,6 +79,7 @@ public class ReactionsControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)));
     }
+
     @Test
     void updateLikeToDislikeTest() throws Exception {
         Reaction reaction = new Reaction();
@@ -103,10 +107,23 @@ public class ReactionsControllerTest {
         String contentAsString = result.getResponse().getContentAsString();
         Reaction[] reactions = new ObjectMapper().readValue(contentAsString, Reaction[].class);
 
-        assertFalse("didn't switch like to dislike",reactions[0].isLike());
+        assertFalse("didn't switch like to dislike", reactions[0].isLike());
         assertEquals("new Reaction created instead of switch", reactions[0].getId(), 25);
     }
 
+    @Test
+    void deleteNonExistingReactionTest() throws Exception {
+        MvcResult result = mvc.perform(delete("/reactions/{entityId}", 5678)
+                        .param("entityType", "post")
+                        .param("userId", "1"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        assertEquals("tried to delete a non existing reaction",
+                "Reaction was not found",
+                result.getResponse().getContentAsString());
+    }
 }
+
 
 

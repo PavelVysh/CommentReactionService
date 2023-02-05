@@ -16,18 +16,22 @@ public class CommentController {
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
     }
+
     @PostMapping
     public CommentDTO createComment(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable int id) {
         return commentService.findById(id);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable int id) {
         return commentService.deleteById(id);
     }
+
     @GetMapping("/posts/{postId}")
     public ResponseEntity<?> findCommentsByPostId(@PathVariable int postId) {
         return commentService.findCommentsByPostId(postId);

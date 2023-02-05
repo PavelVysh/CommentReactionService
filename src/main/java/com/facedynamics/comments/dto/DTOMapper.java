@@ -15,6 +15,7 @@ public class DTOMapper {
                 .postId(comment.getPostId())
                 .build();
     }
+
     public static ReplyDTO fromReplyToReplyDTO(Reply reply) {
         return ReplyDTO.builder()
                 .comment_id(reply.getCommentId())

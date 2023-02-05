@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "replies")
 @Getter
 @Setter
-public class Reply implements Likable{
+public class Reply implements Likable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

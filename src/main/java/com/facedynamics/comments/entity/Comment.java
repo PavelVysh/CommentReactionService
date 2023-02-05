@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "comments")
 @Getter
 @Setter
-public class Comment implements Likable{
+public class Comment implements Likable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

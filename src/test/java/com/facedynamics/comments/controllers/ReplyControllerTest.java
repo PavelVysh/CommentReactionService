@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,6 +36,7 @@ public class ReplyControllerTest {
                 .andExpect(jsonPath("$.text",
                         equalTo("I am a second reply made for comment number three by user 2")));
     }
+
     @Test
     void replyControllerDeleteTest() throws Exception {
         mvc.perform(delete("/replies/{id}", 3))
@@ -42,6 +44,7 @@ public class ReplyControllerTest {
         mvc.perform(get("/replies/{id}", 3))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void replyControllerGetListTest() throws Exception {
         mvc.perform(get("/replies/comments/{id}", 2))
@@ -49,6 +52,7 @@ public class ReplyControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(3)));
     }
+
     @Test
     void replyControllerPostTest() throws Exception {
         Reply reply = new Reply();
@@ -70,5 +74,25 @@ public class ReplyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.text", equalTo("two chars")));
+    }
+    @Test
+    void deleteNonExistingReplyTest() throws Exception {
+        MvcResult result = mvc.perform(delete("/replies/{id}", 5678))
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+        assertEquals("should be message about reply {id} not found",
+                "Reply with id - 5678 was not found",
+                result.getResponse().getContentAsString());
+    }
+
+    @Test
+    void findRepliesForNonExistingComments() throws Exception {
+        MvcResult result = mvc.perform(get("/replies/comments/{commentId}", 5678))
+                .andExpect(status().isNotFound())
+                .andReturn();
+        assertEquals("should be message about reply non existing for comment {commentID}",
+                "Replies for comment with id - 5678 were not found",
+                result.getResponse().getContentAsString());
     }
 }

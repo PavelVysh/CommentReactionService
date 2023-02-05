@@ -28,6 +28,7 @@ public class ReplyService {
         Reply savedReply = replyRepository.save(reply);
         return DTOMapper.fromReplyToReplyDTO(savedReply);
     }
+
     public ResponseEntity<?> findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
@@ -38,6 +39,7 @@ public class ReplyService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(reply);
     }
+
     public ResponseEntity<?> deleteById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
@@ -48,6 +50,7 @@ public class ReplyService {
                     " was not found");
         }
     }
+
     public ResponseEntity<?> findRepliesByCommentId(int commentId) {
         List<Reply> replies = replyRepository.findRepliesByCommentId(commentId);
         if (replies.size() < 1) {
@@ -57,6 +60,7 @@ public class ReplyService {
         replies.forEach(this::setLikesDislikes);
         return ResponseEntity.status(HttpStatus.OK).body(replies);
     }
+
     public Reply setLikesDislikes(Reply reply) {
         reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
                 reply.getId(), EntityType.reply, false));
