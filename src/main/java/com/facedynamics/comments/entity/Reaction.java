@@ -2,6 +2,7 @@ package com.facedynamics.comments.entity;
 
 import com.facedynamics.comments.entity.enums.EntityType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +16,21 @@ import lombok.Setter;
 @Table(name = "reactions")
 public class Reaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int userId;
-    private int entityId;
+    @NotNull(message = "You must provide userId")
+    private Integer userId;
+    @NotNull(message = "You must provide entityId")
+    private Integer entityId;
     @Enumerated(value = EnumType.STRING)
+    @NotNull(message = "You must provide entityType")
     private EntityType entityType;
     @Column(name = "is_like")
-    private boolean like;
+    @NotNull(message = "You must specify is this a like (like=true/false)")
+    private Boolean like;
+
+    public Boolean isLike() {
+        return like;
+    }
 
 }

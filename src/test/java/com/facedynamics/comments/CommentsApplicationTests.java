@@ -49,7 +49,8 @@ class CommentsApplicationTests {
 	void getReplies() {
 		Reply reply = new Reply();
 		reply.setText("hyp hye");
-		reply.setCommentId(5);
+		reply.setCommentId(2);
+		reply.setUserId(5);
 
 		replyService.save(reply);
 

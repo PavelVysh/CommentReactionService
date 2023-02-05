@@ -54,6 +54,7 @@ public class ReplyControllerTest {
         Reply reply = new Reply();
         reply.setText("two chars");
         reply.setCommentId(1);
+        reply.setUserId(231);
         ResultActions resultActions = mvc.perform(post("/replies")
                 .content(new ObjectMapper().writeValueAsString(reply))
                 .contentType(MediaType.APPLICATION_JSON)

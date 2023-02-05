@@ -46,20 +46,22 @@ public class ReactionsControllerTest {
     }
     @Test
     void reactionsControllerDeleteMethodTest() throws Exception {
-        mvc.perform(delete("/reactions/{reactionId}", 18))
+        mvc.perform(delete("/reactions/{entityId}", 2)
+                        .param("userId", "333")
+                        .param("entityType", "reply"))
                 .andExpect(status().isOk());
-        mvc.perform(get("/reactions/{entityId}", 4)
+        mvc.perform(get("/reactions/{entityId}", 2)
                 .param("entityType", "reply")
                 .param("isLike", "true"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(jsonPath("$", hasSize(4)));
     }
     @Test
     void reactionsControllerPostMethodTest() throws Exception {
         Reaction reaction = new Reaction();
-        reaction.setId(666);
         reaction.setLike(true);
         reaction.setEntityId(555);
+        reaction.setUserId(333);
         reaction.setEntityType(EntityType.reply);
 
         mvc.perform(post("/reactions")

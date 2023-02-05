@@ -3,6 +3,8 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public class ReactionsController {
         this.reactionsService = reactionsService;
     }
     @PostMapping
-    public void createLike(@RequestBody Reaction reaction) {
+    public void createLike(@RequestBody @Valid Reaction reaction) {
         reactionsService.save(reaction);
     }
     @GetMapping("/{entityId}")
@@ -26,9 +28,11 @@ public class ReactionsController {
                                                 @RequestParam boolean isLike) {
         return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
     }
-    @DeleteMapping("/{reactionId}")
-    public void deleteLike(@PathVariable int reactionId) {
-        reactionsService.deleteById(reactionId);
+    @DeleteMapping("/{entityId}")
+    public ResponseEntity<?> deleteLike(@PathVariable int entityId,
+                                        @RequestParam int userId,
+                                        @RequestParam EntityType entityType) {
+        return reactionsService.deleteById(entityId, entityType, userId);
     }
     @GetMapping("/user/{userId}")
     public List<Reaction> getReactionsByUser(@PathVariable int userId,
