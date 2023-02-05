@@ -41,8 +41,14 @@ public class CommentService {
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
     public ResponseEntity deleteById(int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(commentRepository.deleteById(id).getText());
-
+        Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment != null) {
+            commentRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(comment.getText());
+        } else {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity with id - " + id +
+           " was not found");
+        }
     }
     public List<Comment> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
