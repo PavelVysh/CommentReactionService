@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class Reply implements Likable{
     @Id
     private int id;
-    @Column(name = "comment_id")
+    @Column(name = "comment_id", insertable = false, updatable = false)
     private int commentId;
     private int userId;
     @CreationTimestamp

@@ -30,7 +30,7 @@ public class Comment implements Likable{
     private String text;
     @Transient
     private int likes, dislikes;
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "comment_id")
     private List<Reply> replies;
 

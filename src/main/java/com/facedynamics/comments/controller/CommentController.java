@@ -23,12 +23,12 @@ public class CommentController {
         return commentService.save(comment);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> findById(@PathVariable int id) {
+    public ResponseEntity findById(@PathVariable int id) {
         return commentService.findById(id);
     }
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable int id) {
-        commentService.deleteById(id);
+    public ResponseEntity deleteById(@PathVariable int id) {
+        return commentService.deleteById(id);
     }
     @GetMapping("/posts/{postId}")
     public List<Comment> findCommentsByPostId(@PathVariable int postId) {

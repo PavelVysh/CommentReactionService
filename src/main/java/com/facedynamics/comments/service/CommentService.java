@@ -29,17 +29,20 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         return DTOMapper.fromCommentToCommentDTO(savedComment);
     }
-    public ResponseEntity<Comment> findById(int id) {
+    public ResponseEntity findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
+        System.out.println(comment);
         if (comment != null) {
             comment = setLikesDislikes(comment, EntityType.comment);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Comment with id - " + id + " was not found");
         }
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
-    public void deleteById(int id) {
-        commentRepository.deleteById(id);
+    public ResponseEntity deleteById(int id) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentRepository.deleteById(id).getText());
+
     }
     public List<Comment> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
