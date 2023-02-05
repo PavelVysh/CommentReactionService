@@ -1,5 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DTOMapper;
+import com.facedynamics.comments.dto.ReplyDTO;
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
@@ -22,25 +24,38 @@ public class ReplyService {
         this.reactionsRepository = reactionsRepository;
     }
 
-    public void save(Reply reply) {
-        replyRepository.save(reply);
+    public ReplyDTO save(Reply reply) {
+        Reply savedReply = replyRepository.save(reply);
+        return DTOMapper.fromReplyToReplyDTO(savedReply);
     }
-    public ResponseEntity<Reply> findById(int id) {
+    public ResponseEntity<?> findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
             reply = setLikesDislikes(reply);
         } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reply with id - " + id +
+                    " was not found");
         }
-        return new ResponseEntity<>(reply, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(reply);
     }
-    public void deleteById(int id) {
-        replyRepository.deleteById(id);
+    public ResponseEntity<?> deleteById(int id) {
+        Reply reply = replyRepository.findById(id).orElse(null);
+        if (reply != null) {
+            replyRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(reply.getText());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reply with id - " + id +
+                    " was not found");
+        }
     }
-    public List<Reply> findRepliesByCommentId(int commentId) {
+    public ResponseEntity<?> findRepliesByCommentId(int commentId) {
         List<Reply> replies = replyRepository.findRepliesByCommentId(commentId);
+        if (replies.size() < 1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Replies for comment with id - " +
+                    commentId + " were not found");
+        }
         replies.forEach(this::setLikesDislikes);
-        return replies;
+        return ResponseEntity.status(HttpStatus.OK).body(replies);
     }
     public Reply setLikesDislikes(Reply reply) {
         reply.setDislikes(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
