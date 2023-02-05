@@ -39,6 +39,7 @@ class CommentsApplicationTests {
 		Comment comment = new Comment();
 		comment.setPostId(2);
 		comment.setId(200);
+		comment.setUserId(123);
 		comment.setText("hye hyo");
 		commentService.save(comment);
 
@@ -47,9 +48,8 @@ class CommentsApplicationTests {
 	@Test
 	void getReplies() {
 		Reply reply = new Reply();
-		reply.setCommentId(1);
-		reply.setId(100);
 		reply.setText("hyp hye");
+		reply.setCommentId(5);
 
 		replyService.save(reply);
 

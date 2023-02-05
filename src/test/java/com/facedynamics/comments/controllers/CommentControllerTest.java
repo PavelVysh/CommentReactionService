@@ -47,6 +47,8 @@ public class CommentControllerTest {
     @Test
     void commentControllerPostTest() throws Exception {
         Comment comment = new Comment();
+        comment.setUserId(123);
+        comment.setPostId(321);
         comment.setText("i am a sample text to match");
         ResultActions resultActions = mvc.perform(post("/comments")
                 .content(new ObjectMapper().writeValueAsString(comment))
@@ -68,7 +70,7 @@ public class CommentControllerTest {
                 .andExpect(status().isOk());
 
         mvc.perform(get("/comments/{id}", 1))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNotFound());
     }
     @Test
     void commentControllerGetListMethodTest() throws Exception {

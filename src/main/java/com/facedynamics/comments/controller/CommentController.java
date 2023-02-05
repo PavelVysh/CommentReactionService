@@ -7,8 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
@@ -23,15 +21,15 @@ public class CommentController {
         return commentService.save(comment);
     }
     @GetMapping("/{id}")
-    public ResponseEntity findById(@PathVariable int id) {
+    public ResponseEntity<?> findById(@PathVariable int id) {
         return commentService.findById(id);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteById(@PathVariable int id) {
+    public ResponseEntity<?> deleteById(@PathVariable int id) {
         return commentService.deleteById(id);
     }
     @GetMapping("/posts/{postId}")
-    public List<Comment> findCommentsByPostId(@PathVariable int postId) {
+    public ResponseEntity<?> findCommentsByPostId(@PathVariable int postId) {
         return commentService.findCommentsByPostId(postId);
     }
 }

@@ -29,7 +29,7 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         return DTOMapper.fromCommentToCommentDTO(savedComment);
     }
-    public ResponseEntity findById(int id) {
+    public ResponseEntity<?> findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         System.out.println(comment);
         if (comment != null) {
@@ -40,20 +40,24 @@ public class CommentService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
-    public ResponseEntity deleteById(int id) {
+    public ResponseEntity<?> deleteById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             commentRepository.deleteById(id);
             return ResponseEntity.status(HttpStatus.OK).body(comment.getText());
         } else {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entity with id - " + id +
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment with id - " + id +
            " was not found");
         }
     }
-    public List<Comment> findCommentsByPostId(int postId) {
+    public ResponseEntity<?> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
+        if (comments.size() < 1) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comments for post with id "
+            + postId + " were not found");
+        }
         comments = setLikesDislikes(comments, EntityType.comment);
-        return comments;
+        return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
 
     public <T extends Likable> T setLikesDislikes(T t, EntityType entityType) {
