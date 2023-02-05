@@ -16,9 +16,12 @@ import java.util.List;
 @Setter
 public class Comment implements Likable{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int postId;
-    private int userId;
+    @NotNull(message = "You have to provide postId")
+    private Integer postId;
+    @NotNull(message = "You have to provide userId")
+    private Integer userId;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @Size(min = 2, message = "Text must be at least 2 characters long")

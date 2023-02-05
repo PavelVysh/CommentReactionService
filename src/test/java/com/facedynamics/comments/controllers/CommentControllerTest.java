@@ -26,6 +26,8 @@ public class CommentControllerTest {
 
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void likesDislikesAssignedTest() throws Exception {
@@ -45,17 +47,20 @@ public class CommentControllerTest {
     @Test
     void commentControllerPostTest() throws Exception {
         Comment comment = new Comment();
-        comment.setId(666);
-        comment.setText("two chars");
-        mvc.perform(post("/comments")
+        comment.setText("i am a sample text to match");
+        ResultActions resultActions = mvc.perform(post("/comments")
                 .content(new ObjectMapper().writeValueAsString(comment))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-        mvc.perform(get("/comments/{id}", 666))
+        MvcResult result = resultActions.andReturn();
+        int idOfSavedComment = objectMapper.readValue(
+                result.getResponse().getContentAsString(), Comment.class).getId();
+
+        mvc.perform(get("/comments/{id}", idOfSavedComment))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.text", equalTo("two chars")));
+                .andExpect(jsonPath("$.text", equalTo("i am a sample text to match")));
     }
     @Test
     void commentControllerDeleteMethodTest() throws Exception {

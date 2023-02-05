@@ -1,5 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.CommentDTO;
+import com.facedynamics.comments.dto.DTOMapper;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Likable;
 import com.facedynamics.comments.entity.enums.EntityType;
@@ -23,8 +25,9 @@ public class CommentService {
         this.reactionsRepository = reactionsRepository;
     }
 
-    public void save(Comment comment) {
-        commentRepository.save(comment);
+    public CommentDTO save(Comment comment) {
+        Comment savedComment = commentRepository.save(comment);
+        return DTOMapper.fromCommentToCommentDTO(savedComment);
     }
     public ResponseEntity<Comment> findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);

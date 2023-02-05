@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.CommentDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
@@ -18,8 +19,8 @@ public class CommentController {
         this.commentService = commentService;
     }
     @PostMapping
-    public void createComment(@RequestBody @Valid Comment comment) {
-        commentService.save(comment);
+    public CommentDTO createComment(@RequestBody @Valid Comment comment) {
+        return commentService.save(comment);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Comment> findById(@PathVariable int id) {
