@@ -36,7 +36,7 @@ public class ReactionsController {
         return reactionsService.deleteById(entityId, entityType, userId);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<?> getReactionsByUser(@PathVariable int userId,
                                              @RequestParam EntityType entityType,
                                              @RequestParam boolean isLike) {

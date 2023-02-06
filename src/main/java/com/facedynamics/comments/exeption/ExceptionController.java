@@ -1,4 +1,4 @@
-package com.facedynamics.comments.exeptions;
+package com.facedynamics.comments.exeption;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

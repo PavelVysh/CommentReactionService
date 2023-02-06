@@ -1,4 +1,4 @@
-package com.facedynamics.comments.exeptions;
+package com.facedynamics.comments.exeption;
 
 import java.time.LocalDateTime;
 
