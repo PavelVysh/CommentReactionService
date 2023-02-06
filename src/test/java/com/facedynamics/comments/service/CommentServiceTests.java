@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class CommentServiceTest {
+public class CommentServiceTests {
     @Mock
     private static CommentRepository commentRepository;
     @Mock

@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql({"/dataForTests.sql"})
-public class ReplyControllerTest {
+public class ReplyControllerTests {
     @Autowired
     private MockMvc mvc;
     @Autowired

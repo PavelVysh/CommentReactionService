@@ -25,7 +25,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ReplyServiceTest {
+public class ReplyServiceTests {
     @Mock
     private static ReplyRepository replyRepository;
     @Mock
