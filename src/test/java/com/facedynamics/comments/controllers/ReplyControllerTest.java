@@ -95,4 +95,17 @@ public class ReplyControllerTest {
                 "Replies for comment with id - 5678 were not found",
                 result.getResponse().getContentAsString());
     }
+    @Test
+    void createReplyForNonExistingComment() throws Exception {
+        Reply reply = new Reply();
+        reply.setCommentId(5555);
+        reply.setUserId(1);
+        reply.setText("two chars");
+
+        mvc.perform(post("/replies")
+                .content(new ObjectMapper().writeValueAsString(reply))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
+    }
 }
