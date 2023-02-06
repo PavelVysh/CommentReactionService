@@ -1,4 +1,4 @@
-package com.facedynamics.comments.controllers;
+package com.facedynamics.comments.integrational;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reply;

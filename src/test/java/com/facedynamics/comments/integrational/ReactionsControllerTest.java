@@ -1,4 +1,4 @@
-package com.facedynamics.comments.controllers;
+package com.facedynamics.comments.integrational;
 
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
