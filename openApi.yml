@@ -20,10 +20,8 @@ tags:
     description: comments endpoints
   - name: replies
     description: replies endpoints
-  - name: likes
-    description: likes endpoints
-  - name: dislikes
-    description: dislikes endpoints
+  - name: reactions
+    description: reactions endpoints
 paths:
   /comments:
     post:
@@ -37,10 +35,10 @@ paths:
           application/json:
             schema:
               properties:
-                user_id:
+                userId:
                   type: integer
                   example: 4567654
-                post_id:
+                postId:
                   type: integer
                   example: 567654
                 text:
@@ -79,9 +77,6 @@ paths:
                   text:
                     type: string
                     example: "Post with id - {id} was not found"
-      security:
-        - comments_auth:
-            - write:comments
   /comments/{commentId}:
     get:
       tags:
@@ -141,7 +136,7 @@ paths:
                 properties:
                   text:
                     type: string
-                    example: "Curring user can't delet this comment"
+                    example: "Current user can't delet this comment"
         '404':
           description: Comment with such ID not found
           content:
@@ -151,9 +146,6 @@ paths:
                   text:
                     type: string
                     example: "Comment with id - {commentId} not found"
-      security:
-        - comments_auth:
-            - delete:comments
   /comments/posts/{postId}:
     get:
       tags:
@@ -230,9 +222,6 @@ paths:
                     example: "message should be between 2 and 500 characters"
         '403':
           description: Unauthorized user
-      security:
-        - comments_auth:
-            - write:comments
   /replies/{replyId}:
     get:
       tags:
@@ -292,7 +281,7 @@ paths:
                 properties:
                   text:
                     type: string
-                    example: "Curring user can't delet this reply"
+                    example: "Current user can't delet this reply"
         '404':
           description: Comment with such ID not found
           content:
@@ -302,9 +291,6 @@ paths:
                   text:
                     type: string
                     example: "Reply with id - {commentId} not found"
-      security:
-        - comments_auth:
-            - user:authorized
   /replies/comments/{commentId}:
     get:
       tags:
@@ -336,11 +322,11 @@ paths:
                   message:
                     type: string
                     example: comment with id - {id} not found
-  /likes:
+  /reactions:
     post:
       tags:
-        - likes
-      summary: Create a like for existing Post/Repost/Comment/Reply
+        - reactions
+      summary: Create a reaction for existing Post/Repost/Comment/Reply
       requestBody:
         content:
           application/json:
@@ -349,24 +335,20 @@ paths:
                 user_id:
                   type: integer
                   example: 5676
+                entity_id:
+                  type: integer
+                  example: 46537
                 entity_type:
                   type: string
                   enum: [Comment, Post, Reply, Repost]
                   example: "Comment"
-                entity_id:
-                  type: integer
-                  example: 46537
+                is_like:
+                  type: boolean
+                  example: true
         required: true
       responses:
         '200':
           description: Successful operation
-          content:
-            application/json:
-              schema:
-                properties:
-                  likeId:
-                    type: integer
-                    example: 845654
         '400':
           description: Invalid input
         '403':
@@ -380,16 +362,11 @@ paths:
                   text:
                     type: string
                     example: "{entity} with {id} was not found"
-      security:
-        - comments_auth:
-            - user:authorized
-
-  /likes/{entityId}:
+  /reactions/{entityId}:
     get:
       tags:
-        - likes
-      summary: Get likes for a specifit entity(post/repost/comment/reply)
-
+        - reactions
+      summary: Get reaction s for a specifit entity(post/repost/comment/reply)
       parameters:
         - name: entityId
           in: path
@@ -405,7 +382,14 @@ paths:
           schema:
             type: string
             enum: [Comment, Post, Reply, Repost]
-            example: "Comment"
+            example: "comment"
+        - name: isLike
+          in: query
+          description: Like or Dislike
+          required: true
+          schema:
+            type: boolean
+            example: true
       responses:
         '200':
           description: Seccessful operation
@@ -414,7 +398,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Like'
+                  $ref: '#/components/schemas/Reaction'
         '404':
           description: Entity not found
           content:
@@ -426,8 +410,8 @@ paths:
                     example: entity with id - {id} not found
     delete:
       tags:
-        - likes
-      summary: Get likes for a specifit entity(post/repost/comment/reply)
+        - reactions
+      summary: Delete reaction for a specific entity(post/repost/comment/reply)
       parameters:
         - name: entityId
           in: path
@@ -442,7 +426,13 @@ paths:
           required: true
           schema:
             type: string
-            example: "Comment"
+            example: "comment"
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 123
       responses:
         '200':
           description: Seccessful operation
@@ -451,7 +441,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Like'
+                  $ref: '#/components/schemas/Reaction'
         '404':
           description: Entity not found
           content:
@@ -460,15 +450,12 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: entity with id - {id} not found
-      security:
-        - comments_auth:
-            - user:authorized
-  /likes/user/{userId}:
+                    example: "Reaction was not found"
+  /reactions/user/{userId}:
     get:
       tags:
-        - likes
-      summary: Get likes for a specific group (post/repost/comment/reply) by User
+        - reactions
+      summary: Get reaction for a specific group (post/repost/comment/reply) by User
       parameters:
         - name: userId
           in: path
@@ -485,6 +472,12 @@ paths:
             type: string
             enum: [Comment, Post, Reply, Repost]
             example: "Comment"
+        - name: isLike
+          in: query
+          description: true for like, false for dislike
+          required: true
+          schema:
+            type: boolean
       responses:
         '200':
           description: Seccessful operation
@@ -493,7 +486,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Like'
+                  $ref: '#/components/schemas/Reaction'
         '404':
           description: User
           content:
@@ -502,173 +495,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: user with id - {id} not found
-  /dislikes:
-    post:
-      tags:
-        - dislikes
-      summary: Create a dislike for existing Post/Repost/Comment/Reply
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                user_id:
-                  type: integer
-                  example: 565456
-                entity_type:
-                  type: string
-                  enum: [Comment, Post, Reply, Repost]
-                  example: "Comment"
-                entity_id:
-                  type: integer
-                  example: 437486
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                properties:
-                  dislikeId:
-                    type: integer
-                    example: 845654
-        '400':
-          description: Invalid input
-        '403':
-          description: Unauthorized user
-        '404':
-          description: Entity not found
-          content:
-            application/json:
-              schema:
-                properties:
-                  text:
-                    type: string
-                    example: "{entity} with {id} was not found"
-      security:
-        - comments_auth:
-            - user:authorized
-
-  /dislikes/{entityId}:
-    get:
-      tags:
-        - dislikes
-      summary: Get dislikes for a specifit entity(post/repost/comment/reply)
-      parameters:
-        - name: entityId
-          in: path
-          description: ID of a entity which dislikes are needed
-          required: true
-          schema:
-            type: integer
-            example: 7654567
-        - name: entityType
-          in: query
-          description: Type of an entity where we add dislike
-          required: true
-          schema:
-            type: string
-            enum: [Comment, Post, Reply, Repost]
-            example: "Comment"
-      responses:
-        '200':
-          description: Seccessful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Dislike'
-        '404':
-          description: Entity not found
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    type: string
-                    example: "entity with id - {id} not found"
-    delete:
-      tags:
-        - dislikes
-      summary: Get dislikes for a specifit entity(post/repost/comment/reply)
-      parameters:
-        - name: entityId
-          in: path
-          description: ID of a entity which dislikes are needed
-          required: true
-          schema:
-            type: integer
-            example: 27826
-        - name: entityType
-          in: query
-          description: Type of an entity where we add dislike
-          required: true
-          schema:
-            type: string
-            example: "Comment"
-      responses:
-        '200':
-          description: Seccessful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Dislike'
-        '404':
-          description: Entity not found
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    type: string
-                    example: entity with id - {id} not found
-      security:
-        - comments_auth:
-            - user:authorized
-  /dislikes/user/{userId}:
-    get:
-      tags:
-        - dislikes
-      summary: Get dislikes for a specific group (post/repost/comment/reply) by User
-      parameters:
-        - name: userId
-          in: path
-          description: ID of a user which likes are needed
-          required: true
-          schema:
-            type: integer
-            example: 63638
-        - name: entityType
-          in: query
-          description: Type of an entity
-          required: true
-          schema:
-            type: string
-            enum: [Comment, Post, Reply, Repost]
-            example: "Comment"
-      responses:
-        '200':
-          description: Seccessful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Dislike'
-        '404':
-          description: User
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    type: string
-                    example: user with id - {id} not found
+                    example: "Reaction not found"
 components:
   schemas:
     Comment:
@@ -712,31 +539,16 @@ components:
           type: integer
           format: int64
           example: 10
-    Like:
+    Reaction:
       type: object
       properties:
+        id:
+          type: integer
         user_id:
           type: integer
-          example: 232
         entity_id:
           type: integer
-          example: 546
-    Dislike:
-      type: object
-      properties:
-        user_id:
-          type: integer
-          example: 6818
-        entity_id:
-          type: integer
-          example: 819272
-  securitySchemes:
-    comments_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://localhost:8081
-          scopes:
-            user:authorized: user is authorized
-            write:comments: add comments to existing post
-            delete:comments: delete a comment from a post
+        isLike:
+          type: boolean
+        entityType:
+          type: string
