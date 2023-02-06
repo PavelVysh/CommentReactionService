@@ -1,19 +1,14 @@
 package com.facedynamics.comments.exeption;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public class ValidationException {
-    private final LocalDateTime localDateTime;
-    private final String message;
+    private final List<String> errors;
 
-    public ValidationException(String message) {
-        this.localDateTime = LocalDateTime.now();
-        this.message = message;
+    public ValidationException(List<String> errors) {
+        this.errors = errors;
     }
-    public LocalDateTime getLocalDateTime(){
-        return localDateTime;
-    }
-    public String getMessage() {
-        return message;
+    public List<String> getErrors() {
+        return errors;
     }
 }
