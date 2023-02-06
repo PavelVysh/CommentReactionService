@@ -7,8 +7,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/reactions")
 public class ReactionsController {
@@ -25,7 +23,7 @@ public class ReactionsController {
     }
 
     @GetMapping("/{entityId}")
-    public List<Reaction> getReactionsForEntity(@PathVariable int entityId,
+    public ResponseEntity<?> getReactionsForEntity(@PathVariable int entityId,
                                                 @RequestParam EntityType entityType,
                                                 @RequestParam boolean isLike) {
         return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
@@ -39,7 +37,7 @@ public class ReactionsController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Reaction> getReactionsByUser(@PathVariable int userId,
+    public ResponseEntity<?> getReactionsByUser(@PathVariable int userId,
                                              @RequestParam EntityType entityType,
                                              @RequestParam boolean isLike) {
         return reactionsService.findAllByUserIdAndType(userId, entityType, isLike);
