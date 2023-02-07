@@ -7,6 +7,7 @@ import com.facedynamics.comments.entity.Likable;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
-
-    public CommentService(CommentRepository commentRepository,
-                          ReactionsRepository reactionsRepository) {
-        this.commentRepository = commentRepository;
-        this.reactionsRepository = reactionsRepository;
-    }
 
     public CommentDTO save(Comment comment) {
         Comment savedComment = commentRepository.save(comment);

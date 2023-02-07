@@ -4,18 +4,17 @@ import com.facedynamics.comments.dto.CommentDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/comments")
+@AllArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
 
     @PostMapping
     public CommentDTO createComment(@RequestBody @Valid Comment comment) {
