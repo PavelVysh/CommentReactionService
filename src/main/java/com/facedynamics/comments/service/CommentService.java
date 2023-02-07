@@ -5,6 +5,7 @@ import com.facedynamics.comments.dto.DTOMapper;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Likable;
 import com.facedynamics.comments.entity.enums.EntityType;
+import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.AllArgsConstructor;
@@ -26,32 +27,30 @@ public class CommentService {
         return DTOMapper.fromCommentToCommentDTO(savedComment);
     }
 
-    public ResponseEntity<?> findById(int id) {
+    public ResponseEntity<Comment> findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             comment = setLikesDislikes(comment, EntityType.comment);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Comment with id - " + id + " was not found");
+            throw new NotFoundException("Comment with id - " + id + " was not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
 
-    public ResponseEntity<?> deleteById(int id) {
+    public ResponseEntity<String> deleteById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             commentRepository.deleteById(id);
             return ResponseEntity.status(HttpStatus.OK).body(comment.getText());
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comment with id - " + id +
-                    " was not found");
+            throw new NotFoundException("Comment with id - " + id + " was not found");
         }
     }
 
-    public ResponseEntity<?> findCommentsByPostId(int postId) {
+    public ResponseEntity<List<Comment>> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
         if (comments.size() < 1) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Comments for post with id "
+            throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
         comments = setLikesDislikes(comments, EntityType.comment);

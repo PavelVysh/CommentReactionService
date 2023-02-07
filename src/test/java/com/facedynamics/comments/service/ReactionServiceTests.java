@@ -2,6 +2,7 @@ package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
+import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
@@ -72,8 +74,9 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
                 .thenReturn(Collections.emptyList());
 
-        ResponseEntity<?> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
-        assertEquals("finding reactions for entity", HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThrows(NotFoundException.class, () ->
+                reactionsService.findReactionsForEntity(2, EntityType.post, true),
+                "Should throw NotFoundException");
     }
     @Test
     void deleteReactionSuccessfulTest() {
@@ -89,9 +92,8 @@ public class ReactionServiceTests {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(false);
 
-        ResponseEntity<?> response = reactionsService.deleteReaction(2, EntityType.post, 1);
-
-        assertEquals("delete fail test", HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThrows(NotFoundException.class, () -> reactionsService.deleteReaction(2, EntityType.post, 1)
+                , "Should throw NotFoundException");
     }
     @Test
     void findByUserIdAndTypeSuccessfulTest() {
@@ -107,9 +109,8 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
                 .thenReturn(Collections.emptyList());
 
-        ResponseEntity<?> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
-
-        assertEquals("Finding reactions successfully", HttpStatus.NOT_FOUND, response.getStatusCode());
-
+        assertThrows(NotFoundException.class, () ->
+                reactionsService.findAllByUserIdAndType(1, EntityType.post, true),
+                "Should throw NotFoundException");
     }
 }

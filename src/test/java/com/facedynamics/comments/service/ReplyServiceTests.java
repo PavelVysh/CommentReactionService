@@ -3,6 +3,7 @@ package com.facedynamics.comments.service;
 import com.facedynamics.comments.dto.ReplyDTO;
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
+import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
@@ -64,9 +66,8 @@ public class ReplyServiceTests {
     void findByIdUnSuccessfulTest() {
         when(replyRepository.findById(2)).thenReturn(Optional.empty());
 
-        ResponseEntity<?> status = replyService.findById(2);
-
-        assertEquals("looking for a comment that doesn't exist", HttpStatus.NOT_FOUND , status.getStatusCode());
+        assertThrows(NotFoundException.class, () -> replyService.findById(2),
+                "Should throw NotFoundException");
     }
     @Test
     void deleteByIDSuccessfulTest() {
@@ -82,9 +83,8 @@ public class ReplyServiceTests {
     void deleteByIdNotSuccessfulTest() {
         when(replyRepository.findById(666)).thenReturn(Optional.empty());
 
-        ResponseEntity<?> response = replyService.deleteById(666);
-
-        assertEquals("Deletion of a non existing comment by id", HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThrows(NotFoundException.class, () -> replyService.deleteById(666),
+                "Should throw NotFoundException");
     }
     @Test
     void findReplyByCommentIdSuccessfulTest() {
@@ -99,9 +99,8 @@ public class ReplyServiceTests {
     void findReplyByCommentIdUnSuccessfulTest() {
         when(replyRepository.findRepliesByCommentId(666)).thenReturn(new ArrayList<>());
 
-        ResponseEntity<?> response = replyService.findRepliesByCommentId(666);
-
-        assertEquals("Searching for a reply that doesn't exist", HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertThrows(NotFoundException.class, () -> replyService.findRepliesByCommentId(666)
+                , "Should throw NotFoundException");
     }
     @Test
     void setLikesDislikesForReplyTest() {

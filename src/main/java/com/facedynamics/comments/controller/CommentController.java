@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/comments")
 @AllArgsConstructor
@@ -22,17 +24,17 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable int id) {
+    public ResponseEntity<Comment> findById(@PathVariable int id) {
         return commentService.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable int id) {
+    public ResponseEntity<String> deleteById(@PathVariable int id) {
         return commentService.deleteById(id);
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<?> findCommentsByPostId(@PathVariable int postId) {
+    public ResponseEntity<List<Comment>> findCommentsByPostId(@PathVariable int postId) {
         return commentService.findCommentsByPostId(postId);
     }
 }

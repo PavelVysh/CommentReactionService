@@ -1,4 +1,4 @@
-package com.facedynamics.integrational;
+package integrational;
 
 import com.facedynamics.comments.CommentsApplication;
 import com.facedynamics.comments.entity.Reaction;

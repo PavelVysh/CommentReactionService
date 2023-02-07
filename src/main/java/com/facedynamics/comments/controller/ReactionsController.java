@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/reactions")
 @AllArgsConstructor
@@ -21,21 +23,21 @@ public class ReactionsController {
     }
 
     @GetMapping("/{entityId}")
-    public ResponseEntity<?> getReactionsForEntity(@PathVariable int entityId,
-                                                @RequestParam EntityType entityType,
-                                                @RequestParam boolean isLike) {
+    public ResponseEntity<List<Reaction>> getReactionsForEntity(@PathVariable int entityId,
+                                                                @RequestParam EntityType entityType,
+                                                                @RequestParam boolean isLike) {
         return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
     }
 
     @DeleteMapping("/{entityId}")
-    public ResponseEntity<?> deleteReaction(@PathVariable int entityId,
+    public ResponseEntity<String> deleteReaction(@PathVariable int entityId,
                                         @RequestParam int userId,
                                         @RequestParam EntityType entityType) {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<?> getReactionsByUser(@PathVariable int userId,
+    public ResponseEntity<List<Reaction>> getReactionsByUser(@PathVariable int userId,
                                              @RequestParam EntityType entityType,
                                              @RequestParam boolean isLike) {
         return reactionsService.findAllByUserIdAndType(userId, entityType, isLike);

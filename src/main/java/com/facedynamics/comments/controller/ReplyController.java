@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/replies")
 @AllArgsConstructor
@@ -21,17 +23,17 @@ public class ReplyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable int id) {
+    public ResponseEntity<Reply> findById(@PathVariable int id) {
         return replyService.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable int id) {
+    public ResponseEntity<String> deleteById(@PathVariable int id) {
         return replyService.deleteById(id);
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<?> findRepliesByCommentId(@PathVariable int commentId) {
+    public ResponseEntity<List<Reply>> findRepliesByCommentId(@PathVariable int commentId) {
         return replyService.findRepliesByCommentId(commentId);
     }
 }

@@ -24,12 +24,16 @@ public class ExceptionController {
                 ex.getStatusCode());
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
-    protected ResponseEntity<String> constraintProblem(DataIntegrityViolationException exc) {
+    protected ResponseEntity<String> constraintProblem() {
         return new ResponseEntity<>("Can't create a reply for a comment that doesn't exist.",
                 HttpStatus.CONFLICT);
     }
     @ExceptionHandler(HttpMessageConversionException.class)
-    protected ResponseEntity<?> parseProblem(HttpMessageConversionException exc) {
+    protected ResponseEntity<String> parseProblem(HttpMessageConversionException exc) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exc.getMessage());
+    }
+    @ExceptionHandler(NotFoundException.class)
+    protected ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }
