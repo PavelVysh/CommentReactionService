@@ -9,18 +9,19 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.List;
+
 @ControllerAdvice
 public class ExceptionController {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ResponseEntity<ValidationException> validationProblem(MethodArgumentNotValidException ex) {
-        return new ResponseEntity<>(
-                new ValidationException(
+    protected ResponseEntity<List<String>> validationProblem(MethodArgumentNotValidException ex) {
+        return new ResponseEntity<>(new ValidationException(
                         ex.getBindingResult()
                                 .getAllErrors()
                                 .stream()
                                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                                .toList()),
+                                .toList()).getErrors(),
                 ex.getStatusCode());
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
