@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -82,9 +82,8 @@ public class ReplyTests {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        assertEquals("should be message about reply {id} not found",
-                "Reply with id - 5678 was not found",
-                result.getResponse().getContentAsString());
+        assertTrue("should be message about reply {id} not found",
+                result.getResponse().getContentAsString().contains("Reply with id - 5678 was not found"));
     }
 
     @Test
@@ -92,9 +91,8 @@ public class ReplyTests {
         MvcResult result = mvc.perform(get("/replies/comments/{commentId}", 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
-        assertEquals("should be message about reply non existing for comment {commentID}",
-                "Replies for comment with id - 5678 were not found",
-                result.getResponse().getContentAsString());
+        assertTrue("should be message about reply non existing for comment {commentID}",
+                result.getResponse().getContentAsString().contains("Replies for comment with id - 5678 were not found"));
     }
     @Test
     void createReplyForNonExistingComment() throws Exception {

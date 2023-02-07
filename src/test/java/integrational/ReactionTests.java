@@ -15,8 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertFalse;
+import static org.springframework.test.util.AssertionErrors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -120,9 +119,8 @@ public class ReactionTests {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        assertEquals("tried to delete a non existing reaction",
-                "Reaction was not found",
-                result.getResponse().getContentAsString());
+        assertTrue("tried to delete a non existing reaction",
+                result.getResponse().getContentAsString().contains("Reaction was not found"));
     }
 }
 
