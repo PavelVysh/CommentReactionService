@@ -1,4 +1,4 @@
-package com.facedynamics.comments.controllers;
+package com.facedynamics.comments.integrational;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reply;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql({"/dataForTests.sql"})
-public class ReplyControllerTest {
+public class ReplyTests {
     @Autowired
     private MockMvc mvc;
     @Autowired

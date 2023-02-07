@@ -20,14 +20,16 @@ public class ReactionsService {
     }
 
     @Transactional
-    public void save(Reaction reaction) {
+    public Reaction save(Reaction reaction) {
         if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
                 reaction.getEntityType(), reaction.getUserId())) {
             repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
                     reaction.getUserId(), reaction.isLike());
-        } else {
-            repository.save(reaction);
+            return repository.findByEntityIdAndEntityTypeAndUserIdAndLike(
+                    reaction.getEntityId(), reaction.getEntityType(),
+                    reaction.getUserId(), reaction.isLike());
         }
+        return repository.save(reaction);
     }
 
     public ResponseEntity<?> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
@@ -39,7 +41,7 @@ public class ReactionsService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteById(int entityId, EntityType entityType, int userId) {
+    public ResponseEntity<?> deleteReaction(int entityId, EntityType entityType, int userId) {
         if (repository.existsByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId)) {
             repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId);
             return ResponseEntity.status(HttpStatus.OK).body("Reaction was successfully deleted");

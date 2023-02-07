@@ -18,8 +18,8 @@ public class ReactionsController {
     }
 
     @PostMapping
-    public void createLike(@RequestBody @Valid Reaction reaction) {
-        reactionsService.save(reaction);
+    public Reaction createReaction(@RequestBody @Valid Reaction reaction) {
+        return reactionsService.save(reaction);
     }
 
     @GetMapping("/{entityId}")
@@ -33,7 +33,7 @@ public class ReactionsController {
     public ResponseEntity<?> deleteReaction(@PathVariable int entityId,
                                         @RequestParam int userId,
                                         @RequestParam EntityType entityType) {
-        return reactionsService.deleteById(entityId, entityType, userId);
+        return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 
     @GetMapping("/users/{userId}")

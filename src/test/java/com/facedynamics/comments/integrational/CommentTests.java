@@ -1,4 +1,4 @@
-package com.facedynamics.comments.controllers;
+package com.facedynamics.comments.integrational;
 
 import com.facedynamics.comments.entity.Comment;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql({"/dataForTests.sql"})
-public class CommentControllerTest {
+public class CommentTests {
 
     @Autowired
     private MockMvc mvc;
