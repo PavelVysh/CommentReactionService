@@ -1,5 +1,6 @@
-package com.facedynamics.comments.integrational;
+package com.facedynamics.integrational;
 
+import com.facedynamics.comments.CommentsApplication;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reply;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(classes = CommentsApplication.class)
 @AutoConfigureMockMvc
 @Sql({"/dataForTests.sql"})
 public class ReplyTests {
