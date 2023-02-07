@@ -52,7 +52,7 @@ public class CommentServiceTests {
         assertEquals("id doesn't equals" ,1, savedComment.getId());
     }
     @Test
-    void findByIdSuccessful() {
+    void findByIdSuccessfulTest() {
         Comment comment = new Comment();
         comment.setId(2);
         comment.setReplies(new ArrayList<>());
@@ -64,7 +64,7 @@ public class CommentServiceTests {
         assertEquals("didn't find an existing comment",HttpStatus.OK , status.getStatusCode());
     }
     @Test
-    void findByInUnSuccessful() {
+    void findByInUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
         ResponseEntity<?> status = commentService.findById(3);
@@ -72,7 +72,7 @@ public class CommentServiceTests {
         assertEquals("trying to find comment that doesn't exist", HttpStatus.NOT_FOUND, status.getStatusCode());
     }
     @Test
-    void deleteByIDSuccessful() {
+    void deleteByIDSuccessfulTest() {
 
         when(commentRepository.findById(1)).thenReturn(Optional.of(new Comment()));
 
@@ -82,7 +82,7 @@ public class CommentServiceTests {
 
     }
     @Test
-    void deleteByIdNotSuccessful() {
+    void deleteByIdNotSuccessfulTest() {
         when(commentRepository.findById(666)).thenReturn(Optional.empty());
 
         ResponseEntity<?> response = commentService.deleteById(666);
@@ -90,7 +90,7 @@ public class CommentServiceTests {
         assertEquals("Deletion of a non existing comment by id", HttpStatus.NOT_FOUND, response.getStatusCode());
     }
     @Test
-    void findCommentsByPostIdSuccessful() {
+    void findCommentsByPostIdSuccessfulTest() {
         Comment comment1 = new Comment();
         Comment comment2 = new Comment();
 
@@ -104,7 +104,7 @@ public class CommentServiceTests {
         assertEquals("should have found two comments", HttpStatus.OK, commentsFound.getStatusCode());
     }
     @Test
-    void findCommentsByPostIdUnSuccessful() {
+    void findCommentsByPostIdUnSuccessfulTest() {
         when(commentRepository.findCommentsByPostId(666)).thenReturn(new ArrayList<>());
 
         ResponseEntity<?> commentsFound = commentService.findCommentsByPostId(666);

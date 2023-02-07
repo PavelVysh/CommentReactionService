@@ -69,7 +69,7 @@ public class ReplyServiceTests {
         assertEquals("looking for a comment that doesn't exist", HttpStatus.NOT_FOUND , status.getStatusCode());
     }
     @Test
-    void deleteByIDSuccessful() {
+    void deleteByIDSuccessfulTest() {
 
         when(replyRepository.findById(1)).thenReturn(Optional.of(new Reply()));
 
@@ -79,7 +79,7 @@ public class ReplyServiceTests {
 
     }
     @Test
-    void deleteByIdNotSuccessful() {
+    void deleteByIdNotSuccessfulTest() {
         when(replyRepository.findById(666)).thenReturn(Optional.empty());
 
         ResponseEntity<?> response = replyService.deleteById(666);
@@ -87,7 +87,7 @@ public class ReplyServiceTests {
         assertEquals("Deletion of a non existing comment by id", HttpStatus.NOT_FOUND, response.getStatusCode());
     }
     @Test
-    void findReplyByCommentIdSuccessful() {
+    void findReplyByCommentIdSuccessfulTest() {
         List<Reply> replyList = new ArrayList<>(Arrays.asList(new Reply(), new Reply()));
         when(replyRepository.findRepliesByCommentId(2)).thenReturn(replyList);
 
@@ -96,7 +96,7 @@ public class ReplyServiceTests {
         assertEquals("Finding replies by comment id", HttpStatus.OK, response.getStatusCode());
     }
     @Test
-    void findReplyByCommentIdUnSuccessful() {
+    void findReplyByCommentIdUnSuccessfulTest() {
         when(replyRepository.findRepliesByCommentId(666)).thenReturn(new ArrayList<>());
 
         ResponseEntity<?> response = replyService.findRepliesByCommentId(666);
@@ -104,7 +104,7 @@ public class ReplyServiceTests {
         assertEquals("Searching for a reply that doesn't exist", HttpStatus.NOT_FOUND, response.getStatusCode());
     }
     @Test
-    void setLikesDislikesForReply() {
+    void setLikesDislikesForReplyTest() {
         when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
                 1, EntityType.reply, false)).thenReturn(3);
         when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(

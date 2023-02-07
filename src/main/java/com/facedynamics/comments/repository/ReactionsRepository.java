@@ -12,6 +12,7 @@ public interface ReactionsRepository extends JpaRepository<Reaction, Integer> {
     List<Reaction> findAllByEntityIdAndEntityTypeAndLike(int entityId, EntityType entityType, boolean isLike);
 
     List<Reaction> findAllByUserIdAndEntityTypeAndLike(int userId, EntityType entityType, boolean isLike);
+    Reaction findByEntityIdAndEntityTypeAndUserIdAndLike(int entityId, EntityType entityType, int userId, boolean like);
 
     int countAllByEntityIdAndEntityTypeAndLike(int entityId, EntityType type, boolean isLike);
 
@@ -19,7 +20,7 @@ public interface ReactionsRepository extends JpaRepository<Reaction, Integer> {
 
     @Modifying
     @Query("update Reaction r SET r.like = :like WHERE r.entityType = :entityType AND r.entityId = :entityId AND r.userId = :userId")
-    void changeReactionToOpposite(int entityId, EntityType entityType, int userId, boolean like);
+    int changeReactionToOpposite(int entityId, EntityType entityType, int userId, boolean like);
 
     void deleteByEntityIdAndEntityTypeAndUserId(int entityId, EntityType entityType, int userId);
 }
