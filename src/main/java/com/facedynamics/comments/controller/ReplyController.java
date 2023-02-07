@@ -4,18 +4,16 @@ import com.facedynamics.comments.dto.ReplyDTO;
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.service.ReplyService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/replies")
+@AllArgsConstructor
 public class ReplyController {
 
     private final ReplyService replyService;
-
-    public ReplyController(ReplyService replyService) {
-        this.replyService = replyService;
-    }
 
     @PostMapping
     public ReplyDTO createReply(@RequestBody @Valid Reply reply) {

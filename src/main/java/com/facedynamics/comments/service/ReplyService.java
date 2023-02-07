@@ -6,6 +6,7 @@ import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,16 +14,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
     private final ReactionsRepository reactionsRepository;
-
-    public ReplyService(ReplyRepository replyRepository,
-                        ReactionsRepository reactionsRepository) {
-        this.replyRepository = replyRepository;
-        this.reactionsRepository = reactionsRepository;
-    }
 
     public ReplyDTO save(Reply reply) {
         Reply savedReply = replyRepository.save(reply);

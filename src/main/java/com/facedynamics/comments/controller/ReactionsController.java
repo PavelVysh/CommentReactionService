@@ -4,18 +4,16 @@ import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/reactions")
+@AllArgsConstructor
 public class ReactionsController {
 
     private final ReactionsService reactionsService;
-
-    public ReactionsController(ReactionsService reactionsService) {
-        this.reactionsService = reactionsService;
-    }
 
     @PostMapping
     public Reaction createReaction(@RequestBody @Valid Reaction reaction) {

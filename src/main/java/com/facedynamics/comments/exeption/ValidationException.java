@@ -2,7 +2,7 @@ package com.facedynamics.comments.exeption;
 
 import java.util.List;
 
-public class ValidationException {
+public class ValidationException extends jakarta.validation.ValidationException {
     private final List<String> errors;
 
     public ValidationException(List<String> errors) {
