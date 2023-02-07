@@ -14,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,13 +55,14 @@ public class CommentServiceTests {
     void findByIdSuccessfulTest() {
         Comment comment = new Comment();
         comment.setId(2);
+        comment.setText("test text");
         comment.setReplies(new ArrayList<>());
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        ResponseEntity<?> status = commentService.findById(2);
+        Comment status = commentService.findById(2);
 
-        assertEquals("didn't find an existing comment",HttpStatus.OK , status.getStatusCode());
+        assertEquals("didn't find an existing comment","test text" , status.getText());
     }
     @Test
     void findByInUnSuccessfulTest() {
@@ -74,12 +73,13 @@ public class CommentServiceTests {
     }
     @Test
     void deleteByIDSuccessfulTest() {
+        Comment comment = new Comment();
+        comment.setText("test text");
+        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
 
-        when(commentRepository.findById(1)).thenReturn(Optional.of(new Comment()));
+        String response = commentService.deleteById(1);
 
-        ResponseEntity<?> response = commentService.deleteById(1);
-
-        assertEquals("Deletion of a comment by id", HttpStatus.OK , response.getStatusCode());
+        assertEquals("Deletion of a comment by id", "test text" , response);
 
     }
     @Test
@@ -99,9 +99,9 @@ public class CommentServiceTests {
 
         when(commentRepository.findCommentsByPostId(1)).thenReturn(new ArrayList<>(Arrays.asList(comment1, comment2)));
 
-        ResponseEntity<?> commentsFound = commentService.findCommentsByPostId(1);
+        List<Comment> commentsFound = commentService.findCommentsByPostId(1);
 
-        assertEquals("should have found two comments", HttpStatus.OK, commentsFound.getStatusCode());
+        assertEquals("should have found two comments", 2, commentsFound.size());
     }
     @Test
     void findCommentsByPostIdUnSuccessfulTest() {

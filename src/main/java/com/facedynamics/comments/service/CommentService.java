@@ -9,8 +9,6 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,34 +25,34 @@ public class CommentService {
         return DTOMapper.fromCommentToCommentDTO(savedComment);
     }
 
-    public ResponseEntity<Comment> findById(int id) {
+    public Comment findById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             comment = setLikesDislikes(comment, EntityType.comment);
         } else {
             throw new NotFoundException("Comment with id - " + id + " was not found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(comment);
+        return comment;
     }
 
-    public ResponseEntity<String> deleteById(int id) {
+    public String deleteById(int id) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
             commentRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(comment.getText());
+            return comment.getText();
         } else {
             throw new NotFoundException("Comment with id - " + id + " was not found");
         }
     }
 
-    public ResponseEntity<List<Comment>> findCommentsByPostId(int postId) {
+    public List<Comment> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
         if (comments.size() < 1) {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
         comments = setLikesDislikes(comments, EntityType.comment);
-        return ResponseEntity.status(HttpStatus.OK).body(comments);
+        return comments;
     }
 
     public <T extends Likable> T setLikesDislikes(T t, EntityType entityType) {

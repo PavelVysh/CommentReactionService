@@ -5,7 +5,6 @@ import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.service.ReplyService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +22,17 @@ public class ReplyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reply> findById(@PathVariable int id) {
+    public Reply findById(@PathVariable int id) {
         return replyService.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable int id) {
+    public String deleteById(@PathVariable int id) {
         return replyService.deleteById(id);
     }
 
     @GetMapping("/comments/{commentId}")
-    public ResponseEntity<List<Reply>> findRepliesByCommentId(@PathVariable int commentId) {
+    public List<Reply> findRepliesByCommentId(@PathVariable int commentId) {
         return replyService.findRepliesByCommentId(commentId);
     }
 }

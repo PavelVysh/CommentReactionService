@@ -11,11 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -64,10 +63,10 @@ public class ReactionServiceTests {
     @Test
     void findingReactionTestSuccessfulTest() {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
-                .thenReturn(Collections.singletonList(reaction));
+                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
 
-        ResponseEntity<?> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
-        assertEquals("finding reactions for entity", HttpStatus.OK, response.getStatusCode());
+        List<Reaction> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
+        assertEquals("finding reactions for entity", 2, response.size());
     }
     @Test
     void findingReactionTestNotFoundTest() {
@@ -83,9 +82,9 @@ public class ReactionServiceTests {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(true);
 
-        ResponseEntity<?> response = reactionsService.deleteReaction(2, EntityType.post, 1);
+        String response = reactionsService.deleteReaction(2, EntityType.post, 1);
 
-        assertEquals("delete successfully test", HttpStatus.OK, response.getStatusCode());
+        assertEquals("delete successfully test", "Reaction was successfully deleted", response);
     }
     @Test
     void deleteReactionFailTest() {
@@ -100,9 +99,9 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
                 .thenReturn(Arrays.asList(new Reaction(), reaction));
 
-        ResponseEntity<?> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
+        List<Reaction> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
 
-        assertEquals("Finding reactions successfully", HttpStatus.OK, response.getStatusCode());
+        assertEquals("Finding reactions successfully", 2, response.size());
     }
     @Test
     void findByUserIdAndTypeFailTest() {

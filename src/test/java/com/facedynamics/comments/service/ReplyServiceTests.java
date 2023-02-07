@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,9 +56,9 @@ public class ReplyServiceTests {
 
         when(replyRepository.findById(2)).thenReturn(Optional.of(reply));
 
-        ResponseEntity<?> status = replyService.findById(2);
+        Reply response = replyService.findById(2);
 
-        assertEquals("didn't find an existing comment", HttpStatus.OK , status.getStatusCode());
+        assertEquals("didn't find an existing comment", 2 , response.getId());
     }
     @Test
     void findByIdUnSuccessfulTest() {
@@ -71,12 +69,14 @@ public class ReplyServiceTests {
     }
     @Test
     void deleteByIDSuccessfulTest() {
+        Reply reply = new Reply();
+        reply.setText("test text");
 
-        when(replyRepository.findById(1)).thenReturn(Optional.of(new Reply()));
+        when(replyRepository.findById(1)).thenReturn(Optional.of(reply));
 
-        ResponseEntity<?> response = replyService.deleteById(1);
+        String response = replyService.deleteById(1);
 
-        assertEquals("Deletion of a reply by id", HttpStatus.OK , response.getStatusCode());
+        assertEquals("Deletion of a reply by id", "test text" , response);
 
     }
     @Test
@@ -91,9 +91,9 @@ public class ReplyServiceTests {
         List<Reply> replyList = new ArrayList<>(Arrays.asList(new Reply(), new Reply()));
         when(replyRepository.findRepliesByCommentId(2)).thenReturn(replyList);
 
-        ResponseEntity<?> response = replyService.findRepliesByCommentId(2);
+        List<Reply> response = replyService.findRepliesByCommentId(2);
 
-        assertEquals("Finding replies by comment id", HttpStatus.OK, response.getStatusCode());
+        assertEquals("Finding replies by comment id", 2, response.size());
     }
     @Test
     void findReplyByCommentIdUnSuccessfulTest() {

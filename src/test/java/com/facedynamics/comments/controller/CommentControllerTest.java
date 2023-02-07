@@ -11,12 +11,11 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,9 +31,9 @@ public class CommentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private Comment comment;
+
     @BeforeEach
     void init() {
-//        commentController = new CommentController(commentService);
         comment = new Comment();
         comment.setId(1);
         comment.setReplies(new ArrayList<>());
@@ -42,38 +41,37 @@ public class CommentControllerTest {
         comment.setPostId(1);
         comment.setUserId(1);
     }
+
     @Test
     void saveTest() throws Exception {
         when(commentService.save(comment)).thenReturn(DTOMapper.fromCommentToCommentDTO(comment));
 
         mvc.perform(post("/comments")
-                .content(objectMapper.writeValueAsString(comment))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(comment))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
+
     @Test
     void findByIdTest() throws Exception {
-        when(commentService.findById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        when(commentService.findById(2)).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        when(commentService.findById(1)).thenReturn(new Comment());
 
         mvc.perform(get("/comments/{id}", 1))
                 .andExpect(status().isOk());
-        mvc.perform(get("/comments/{id}", 2))
-                .andExpect(status().isNotFound());
-
     }
+
     @Test
-    void deleteByIdTest() throws Exception{
-        when(commentService.deleteById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+    void deleteByIdTest() throws Exception {
+        when(commentService.deleteById(1)).thenReturn("OK");
 
         mvc.perform(delete("/comments/{id}", 1))
                 .andExpect(status().isOk());
     }
+
     @Test
-    void findingCommentsByPostId() throws Exception{
-        when(commentService.findCommentsByPostId(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+    void findingCommentsByPostId() throws Exception {
+        when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new Comment(), new Comment()));
 
         mvc.perform(get("/comments/posts/{id}", 2))
                 .andExpect(status().isOk());

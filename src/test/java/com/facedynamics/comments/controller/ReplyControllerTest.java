@@ -11,10 +11,10 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,7 +53,7 @@ public class ReplyControllerTest {
     }
     @Test
     void findByIdTest() throws Exception {
-        when(replyService.findById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(replyService.findById(1)).thenReturn(new Reply());
 
         mvc.perform(get("/replies/{id}", 1))
                         .andExpect(status().isOk());
@@ -61,14 +61,14 @@ public class ReplyControllerTest {
     }
     @Test
     void findByCommentIdTest() throws Exception {
-        when(replyService.findRepliesByCommentId(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(replyService.findRepliesByCommentId(1)).thenReturn(Arrays.asList(new Reply(), new Reply()));
 
         mvc.perform(get("/replies/comments/{id}", 1))
                         .andExpect(status().isOk());
     }
     @Test
     void deleteReplyTest() throws Exception {
-        when(replyService.deleteById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+        when(replyService.deleteById(1)).thenReturn("OK");
 
         mvc.perform(delete("/replies/{id}", 1)).andExpect(status().isOk());
 

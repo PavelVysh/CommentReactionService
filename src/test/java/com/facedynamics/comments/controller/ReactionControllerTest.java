@@ -10,10 +10,10 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -52,7 +52,7 @@ public class ReactionControllerTest {
     @Test
     void findReactionForEntityTest() throws Exception {
         when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
 
         mvc.perform(get("/reactions/{id}", 1)
                 .param("entityType", "post")
@@ -63,7 +63,7 @@ public class ReactionControllerTest {
     @Test
     void findReactionsByUserTest() throws Exception {
         when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
 
         mvc.perform(get("/reactions/users/{id}", 1)
                 .param("entityType", "post")
@@ -75,7 +75,7 @@ public class ReactionControllerTest {
     @Test
     void deleteReactionTest() throws Exception {
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
+                .thenReturn("test text");
 
         mvc.perform(delete("/reactions/{id}", 1)
                 .param("entityType", "post")

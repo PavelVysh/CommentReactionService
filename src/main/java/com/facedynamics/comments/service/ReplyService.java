@@ -8,8 +8,6 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +24,7 @@ public class ReplyService {
         return DTOMapper.fromReplyToReplyDTO(savedReply);
     }
 
-    public ResponseEntity<Reply> findById(int id) {
+    public Reply findById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
             reply = setLikesDislikes(reply);
@@ -34,27 +32,27 @@ public class ReplyService {
             throw new NotFoundException("Reply with id - " + id +
                     " was not found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(reply);
+        return reply;
     }
 
-    public ResponseEntity<String> deleteById(int id) {
+    public String deleteById(int id) {
         Reply reply = replyRepository.findById(id).orElse(null);
         if (reply != null) {
             replyRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(reply.getText());
+            return reply.getText();
         } else {
             throw new NotFoundException("Reply with id - " + id + " was not found");
         }
     }
 
-    public ResponseEntity<List<Reply>> findRepliesByCommentId(int commentId) {
+    public List<Reply> findRepliesByCommentId(int commentId) {
         List<Reply> replies = replyRepository.findRepliesByCommentId(commentId);
         if (replies.size() < 1) {
             throw new NotFoundException("Replies for comment with id - " +
                     commentId + " were not found");
         }
         replies.forEach(this::setLikesDislikes);
-        return ResponseEntity.status(HttpStatus.OK).body(replies);
+        return replies;
     }
 
     public Reply setLikesDislikes(Reply reply) {

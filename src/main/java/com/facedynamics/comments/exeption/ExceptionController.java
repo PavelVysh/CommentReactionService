@@ -1,7 +1,7 @@
 package com.facedynamics.comments.exeption;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -24,7 +24,7 @@ public class ExceptionController {
                                 .toList()).getErrors(),
                 ex.getStatusCode());
     }
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<String> constraintProblem() {
         return new ResponseEntity<>("Can't create a reply for a comment that doesn't exist.",
                 HttpStatus.CONFLICT);
