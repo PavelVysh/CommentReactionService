@@ -3,68 +3,84 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = ReactionsController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ReactionControllerTest {
 
-    @Mock
+    @MockBean
     private ReactionsService reactionsService;
-    private ReactionsController reactionsController;
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void init() {
-        reactionsController = new ReactionsController(reactionsService);
-    }
+
     @Test
-    void saveTest() {
+    void saveTest() throws Exception {
         Reaction reaction = new Reaction();
+        reaction.setUserId(1);
+        reaction.setEntityId(2);
+        reaction.setEntityType(EntityType.post);
+        reaction.setLike(true);
         Reaction reactionWithId = new Reaction();
         reactionWithId.setId(1);
 
         when(reactionsService.save(reaction)).thenReturn(reactionWithId);
+        mvc.perform(post("/reactions")
+                .content(objectMapper.writeValueAsString(reaction))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        Reaction returnedReaction = reactionsController.createReaction(reaction);
-
-        assertEquals("saving reaction", 1, returnedReaction.getId());
     }
     @Test
-    void findReactionForEntityTest() {
+    void findReactionForEntityTest() throws Exception {
         when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> response = reactionsController.getReactionsForEntity(1, EntityType.post, false);
+        mvc.perform(get("/reactions/{id}", 1)
+                .param("entityType", "post")
+                .param("isLike", "false"))
+                .andExpect(status().isOk());
 
-        assertEquals("finding reactions by entity", HttpStatus.OK, response.getStatusCode());
     }
     @Test
-    void findReactionsByUserTest() {
+    void findReactionsByUserTest() throws Exception {
         when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> response = reactionsController.getReactionsByUser(1, EntityType.post, true);
+        mvc.perform(get("/reactions/users/{id}", 1)
+                .param("entityType", "post")
+                .param("isLike", "true"))
+                .andExpect(status().isOk());
 
-        assertEquals("finding reactions by userID", HttpStatus.OK, response.getStatusCode());
+
     }
     @Test
-    void deleteReactionTest() {
+    void deleteReactionTest() throws Exception {
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> response = reactionsController.deleteReaction(1, 2, EntityType.post);
+        mvc.perform(delete("/reactions/{id}", 1)
+                .param("entityType", "post")
+                .param("userId", "2"))
+                .andExpect(status().isOk());
 
-        assertEquals("deleting a response", HttpStatus.OK, response.getStatusCode());
         }
 }

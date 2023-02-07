@@ -1,69 +1,77 @@
 package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.dto.DTOMapper;
-import com.facedynamics.comments.dto.ReplyDTO;
 import com.facedynamics.comments.entity.Reply;
 import com.facedynamics.comments.service.ReplyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(controllers = ReplyController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ReplyControllerTest {
-    @Mock
+    @MockBean
     private ReplyService replyService;
-    private ReplyController replyController;
+    @Autowired
+    private MockMvc mvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    private Reply replyWithId;
 
     @BeforeEach
     void init() {
-        replyController = new ReplyController(replyService);
-    }
-    @Test
-    void saveTest() {
-        Reply replyWithId = new Reply();
+        replyWithId = new Reply();
         replyWithId.setId(1);
         replyWithId.setCommentId(1);
         replyWithId.setUserId(1);
         replyWithId.setText("hehe");
+    }
+    @Test
+    void saveTest() throws Exception {
+
         when(replyService.save(replyWithId)).thenReturn(DTOMapper.fromReplyToReplyDTO(replyWithId));
 
-        ReplyDTO replyDTO = replyController.createReply(replyWithId);
+        mvc.perform(post("/replies")
+                        .content(objectMapper.writeValueAsString(replyWithId))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-        assertEquals("saving a comment", "hehe", replyDTO.getText());
     }
     @Test
-    void findByIdTest() {
+    void findByIdTest() throws Exception {
         when(replyService.findById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> entity = replyController.findById(1);
+        mvc.perform(get("/replies/{id}", 1))
+                        .andExpect(status().isOk());
 
-        assertEquals("find reply by id", HttpStatus.OK, entity.getStatusCode());
     }
     @Test
-    void findByCommentIdTest() {
+    void findByCommentIdTest() throws Exception {
         when(replyService.findRepliesByCommentId(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> entity = replyController.findRepliesByCommentId(1);
-
-        assertEquals("find by comment id", HttpStatus.OK, entity.getStatusCode());
+        mvc.perform(get("/replies/comments/{id}", 1))
+                        .andExpect(status().isOk());
     }
     @Test
-    void deleteReplyTest() {
+    void deleteReplyTest() throws Exception {
         when(replyService.deleteById(1)).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        ResponseEntity<?> entity = replyController.deleteById(1);
+        mvc.perform(delete("/replies/{id}", 1)).andExpect(status().isOk());
 
-        assertEquals("deleting reply", HttpStatus.OK, entity.getStatusCode());
     }
 
 }
