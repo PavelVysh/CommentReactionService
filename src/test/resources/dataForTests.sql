@@ -1,35 +1,9 @@
-DROP TABLE IF EXISTS reactions;
-DROP TABLE IF EXISTS replies;
-DROP TABLE IF EXISTS comments;
-CREATE TABLE comments
-(
-    id         INTEGER PRIMARY KEY AUTO_INCREMENT,
-    post_id    INTEGER      NOT NULL,
-    user_id    INTEGER      NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    text       VARCHAR(500) NOT NULL
-);
-
-CREATE TABLE replies
-(
-    id         INTEGER PRIMARY KEY AUTO_INCREMENT,
-    comment_id INTEGER      NOT NULL,
-    user_id    INTEGER      NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    text       VARCHAR(500) NOT NULL,
-    FOREIGN KEY (comment_id) REFERENCES comments (id)
-);
-
-CREATE TABLE reactions
-(
-    id          INTEGER PRIMARY KEY AUTO_INCREMENT,
-    user_id     INTEGER,
-    entity_id   INTEGER,
-    entity_type VARCHAR(255),
-    is_like     BOOLEAN
-);
-ALTER TABLE reactions
-    ADD CONSTRAINT uniq_only UNIQUE (user_id, entity_id, entity_type);
+DELETE FROM replies;
+DELETE FROM reactions;
+DELETE FROM comments;
+ALTER TABLE reactions AUTO_INCREMENT = 1;
+ALTER TABLE replies AUTO_INCREMENT = 1;
+ALTER TABLE comments AUTO_INCREMENT = 1;
 INSERT INTO comments(post_id, user_id, text)
 VALUES (1, 1, 'I am the first comment made by a first user'),
        (1, 2, 'I am a comment made by a user number 2 for post number one'),
@@ -70,4 +44,3 @@ VALUES (1, 1, 'reply', true),
        (111, 3, 'reply', true),
        (222, 2, 'reply', true),
        (333, 2, 'reply', true);
-
