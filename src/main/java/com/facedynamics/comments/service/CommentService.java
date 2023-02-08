@@ -28,13 +28,11 @@ public class CommentService {
     }
 
     public String deleteById(int id) {
-        Comment comment = commentRepository.findById(id).orElse(null);
-        if (comment != null) {
+        Comment comment = commentRepository.findById(id).orElseThrow(() ->{
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        });
             commentRepository.deleteById(id);
             return comment.getText();
-        } else {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }
     }
 
     public List<Comment> findCommentsByPostId(int postId) {

@@ -27,13 +27,11 @@ public class ReplyService {
     }
 
     public String deleteById(int id) {
-        Reply reply = replyRepository.findById(id).orElse(null);
-        if (reply != null) {
+        Reply reply = replyRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Reply with id - " + id + " was not found");
+        });
             replyRepository.deleteById(id);
             return reply.getText();
-        } else {
-            throw new NotFoundException("Reply with id - " + id + " was not found");
-        }
     }
 
     public List<Reply> findRepliesByCommentId(int commentId) {
