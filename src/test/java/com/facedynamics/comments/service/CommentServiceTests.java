@@ -2,11 +2,8 @@ package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.CommentDTO;
 import com.facedynamics.comments.entity.Comment;
-import com.facedynamics.comments.entity.Reply;
-import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
-import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,12 +25,11 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 public class CommentServiceTests {
     @Mock
     private static CommentRepository commentRepository;
-    @Mock
-    private static ReactionsRepository reactionsRepository;
+
     private static CommentService commentService;
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository, reactionsRepository);
+        commentService = new CommentService(commentRepository);
     }
 
     @Test
@@ -110,42 +106,5 @@ public class CommentServiceTests {
         assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666),
                 "Should throw NotFoundException");
     }
-    @Test
-    void setLikeDislikeTest() {
-        Comment comment = new Comment();
-        comment.setId(1);
-        comment.setReplies(new ArrayList<>());
-
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.comment, false)).thenReturn(3);
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.comment, true)).thenReturn(4);
-        commentService.setLikesDislikes(comment, EntityType.comment);
-
-        assertEquals("Checking likes on a comment", 4, comment.getLikes());
-        assertEquals("Checking dislikes on a comment", 3, comment.getDislikes());
-    }
-    @Test
-    void setLikeDislikeForReplyInCommentTest() {
-        Comment comment = new Comment();
-        List<Reply> replies = new ArrayList<>();
-        Reply reply = new Reply();
-        reply.setId(1);
-        replies.add(reply);
-        comment.setReplies(replies);
-
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.reply, false)).thenReturn(3);
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.reply, true)).thenReturn(4);
-
-        Comment likedComment = commentService.setLikesDislikes(comment, EntityType.comment);
-
-        assertEquals("setting likes for reply inside a comment", 4,
-                likedComment.getReplies().get(0).getLikes());
-        assertEquals("setting dislikes for reply inside a comment", 3,
-                likedComment.getReplies().get(0).getDislikes());
-    }
-
 
 }

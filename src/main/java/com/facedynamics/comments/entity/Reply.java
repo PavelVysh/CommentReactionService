@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "replies")
 @Getter
 @Setter
-public class Reply implements Likable {
+public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,7 +29,12 @@ public class Reply implements Likable {
     @Size(max = 500, message = "Text should not be longer then 500 characters")
     @NotNull(message = "You can't save a reply without a text")
     private String text;
-    @Transient
-    private int likes, dislikes;
+
+    @Formula(value = "(SELECT count(*) from reactions r where r.is_like=true" +
+            " AND r.entity_type='reply' AND r.entity_id=id)")
+    private int likes;
+    @Formula(value = "(SELECT count(*) from reactions r where r.is_like=false" +
+            " AND r.entity_type='reply' AND r.entity_id=id)")
+    private int dislikes;
 
 }

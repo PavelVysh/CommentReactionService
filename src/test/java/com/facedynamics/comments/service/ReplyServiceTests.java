@@ -2,9 +2,7 @@ package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.ReplyDTO;
 import com.facedynamics.comments.entity.Reply;
-import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.repository.ReactionsRepository;
 import com.facedynamics.comments.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +26,10 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 public class ReplyServiceTests {
     @Mock
     private static ReplyRepository replyRepository;
-    @Mock
-    private static ReactionsRepository reactionsRepository;
     private static ReplyService replyService;
     @BeforeEach
     void init() {
-        replyService = new ReplyService(replyRepository, reactionsRepository);
+        replyService = new ReplyService(replyRepository);
     }
     @Test
     void saveTest() {
@@ -101,19 +97,5 @@ public class ReplyServiceTests {
 
         assertThrows(NotFoundException.class, () -> replyService.findRepliesByCommentId(666)
                 , "Should throw NotFoundException");
-    }
-    @Test
-    void setLikesDislikesForReplyTest() {
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.reply, false)).thenReturn(3);
-        when(reactionsRepository.countAllByEntityIdAndEntityTypeAndLike(
-                1, EntityType.reply, true)).thenReturn(2);
-        Reply reply = new Reply();
-        reply.setId(1);
-
-        replyService.setLikesDislikes(reply);
-
-        assertEquals("Likes weren't assigned properly", 2, reply.getLikes());
-        assertEquals("Dislikes weren't assigned properly", 3, reply.getDislikes());
     }
 }
