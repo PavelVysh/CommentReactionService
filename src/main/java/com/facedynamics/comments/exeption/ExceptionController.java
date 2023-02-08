@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -36,5 +37,9 @@ public class ExceptionController {
     @ExceptionHandler(NotFoundException.class)
     protected ResponseEntity<Error> handleNotFoundException(NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(ex.getMessage(), serviceName));
+    }
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    protected ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(ex.getMessage(), serviceName));
     }
 }
