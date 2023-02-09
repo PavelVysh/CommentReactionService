@@ -79,10 +79,10 @@ public class ReactionServiceTests {
     }
     @Test
     void deleteReactionSuccessfulTest() {
-        when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
-                .thenReturn(true);
+        when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.reply, 33))
+                .thenReturn(1);
 
-        String response = reactionsService.deleteReaction(2, EntityType.post, 1);
+        String response = reactionsService.deleteReaction(4, EntityType.reply, 33);
 
         assertEquals("delete successfully test", "Reaction was successfully deleted", response);
     }
