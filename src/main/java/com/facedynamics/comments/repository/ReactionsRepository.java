@@ -21,4 +21,5 @@ public interface ReactionsRepository extends JpaRepository<Reaction, Integer> {
     int changeReactionToOpposite(int entityId, EntityType entityType, int userId, boolean like);
 
     int deleteByEntityIdAndEntityTypeAndUserId(int entityId, EntityType entityType, int userId);
+    int deleteByEntityIdAndEntityType(int entityId, EntityType entityType);
 }

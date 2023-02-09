@@ -3,7 +3,9 @@ package com.facedynamics.comments.service;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import com.facedynamics.comments.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,12 +27,16 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 public class ReactionServiceTests {
     @Mock
     private ReactionsRepository reactionsRepository;
+    @Mock
+    private CommentRepository commentRepository;
+    @Mock
+    private ReplyRepository replyRepository;
     private ReactionsService reactionsService;
     private Reaction reaction;
 
     @BeforeEach
     void init() {
-        reactionsService = new ReactionsService(reactionsRepository);
+        reactionsService = new ReactionsService(reactionsRepository, commentRepository, replyRepository);
         reaction = new Reaction();
         reaction.setId(15);
         reaction.setUserId(1);

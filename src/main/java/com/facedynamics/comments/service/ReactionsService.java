@@ -3,7 +3,9 @@ package com.facedynamics.comments.service;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import com.facedynamics.comments.repository.ReplyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,16 +16,17 @@ import java.util.List;
 @AllArgsConstructor
 public class ReactionsService {
     private final ReactionsRepository repository;
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
     @Transactional
     public Reaction save(Reaction reaction) {
-        if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
-                reaction.getEntityType(), reaction.getUserId())) {
-            repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
-                    reaction.getUserId(), reaction.isLike());
-            return repository.findByEntityIdAndEntityTypeAndUserIdAndLike(
-                    reaction.getEntityId(), reaction.getEntityType(),
-                    reaction.getUserId(), reaction.isLike());
+
+        if (!checkEntityExists(reaction)) {
+            throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
+        }
+        if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(), reaction.getEntityType(), reaction.getUserId())) {
+            return switchToOpposite(reaction);
         }
         return repository.save(reaction);
     }
@@ -52,5 +55,21 @@ public class ReactionsService {
             throw new NotFoundException("Reaction not found");
         }
         return reactions;
+    }
+
+    private boolean checkEntityExists(Reaction reaction) {
+        return switch (reaction.getEntityType().name()) {
+            case "comment" -> commentRepository.existsById(reaction.getEntityId());
+            case "reply" -> replyRepository.existsById(reaction.getEntityId());
+            case "post" -> true; //TODO
+            default -> false;
+        };
+    }
+
+    private Reaction switchToOpposite(Reaction reaction) {
+        repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
+                reaction.getUserId(), reaction.isLike());
+        return repository.findByEntityIdAndEntityTypeAndUserIdAndLike(reaction.getEntityId(),
+                reaction.getEntityType(), reaction.getUserId(), reaction.isLike());
     }
 }

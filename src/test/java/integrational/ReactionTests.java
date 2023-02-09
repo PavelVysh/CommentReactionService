@@ -65,7 +65,7 @@ public class ReactionTests {
         reaction.setLike(true);
         reaction.setEntityId(555);
         reaction.setUserId(333);
-        reaction.setEntityType(EntityType.reply);
+        reaction.setEntityType(EntityType.post);
 
         mvc.perform(post("/reactions")
                 .content(new ObjectMapper().writeValueAsString(reaction))
@@ -73,7 +73,7 @@ public class ReactionTests {
                 .accept(MediaType.APPLICATION_JSON));
 
         mvc.perform(get("/reactions/{entityId}", 555)
-                        .param("entityType", "reply")
+                        .param("entityType", "post")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -86,7 +86,7 @@ public class ReactionTests {
         reaction.setLike(true);
         reaction.setEntityId(444);
         reaction.setUserId(22);
-        reaction.setEntityType(EntityType.reply);
+        reaction.setEntityType(EntityType.post);
         mvc.perform(post("/reactions")
                 .content(new ObjectMapper().writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,7 @@ public class ReactionTests {
                 .accept(MediaType.APPLICATION_JSON));
 
         ResultActions resultActions = mvc.perform(get("/reactions/{entityId}", 444)
-                        .param("entityType", "reply")
+                        .param("entityType", "post")
                         .param("isLike", "false"))
                 .andExpect(status().isOk());
 
