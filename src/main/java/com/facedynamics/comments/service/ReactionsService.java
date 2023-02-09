@@ -21,7 +21,6 @@ public class ReactionsService {
 
     @Transactional
     public Reaction save(Reaction reaction) {
-
         if (!checkEntityExists(reaction)) {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
@@ -69,7 +68,7 @@ public class ReactionsService {
     private Reaction switchToOpposite(Reaction reaction) {
         repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
                 reaction.getUserId(), reaction.isLike());
-        return repository.findByEntityIdAndEntityTypeAndUserIdAndLike(reaction.getEntityId(),
-                reaction.getEntityType(), reaction.getUserId(), reaction.isLike());
+        return repository.findByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
+                reaction.getEntityType(), reaction.getUserId());
     }
 }

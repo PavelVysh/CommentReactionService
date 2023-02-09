@@ -60,7 +60,7 @@ public class ReactionServiceTests {
                 .thenReturn(true);
         when(reactionsRepository.changeReactionToOpposite(2, EntityType.post, 1, true))
                 .thenReturn(1);
-        when(reactionsRepository.findByEntityIdAndEntityTypeAndUserIdAndLike(2, EntityType.post, 1, true))
+        when(reactionsRepository.findByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(reaction);
 
         Reaction afterChange = reactionsService.save(reaction);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -41,5 +42,9 @@ public class ExceptionController {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(ex.getMessage(), serviceName));
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<Error> handleHttpMessageNotReadableException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error("You must provide a valid JSON body", serviceName));
     }
 }
