@@ -1,5 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
+import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
@@ -46,7 +48,7 @@ public class ReactionServiceTests {
 
         when(reactionsRepository.save(reaction)).thenReturn(reaction);
 
-        Reaction afterSave = reactionsService.save(reaction);
+        ReactionSaveDTO afterSave = reactionsService.save(reaction);
 
         assertEquals("Saving reaction test", 2, afterSave.getEntityId());
     }
@@ -60,7 +62,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.findByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(reaction);
 
-        Reaction afterChange = reactionsService.save(reaction);
+        ReactionSaveDTO afterChange = reactionsService.save(reaction);
         assertEquals("changing reaction to oposite", true, afterChange.isLike());
     }
     @Test
@@ -68,7 +70,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
                 .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
 
-        List<Reaction> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
+        List<ReactionReturnDTO> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
         assertEquals("finding reactions for entity", 2, response.size());
     }
     @Test
@@ -102,7 +104,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
                 .thenReturn(Arrays.asList(new Reaction(), reaction));
 
-        List<Reaction> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
+        List<ReactionReturnDTO> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
 
         assertEquals("Finding reactions successfully", 2, response.size());
     }

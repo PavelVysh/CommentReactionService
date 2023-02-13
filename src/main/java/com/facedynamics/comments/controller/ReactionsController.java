@@ -1,5 +1,7 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
+import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
@@ -17,14 +19,14 @@ public class ReactionsController {
     private final ReactionsService reactionsService;
 
     @PostMapping
-    public Reaction createReaction(@RequestBody @Valid Reaction reaction) {
+    public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
 
     @GetMapping("/{entityId}")
-    public List<Reaction> getReactionsForEntity(@PathVariable int entityId,
-                                                                @RequestParam EntityType entityType,
-                                                                @RequestParam boolean isLike) {
+    public List<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
+                                                         @RequestParam EntityType entityType,
+                                                         @RequestParam boolean isLike) {
         return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
     }
 
@@ -36,7 +38,7 @@ public class ReactionsController {
     }
 
     @GetMapping("/users/{userId}")
-    public List<Reaction> getReactionsByUser(@PathVariable int userId,
+    public List<ReactionReturnDTO> getReactionsByUser(@PathVariable int userId,
                                              @RequestParam EntityType entityType,
                                              @RequestParam boolean isLike) {
         return reactionsService.findAllByUserIdAndType(userId, entityType, isLike);

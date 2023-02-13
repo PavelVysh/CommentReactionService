@@ -1,11 +1,11 @@
-package com.facedynamics.comments.dto;
+package com.facedynamics.comments.dto.comment;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@Builder
-public class CommentDTO {
+@Setter
+public class CommentSaveDTO {
     private int id;
     private int userId;
     private int postId;

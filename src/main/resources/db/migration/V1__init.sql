@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS reactions
     user_id     INTEGER,
     entity_id   INTEGER,
     entity_type VARCHAR(255),
+    update_time TIMESTAMP,
     is_like     BOOLEAN
 );
 ALTER TABLE reactions

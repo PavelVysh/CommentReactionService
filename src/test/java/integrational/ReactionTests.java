@@ -4,6 +4,7 @@ import com.facedynamics.comments.CommentsApplication;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -104,7 +105,7 @@ public class ReactionTests {
 
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
-        Reaction[] reactions = new ObjectMapper().readValue(contentAsString, Reaction[].class);
+        Reaction[] reactions = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(contentAsString, Reaction[].class);
 
         assertFalse("didn't switch like to dislike", reactions[0].isLike());
         assertEquals("new Reaction created instead of switch", reactions[0].getId(), 26);

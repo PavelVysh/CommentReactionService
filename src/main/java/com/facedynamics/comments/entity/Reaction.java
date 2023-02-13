@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,6 +27,8 @@ public class Reaction {
     @Column(name = "is_like")
     @NotNull(message = "You must specify is this a like (like=true/false)")
     private Boolean like;
+    @UpdateTimestamp
+    private LocalDateTime updateTime;
 
     public Boolean isLike() {
         return like;

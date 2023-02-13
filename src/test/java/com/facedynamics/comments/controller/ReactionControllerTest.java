@@ -1,10 +1,13 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ public class ReactionControllerTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
+    private final Mapper mapper = Mappers.getMapper(Mapper.class);
 
 
     @Test
@@ -41,7 +45,7 @@ public class ReactionControllerTest {
         Reaction reactionWithId = new Reaction();
         reactionWithId.setId(1);
 
-        when(reactionsService.save(reaction)).thenReturn(reactionWithId);
+        when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
         mvc.perform(post("/reactions")
                 .content(objectMapper.writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -52,7 +56,7 @@ public class ReactionControllerTest {
     @Test
     void findReactionForEntityTest() throws Exception {
         when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
-                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
+                .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
         mvc.perform(get("/reactions/{id}", 1)
                 .param("entityType", "post")
@@ -63,7 +67,7 @@ public class ReactionControllerTest {
     @Test
     void findReactionsByUserTest() throws Exception {
         when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
-                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
+                .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
         mvc.perform(get("/reactions/users/{id}", 1)
                 .param("entityType", "post")

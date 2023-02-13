@@ -1,11 +1,13 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.DTOMapper;
+import com.facedynamics.comments.dto.comment.CommentReturnDTO;
+import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ public class CommentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private Comment comment;
+    private final Mapper mapper = Mappers.getMapper(Mapper.class);
 
     @BeforeEach
     void init() {
@@ -42,7 +45,7 @@ public class CommentControllerTest {
 
     @Test
     void saveTest() throws Exception {
-        when(commentService.save(comment)).thenReturn(DTOMapper.fromCommentToCommentDTO(comment));
+        when(commentService.save(comment)).thenReturn(mapper.commentToCommentDTO(comment));
 
         mvc.perform(post("/comments")
                         .content(objectMapper.writeValueAsString(comment))
@@ -53,7 +56,7 @@ public class CommentControllerTest {
 
     @Test
     void findByIdTest() throws Exception {
-        when(commentService.findById(1)).thenReturn(new Comment());
+        when(commentService.findById(1)).thenReturn(new CommentReturnDTO());
 
         mvc.perform(get("/comments/{id}", 1))
                 .andExpect(status().isOk());
@@ -69,7 +72,7 @@ public class CommentControllerTest {
 
     @Test
     void findingCommentsByPostId() throws Exception {
-        when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new Comment(), new Comment()));
+        when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO()));
 
         mvc.perform(get("/comments/posts/{id}", 2))
                 .andExpect(status().isOk());

@@ -1,12 +1,15 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.CommentDTO;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
+import com.facedynamics.comments.dto.comment.CommentReturnDTO;
+import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -27,9 +30,10 @@ public class CommentServiceTests {
     private static CommentRepository commentRepository;
 
     private static CommentService commentService;
+    private final Mapper mapper = Mappers.getMapper(Mapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository);
+        commentService = new CommentService(commentRepository, mapper);
     }
 
     @Test
@@ -42,7 +46,7 @@ public class CommentServiceTests {
 
         when(commentRepository.save(comment)).thenReturn(comment);
 
-        CommentDTO savedComment = commentService.save(comment);
+        CommentSaveDTO savedComment = commentService.save(comment);
 
         assertEquals("text of saved comment if off", comment.getText(), savedComment.getText());
         assertEquals("id doesn't equals" ,1, savedComment.getId());
@@ -55,7 +59,7 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        Comment status = commentService.findById(2);
+        CommentReturnDTO status = commentService.findById(2);
 
         assertEquals("didn't find an existing comment","test text" , status.getText());
     }
@@ -91,7 +95,7 @@ public class CommentServiceTests {
 
         when(commentRepository.findCommentsByPostId(1)).thenReturn(new ArrayList<>(Arrays.asList(comment1, comment2)));
 
-        List<Comment> commentsFound = commentService.findCommentsByPostId(1);
+        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1);
 
         assertEquals("should have found two comments", 2, commentsFound.size());
     }

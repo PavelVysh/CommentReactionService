@@ -1,7 +1,8 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.CommentDTO;
-import com.facedynamics.comments.dto.DTOMapper;
+import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.comment.CommentReturnDTO;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
@@ -15,21 +16,22 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private Mapper mapper;
 
-    public CommentDTO save(Comment comment) {
+    public CommentSaveDTO save(Comment comment) {
         if (comment.getParentId() != null) {
             commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
                 throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
             });
         }
         Comment savedComment = commentRepository.save(comment);
-        return DTOMapper.fromCommentToCommentDTO(savedComment);
+        return mapper.commentToCommentDTO(savedComment);
     }
 
-    public Comment findById(int id) {
-        return commentRepository.findById(id).orElseThrow(() -> {
+    public CommentReturnDTO findById(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("Comment with id - " + id + " was not found");
-        });
+        }));
     }
 
     public String deleteById(int id) {
@@ -40,12 +42,12 @@ public class CommentService {
             return comment.getText();
     }
 
-    public List<Comment> findCommentsByPostId(int postId) {
+    public List<CommentReturnDTO> findCommentsByPostId(int postId) {
         List<Comment> comments = commentRepository.findCommentsByPostId(postId);
         if (comments.size() < 1) {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
-        return comments;
+        return mapper.commentToReturnDTO(comments);
     }
 }

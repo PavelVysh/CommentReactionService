@@ -1,6 +1,7 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.CommentDTO;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
+import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
@@ -18,12 +19,12 @@ public class CommentController {
 
 
     @PostMapping
-    public CommentDTO createComment(@RequestBody @Valid Comment comment) {
+    public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
     }
 
     @GetMapping("/{id}")
-    public Comment findById(@PathVariable int id) {
+    public CommentReturnDTO findById(@PathVariable int id) {
         return commentService.findById(id);
     }
 
@@ -33,7 +34,7 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}")
-    public List<Comment> findCommentsByPostId(@PathVariable int postId) {
+    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
         return commentService.findCommentsByPostId(postId);
     }
 }
