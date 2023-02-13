@@ -17,6 +17,11 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public CommentDTO save(Comment comment) {
+        if (comment.getParentId() != null) {
+            commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
+                throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
+            });
+        }
         Comment savedComment = commentRepository.save(comment);
         return DTOMapper.fromCommentToCommentDTO(savedComment);
     }

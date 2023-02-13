@@ -5,7 +5,6 @@ import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
-import com.facedynamics.comments.repository.ReplyRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +16,6 @@ import java.util.List;
 public class ReactionsService {
     private final ReactionsRepository repository;
     private final CommentRepository commentRepository;
-    private final ReplyRepository replyRepository;
 
     @Transactional
     public Reaction save(Reaction reaction) {
@@ -59,7 +57,6 @@ public class ReactionsService {
     private boolean checkEntityExists(Reaction reaction) {
         return switch (reaction.getEntityType().name()) {
             case "comment" -> commentRepository.existsById(reaction.getEntityId());
-            case "reply" -> replyRepository.existsById(reaction.getEntityId());
             case "post" -> true; //TODO
             default -> false;
         };

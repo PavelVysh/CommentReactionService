@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS comments
 (
     id         INTEGER PRIMARY KEY AUTO_INCREMENT,
+    parent_id  INTEGER,
     post_id    INTEGER      NOT NULL,
     user_id    INTEGER      NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),

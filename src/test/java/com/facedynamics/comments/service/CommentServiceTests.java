@@ -52,7 +52,6 @@ public class CommentServiceTests {
         Comment comment = new Comment();
         comment.setId(2);
         comment.setText("test text");
-        comment.setReplies(new ArrayList<>());
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
@@ -90,9 +89,6 @@ public class CommentServiceTests {
         Comment comment1 = new Comment();
         Comment comment2 = new Comment();
 
-        comment1.setReplies(new ArrayList<>());
-        comment2.setReplies(new ArrayList<>());
-
         when(commentRepository.findCommentsByPostId(1)).thenReturn(new ArrayList<>(Arrays.asList(comment1, comment2)));
 
         List<Comment> commentsFound = commentService.findCommentsByPostId(1);
@@ -105,6 +101,15 @@ public class CommentServiceTests {
 
         assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666),
                 "Should throw NotFoundException");
+    }
+    @Test
+    void absentParentTest() {
+        Comment comment = new Comment();
+        comment.setParentId(2);
+
+        when(commentRepository.findById(2)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> commentService.save(comment));
     }
 
 }

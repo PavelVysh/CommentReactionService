@@ -5,7 +5,6 @@ import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
-import com.facedynamics.comments.repository.ReplyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,14 +28,12 @@ public class ReactionServiceTests {
     private ReactionsRepository reactionsRepository;
     @Mock
     private CommentRepository commentRepository;
-    @Mock
-    private ReplyRepository replyRepository;
     private ReactionsService reactionsService;
     private Reaction reaction;
 
     @BeforeEach
     void init() {
-        reactionsService = new ReactionsService(reactionsRepository, commentRepository, replyRepository);
+        reactionsService = new ReactionsService(reactionsRepository, commentRepository);
         reaction = new Reaction();
         reaction.setId(15);
         reaction.setUserId(1);
@@ -85,10 +82,10 @@ public class ReactionServiceTests {
     }
     @Test
     void deleteReactionSuccessfulTest() {
-        when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.reply, 33))
+        when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
                 .thenReturn(1);
 
-        String response = reactionsService.deleteReaction(4, EntityType.reply, 33);
+        String response = reactionsService.deleteReaction(4, EntityType.comment, 33);
 
         assertEquals("delete successfully test", "Reaction was successfully deleted", response);
     }

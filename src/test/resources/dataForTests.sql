@@ -41,6 +41,7 @@ VALUES (1, 1, 'reply', true),
        (1111, 1, 'comment', true),
        (2222, 1, 'comment', true),
        (3333, 1, 'comment', true),
+       (333, 2, 'comment', true),
        (111, 3, 'reply', true),
        (222, 2, 'reply', true),
        (333, 2, 'reply', true);

@@ -50,13 +50,12 @@ public class ReactionTests {
     void reactionsControllerDeleteMethodTest() throws Exception {
         mvc.perform(delete("/reactions/{entityId}", 2)
                         .param("userId", "333")
-                        .param("entityType", "reply"))
+                        .param("entityType", "comment"))
                 .andExpect(status().isOk());
         mvc.perform(get("/reactions/{entityId}", 2)
-                        .param("entityType", "reply")
+                        .param("entityType", "comment")
                         .param("isLike", "true"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(4)));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -108,7 +107,7 @@ public class ReactionTests {
         Reaction[] reactions = new ObjectMapper().readValue(contentAsString, Reaction[].class);
 
         assertFalse("didn't switch like to dislike", reactions[0].isLike());
-        assertEquals("new Reaction created instead of switch", reactions[0].getId(), 25);
+        assertEquals("new Reaction created instead of switch", reactions[0].getId(), 26);
     }
 
     @Test

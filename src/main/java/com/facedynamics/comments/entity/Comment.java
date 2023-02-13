@@ -2,6 +2,7 @@ package com.facedynamics.comments.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,8 +38,10 @@ public class Comment {
     @Formula(value = "(SELECT count(*) from reactions r where r.is_like=false" +
             " AND r.entity_type='comment' AND r.entity_id=id)")
     private int dislikes;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "comment_id")
-    private List<Reply> replies;
-
+    @Positive(message = "parentId should be a positive integer number")
+    @Column(name = "parent_id")
+    private Integer parentId;
+    @OneToMany
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    private List<Comment> comments;
 }
