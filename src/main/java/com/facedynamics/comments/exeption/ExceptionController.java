@@ -1,10 +1,7 @@
 package com.facedynamics.comments.exeption;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -16,35 +13,27 @@ import java.util.List;
 
 @ControllerAdvice
 public class ExceptionController {
-    @Value(value = "${application.name}")
-    private String serviceName;
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ResponseEntity<List<Error>> validationProblem(MethodArgumentNotValidException ex) {
+    protected ProblemDetail validationProblem(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), serviceName)));
-        return new ResponseEntity<>(new ValidationException(errors).getErrors(),
-                ex.getStatusCode());
-    }
-    @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Error> constraintProblem(ConstraintViolationException ex) {
-        return new ResponseEntity<>(new Error(ex.getSQL(), ex.getConstraintName()),
-                HttpStatus.CONFLICT);
-    }
-    @ExceptionHandler(HttpMessageConversionException.class)
-    protected ResponseEntity<Error> parseProblem(HttpMessageConversionException exc) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(exc.getMessage(), serviceName));
+        ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty("problems", errors);
+        return problemDetail;
     }
     @ExceptionHandler(NotFoundException.class)
-    protected ResponseEntity<Error> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(ex.getMessage(), serviceName));
+    protected ProblemDetail handleNotFoundException(NotFoundException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
-        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(ex.getMessage(), serviceName));
+    protected ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty("problems", new Error(ex.getMessage(), ex.getParameterName()));
+        return  problemDetail;
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<Error> handleHttpMessageNotReadableException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error("You must provide a valid JSON body", serviceName));
+    protected ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
     }
 }

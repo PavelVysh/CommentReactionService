@@ -119,4 +119,9 @@ public class CommentTests {
                 result.getResponse()
                         .getContentAsString().contains("Comments for post with id 5678 were not found"));
     }
+    @Test
+    void requestWithBadParamsInJsonBody() throws Exception {
+        mvc.perform(get("/comments/asd"))
+                .andExpect(status().isBadRequest());
+    }
 }

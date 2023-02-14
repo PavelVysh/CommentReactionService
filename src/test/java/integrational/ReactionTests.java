@@ -122,6 +122,17 @@ public class ReactionTests {
         assertTrue("tried to delete a non existing reaction",
                 result.getResponse().getContentAsString().contains("Reaction was not found"));
     }
+    @Test
+    void deleteReactionBadRequestTest() throws Exception {
+        mvc.perform(delete("/reactions/{entityId}", 3))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    void requestWithNoBodyTest() throws Exception {
+        mvc.perform(post("/reactions"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").exists());
+    }
 }
 
 
