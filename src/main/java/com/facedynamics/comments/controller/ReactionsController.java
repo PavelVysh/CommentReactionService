@@ -22,6 +22,10 @@ public class ReactionsController {
     public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
+    @PostMapping("/{id}")
+    public ReactionReturnDTO updateReaction(@PathVariable int id) {
+        return reactionsService.update(id);
+    }
 
     @GetMapping("/{entityId}")
     public List<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,

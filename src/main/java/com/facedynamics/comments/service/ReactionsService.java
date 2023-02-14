@@ -22,15 +22,18 @@ public class ReactionsService {
     private final CommentRepository commentRepository;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
 
-    @Transactional
     public ReactionSaveDTO save(Reaction reaction) {
         if (!checkEntityExists(reaction)) {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
-        if (repository.existsByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(), reaction.getEntityType(), reaction.getUserId())) {
-            return mapper.reactionToSaveDTO(switchToOpposite(reaction));
-        }
         return mapper.reactionToSaveDTO(repository.save(reaction));
+    }
+    @Transactional
+    public ReactionReturnDTO update(int id) {
+        repository.updateReactionById(id);
+        return mapper.reactionToReturnDTO(repository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Reaction with id - " + id + " not found");
+        }));
     }
 
     public List<ReactionReturnDTO> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
@@ -67,10 +70,4 @@ public class ReactionsService {
         };
     }
 
-    private Reaction switchToOpposite(Reaction reaction) {
-        repository.changeReactionToOpposite(reaction.getEntityId(), reaction.getEntityType(),
-                reaction.getUserId(), reaction.isLike());
-        return repository.findByEntityIdAndEntityTypeAndUserId(reaction.getEntityId(),
-                reaction.getEntityType(), reaction.getUserId());
-    }
 }

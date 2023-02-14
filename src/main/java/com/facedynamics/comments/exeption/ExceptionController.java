@@ -27,8 +27,8 @@ public class ExceptionController {
                 ex.getStatusCode());
     }
     @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Error> constraintProblem() {
-        return new ResponseEntity<>(new Error("Can't create a reply for non existing comment", serviceName),
+    protected ResponseEntity<Error> constraintProblem(ConstraintViolationException ex) {
+        return new ResponseEntity<>(new Error(ex.getSQL(), ex.getConstraintName()),
                 HttpStatus.CONFLICT);
     }
     @ExceptionHandler(HttpMessageConversionException.class)
