@@ -7,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReactionSaveDTO {
-    private int id;
     private int userId;
     private int entityId;
     private EntityType entityType;

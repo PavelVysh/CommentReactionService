@@ -43,7 +43,6 @@ public class ReactionControllerTest {
         reaction.setEntityType(EntityType.post);
         reaction.setLike(true);
         Reaction reactionWithId = new Reaction();
-        reactionWithId.setId(1);
 
         when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
         mvc.perform(post("/reactions")

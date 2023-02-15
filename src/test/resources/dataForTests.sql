@@ -1,8 +1,6 @@
-DELETE FROM replies;
 DELETE FROM reactions;
 DELETE FROM comments;
 ALTER TABLE reactions AUTO_INCREMENT = 1;
-ALTER TABLE replies AUTO_INCREMENT = 1;
 ALTER TABLE comments AUTO_INCREMENT = 1;
 INSERT INTO comments(post_id, user_id, text)
 VALUES (1, 1, 'I am the first comment made by a first user'),
@@ -11,13 +9,6 @@ VALUES (1, 1, 'I am the first comment made by a first user'),
        (5, 11, 'I am a comment for fifth post made by 11-th user'),
        (4, 2, 'I am a comment for fourth post made by second user'),
        (4, 5, 'I am a filler comment');
-
-INSERT INTO replies(comment_id, user_id, text)
-VALUES (2, 1, 'I am a first reply for second comment'),
-       (2, 2, 'I am a second reply made for comment number three by user 2'),
-       (5, 11, 'A reply for fifth comment by 11-th user'),
-       (2, 11, 'A reply for second comment by 11-th user'),
-       (4, 11, 'A reply for second comment by 11-th user');
 INSERT INTO reactions(user_id, entity_id, entity_type, is_like)
 VALUES (12, 1, 'comment', false),
        (13, 1, 'comment', false),

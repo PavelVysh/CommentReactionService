@@ -18,7 +18,6 @@ import org.mockito.quality.Strictness;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -38,7 +37,6 @@ public class ReactionServiceTests {
     void init() {
         reactionsService = new ReactionsService(reactionsRepository, commentRepository);
         reaction = new Reaction();
-        reaction.setId(15);
         reaction.setUserId(1);
         reaction.setEntityType(EntityType.post);
         reaction.setEntityId(2);
@@ -52,14 +50,6 @@ public class ReactionServiceTests {
         ReactionSaveDTO afterSave = reactionsService.save(reaction);
 
         assertEquals("Saving reaction test", 2, afterSave.getEntityId());
-    }
-    @Test
-    void switchLikeToDislikeTest() {
-        when(reactionsRepository.findById(2))
-                .thenReturn(Optional.of(reaction));
-
-        ReactionReturnDTO afterChange = reactionsService.update(2);
-        assertEquals("changing reaction to oposite", true, afterChange.isLike());
     }
     @Test
     void findingReactionTestSuccessfulTest() {
@@ -112,20 +102,5 @@ public class ReactionServiceTests {
         assertThrows(NotFoundException.class, () ->
                 reactionsService.findAllByUserIdAndType(1, EntityType.post, true),
                 "Should throw NotFoundException");
-    }
-    @Test
-    void updateNonExistingReaction() {
-        when(reactionsRepository.findById(7)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> reactionsService.update(7));
-    }
-    @Test
-    void saveReactionForNonExistingComment() {
-        when(commentRepository.existsById(77)).thenReturn(false);
-        Reaction reactionForNotExistingComment = new Reaction();
-        reactionForNotExistingComment.setEntityId(7);
-        reactionForNotExistingComment.setEntityType(EntityType.comment);
-
-        assertThrows(NotFoundException.class, () -> reactionsService.save(reactionForNotExistingComment));
     }
 }

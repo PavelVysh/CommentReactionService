@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ReactionReturnDTO {
-    private int id;
     private int userId;
     private int entityId;
     private EntityType entityType;
