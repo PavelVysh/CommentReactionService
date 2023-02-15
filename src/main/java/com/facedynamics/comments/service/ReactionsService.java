@@ -28,13 +28,6 @@ public class ReactionsService {
         }
         return mapper.reactionToSaveDTO(repository.save(reaction));
     }
-    @Transactional
-    public ReactionReturnDTO update(int id) {
-        repository.updateReactionById(id);
-        return mapper.reactionToReturnDTO(repository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Reaction with id - " + id + " not found");
-        }));
-    }
 
     public List<ReactionReturnDTO> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
         List<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
