@@ -18,6 +18,7 @@ import org.mockito.quality.Strictness;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -54,15 +55,10 @@ public class ReactionServiceTests {
     }
     @Test
     void switchLikeToDislikeTest() {
+        when(reactionsRepository.findById(2))
+                .thenReturn(Optional.of(reaction));
 
-        when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
-                .thenReturn(true);
-        when(reactionsRepository.changeReactionToOpposite(2, EntityType.post, 1, true))
-                .thenReturn(1);
-        when(reactionsRepository.findByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
-                .thenReturn(reaction);
-
-        ReactionSaveDTO afterChange = reactionsService.save(reaction);
+        ReactionReturnDTO afterChange = reactionsService.update(2);
         assertEquals("changing reaction to oposite", true, afterChange.isLike());
     }
     @Test
@@ -116,5 +112,20 @@ public class ReactionServiceTests {
         assertThrows(NotFoundException.class, () ->
                 reactionsService.findAllByUserIdAndType(1, EntityType.post, true),
                 "Should throw NotFoundException");
+    }
+    @Test
+    void updateNonExistingReaction() {
+        when(reactionsRepository.findById(7)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> reactionsService.update(7));
+    }
+    @Test
+    void saveReactionForNonExistingComment() {
+        when(commentRepository.existsById(77)).thenReturn(false);
+        Reaction reactionForNotExistingComment = new Reaction();
+        reactionForNotExistingComment.setEntityId(7);
+        reactionForNotExistingComment.setEntityType(EntityType.comment);
+
+        assertThrows(NotFoundException.class, () -> reactionsService.save(reactionForNotExistingComment));
     }
 }

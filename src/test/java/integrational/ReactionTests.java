@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.util.AssertionErrors.*;
@@ -87,28 +86,24 @@ public class ReactionTests {
         reaction.setEntityId(444);
         reaction.setUserId(22);
         reaction.setEntityType(EntityType.post);
-        mvc.perform(post("/reactions")
+        MvcResult resultOne = mvc.perform(post("/reactions")
                 .content(new ObjectMapper().writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON))
+                .andReturn();
 
-        reaction.setLike(false);
-        mvc.perform(post("/reactions")
-                .content(new ObjectMapper().writeValueAsString(reaction))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
+        Reaction saved = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(
+                resultOne.getResponse().getContentAsString(), Reaction.class);
 
-        ResultActions resultActions = mvc.perform(get("/reactions/{entityId}", 444)
-                        .param("entityType", "post")
-                        .param("isLike", "false"))
-                .andExpect(status().isOk());
+        MvcResult resultTwo = mvc.perform(post("/reactions/{id}", saved.getId()))
+                        .andExpect(status().isOk()).andReturn();
 
-        MvcResult result = resultActions.andReturn();
-        String contentAsString = result.getResponse().getContentAsString();
-        Reaction[] reactions = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(contentAsString, Reaction[].class);
+        Reaction switchedReaction = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(
+                resultTwo.getResponse().getContentAsString(), Reaction.class);
 
-        assertFalse("didn't switch like to dislike", reactions[0].isLike());
-        assertEquals("new Reaction created instead of switch", reactions[0].getId(), 26);
+
+        assertFalse("didn't switch like to dislike", switchedReaction.isLike());
+        assertEquals("new Reaction created instead of switch", saved.getId(), switchedReaction.getId());
     }
 
     @Test
