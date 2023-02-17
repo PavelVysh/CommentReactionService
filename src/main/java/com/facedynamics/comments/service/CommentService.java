@@ -42,13 +42,9 @@ public class CommentService {
     public int deleteById(int id, EntityType entityType) {
         int deleted;
         switch (entityType) {
-            case comment -> {
-                deleted = commentRepository.deleteById(id);
-                deleted += commentRepository.deleteByParentId(id);
-            }
+            case comment -> deleted = commentRepository.deleteById(id);
             case post -> {
                 deleted = commentRepository.deleteByPostId(id);
-                deleted += commentRepository.deleteByParentId(id);
                 reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
             }
             default -> deleted = 0;

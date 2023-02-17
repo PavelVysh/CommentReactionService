@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS reactions
     PRIMARY KEY (user_id, entity_id, entity_type)
 );
 
+ALTER TABLE comments ADD FOREIGN KEY cascade_delete (parent_id)
+REFERENCES comments(id)
+ON DELETE CASCADE ;
+
 CREATE TRIGGER cascade_delete_reactions Before DELETE ON comments
     for each row
     delete from reactions
