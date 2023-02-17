@@ -70,7 +70,8 @@ public class CommentTests {
 
     @Test
     void commentControllerDeleteMethodTest() throws Exception {
-        mvc.perform(delete("/comments/{id}", 1))
+        mvc.perform(delete("/comments/{id}", 1)
+                        .param("type", "comment"))
                 .andExpect(status().isOk());
 
         mvc.perform(get("/comments/{id}", 1))
@@ -101,13 +102,14 @@ public class CommentTests {
 
     @Test
     void deletingNonExistingCommentTest() throws Exception {
-        MvcResult result = mvc.perform(delete("/comments/{id}", 5678))
-                .andExpect(status().isNotFound())
+        MvcResult result = mvc.perform(delete("/comments/{id}", 5678)
+                        .param("type", "comment"))
+                .andExpect(status().isOk())
                 .andReturn();
 
-        assertTrue("should be message about comment {id} not found",
+        assertTrue("should be message about 0 deleted comments",
                 result.getResponse()
-                        .getContentAsString().contains("Comment with id - 5678 was not found"));
+                        .getContentAsString().contains("0 comment(s) have been deleted"));
     }
 
     @Test

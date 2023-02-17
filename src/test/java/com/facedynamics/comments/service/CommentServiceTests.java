@@ -72,21 +72,31 @@ public class CommentServiceTests {
     }
     @Test
     void deleteByIDSuccessfulTest() {
-        Comment comment = new Comment();
-        comment.setText("test text");
-        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
+        when(commentRepository.deleteById(1)).thenReturn(1);
 
-        String response = commentService.deleteById(1);
+        int response = commentService.deleteById(1, "comment");
 
-        assertEquals("Deletion of a comment by id", "test text" , response);
+        assertEquals("Deletion of a comment by id", 1 , response);
 
     }
     @Test
     void deleteByIdNotSuccessfulTest() {
-        when(commentRepository.findById(666)).thenReturn(Optional.empty());
+        when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
-        assertThrows(NotFoundException.class, () -> commentService.deleteById(666),
-                "Should throw NotFoundException");
+        assertEquals("should say that 0 been deleted", 0,
+                commentService.deleteById(666, "comment"));
+    }
+    @Test
+    void deleteByPostIDNotSuccessfulTest() {
+        when(commentRepository.deleteByPostId(2)).thenReturn(0);
+
+        assertEquals("should say 0 been deleted",
+                0, commentService.deleteById(2, "post"));
+    }
+    @Test
+    void testForWrongEntityDeletionTest() {
+        assertEquals("should return 0", 0,
+                commentService.deleteById(1, "notification"));
     }
     @Test
     void findCommentsByPostIdSuccessfulTest() {

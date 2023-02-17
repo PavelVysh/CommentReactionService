@@ -64,9 +64,10 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        when(commentService.deleteById(1)).thenReturn("OK");
+        when(commentService.deleteById(1, "comment")).thenReturn(2);
 
-        mvc.perform(delete("/comments/{id}", 1))
+        mvc.perform(delete("/comments/{id}", 1)
+                        .param("type", "comment"))
                 .andExpect(status().isOk());
     }
 

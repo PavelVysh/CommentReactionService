@@ -29,8 +29,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable int id) {
-        return commentService.deleteById(id);
+    public String deleteById(@PathVariable int id, @RequestParam String type) {
+        return "%d comment(s) have been deleted"
+                .formatted(commentService.deleteById(id, type));
     }
 
     @GetMapping("/posts/{postId}")

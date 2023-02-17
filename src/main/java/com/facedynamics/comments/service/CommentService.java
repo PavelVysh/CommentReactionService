@@ -6,6 +6,7 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +34,15 @@ public class CommentService {
             throw new NotFoundException("Comment with id - " + id + " was not found");
         }));
     }
-
-    public String deleteById(int id) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() ->{
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        });
-            commentRepository.deleteById(id);
-            return comment.getText();
+    @Transactional
+    public int deleteById(int id, String type) {
+        int deleted;
+        switch (type) {
+            case "comment" -> deleted = commentRepository.deleteById(id);
+            case "post" -> deleted = commentRepository.deleteByPostId(id);
+            default -> deleted = 0;
+        }
+            return deleted;
     }
 
     public List<CommentReturnDTO> findCommentsByPostId(int postId) {
