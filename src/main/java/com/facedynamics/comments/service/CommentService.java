@@ -4,10 +4,8 @@ import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
-import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
-import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,10 +42,11 @@ public class CommentService {
         switch (entityType) {
             case comment -> {
                 deleted = commentRepository.deleteById(id);
-                reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
+                deleted += commentRepository.deleteByParentId(id);
             }
             case post -> {
                 deleted = commentRepository.deleteByPostId(id);
+                deleted += commentRepository.deleteByParentId(id);
                 reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
             }
             default -> deleted = 0;
