@@ -4,8 +4,10 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
+import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,12 +30,14 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 public class CommentServiceTests {
     @Mock
     private static CommentRepository commentRepository;
+    @Mock
+    private static ReactionsRepository reactionsRepository;
 
     private static CommentService commentService;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository, mapper);
+        commentService = new CommentService(commentRepository,reactionsRepository, mapper);
     }
 
     @Test
@@ -74,7 +78,7 @@ public class CommentServiceTests {
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        int response = commentService.deleteById(1, "comment");
+        int response = commentService.deleteById(1, EntityType.comment);
 
         assertEquals("Deletion of a comment by id", 1 , response);
 
@@ -84,19 +88,19 @@ public class CommentServiceTests {
         when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
         assertEquals("should say that 0 been deleted", 0,
-                commentService.deleteById(666, "comment"));
+                commentService.deleteById(666, EntityType.comment));
     }
     @Test
     void deleteByPostIDNotSuccessfulTest() {
         when(commentRepository.deleteByPostId(2)).thenReturn(0);
 
         assertEquals("should say 0 been deleted",
-                0, commentService.deleteById(2, "post"));
+                0, commentService.deleteById(2, EntityType.post));
     }
     @Test
     void testForWrongEntityDeletionTest() {
         assertEquals("should return 0", 0,
-                commentService.deleteById(1, "notification"));
+                commentService.deleteById(1, EntityType.repost));
     }
     @Test
     void findCommentsByPostIdSuccessfulTest() {

@@ -3,6 +3,7 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        when(commentService.deleteById(1, "comment")).thenReturn(2);
+        when(commentService.deleteById(1, EntityType.comment)).thenReturn(2);
 
         mvc.perform(delete("/comments/{id}", 1)
                         .param("type", "comment"))

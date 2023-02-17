@@ -4,8 +4,10 @@ import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
+import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final ReactionsRepository reactionsRepository;
     private Mapper mapper;
 
     public CommentSaveDTO save(Comment comment) {
@@ -34,15 +37,22 @@ public class CommentService {
             throw new NotFoundException("Comment with id - " + id + " was not found");
         }));
     }
+
     @Transactional
-    public int deleteById(int id, String type) {
+    public int deleteById(int id, EntityType entityType) {
         int deleted;
-        switch (type) {
-            case "comment" -> deleted = commentRepository.deleteById(id);
-            case "post" -> deleted = commentRepository.deleteByPostId(id);
+        switch (entityType) {
+            case comment -> {
+                deleted = commentRepository.deleteById(id);
+                reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
+            }
+            case post -> {
+                deleted = commentRepository.deleteByPostId(id);
+                reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
+            }
             default -> deleted = 0;
         }
-            return deleted;
+        return deleted;
     }
 
     public List<CommentReturnDTO> findCommentsByPostId(int postId) {

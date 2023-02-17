@@ -3,6 +3,7 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable int id, @RequestParam String type) {
+    public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
         return "%d comment(s) have been deleted"
                 .formatted(commentService.deleteById(id, type));
     }
