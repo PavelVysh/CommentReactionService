@@ -10,6 +10,8 @@ import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.AllArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +32,14 @@ public class ReactionsService {
     }
 
     public List<ReactionReturnDTO> findReactions(int entityId,
-                                                          EntityType entityType,
-                                                          boolean isLike,
-                                                          boolean byUser) {
+                                                 EntityType entityType,
+                                                 boolean isLike,
+                                                 boolean byUser,
+                                                 PageRequest pageRequest) {
         if (byUser) {
-             return findByUser(entityId, entityType, isLike);
+             return findByUser(entityId, entityType, isLike, pageRequest);
         } else {
-            return findByEntity(entityId, entityType, isLike);
+            return findByEntity(entityId, entityType, isLike, pageRequest);
         }
     }
 
@@ -57,16 +60,23 @@ public class ReactionsService {
             default -> false;
         };
     }
-    public List<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
-        if (reactions.size() < 1) {
+    public List<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike, PageRequest pageRequest) {
+        Page<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike, pageRequest);
+        if (reactions.isEmpty()) {
             throw new NotFoundException("Reactions not found");
+        }
+        List<ReactionReturnDTO> returnDTOS = mapper.reactionToReturnDTO(reactions);
+
+        for (ReactionReturnDTO reaction : returnDTOS) {
+            reaction.setCurrentPage(pageRequest.getPageNumber());
+            reaction.setPageSize(pageRequest.getPageSize());
+            reaction.setTotalPages(reactions.getTotalPages());
         }
         return mapper.reactionToReturnDTO(reactions);
     }
-    public List<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike);
-        if (reactions.size() < 1) {
+    public List<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, PageRequest pageRequest) {
+        Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageRequest);
+        if (reactions.isEmpty()) {
             throw new NotFoundException("Reaction not found");
         }
         return mapper.reactionToReturnDTO(reactions);

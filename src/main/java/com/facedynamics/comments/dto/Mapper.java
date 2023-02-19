@@ -18,5 +18,5 @@ public interface Mapper {
     List<CommentReturnDTO> commentToReturnDTO(Page<Comment> commentList);
     ReactionSaveDTO reactionToSaveDTO(Reaction reaction);
     ReactionReturnDTO reactionToReturnDTO(Reaction reaction);
-    List<ReactionReturnDTO> reactionToReturnDTO(List<Reaction> reactions);
+    List<ReactionReturnDTO> reactionToReturnDTO(Page<Reaction> reactions);
 }
