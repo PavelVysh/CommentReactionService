@@ -16,9 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +62,8 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        List<CommentReturnDTO> status = commentService.findById(2, false, 0, 10);
+        List<CommentReturnDTO> status = commentService.findById(
+                2, false, PageRequest.of(0, 5, Sort.by("id")));
 
         assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
     }
@@ -72,7 +71,7 @@ public class CommentServiceTests {
     void findByInUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, 0, 10),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, PageRequest.of(0, 5)),
                 "Should throw NotFoundException");
     }
     @Test

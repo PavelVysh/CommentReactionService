@@ -35,10 +35,10 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public List<CommentReturnDTO> findById(int id, boolean post, int page, int size) {
+    public List<CommentReturnDTO> findById(int id,boolean post, PageRequest page) {
         List<CommentReturnDTO> comments;
         if (post) {
-            comments = findCommentsByPostId(id, PageRequest.of(page, size));
+            comments = findCommentsByPostId(id, page);
         } else {
             comments = List.of(findByCommentId(id));
         }
@@ -65,7 +65,6 @@ public class CommentService {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
-
         List<CommentReturnDTO> commentDTOs = mapper.commentToReturnDTO(comments);
         for (CommentReturnDTO comment : commentDTOs) {
             comment.setPageSize(pageable.getPageSize());
