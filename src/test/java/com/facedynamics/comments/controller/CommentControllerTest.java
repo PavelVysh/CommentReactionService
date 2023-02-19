@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -57,7 +58,7 @@ public class CommentControllerTest {
 
     @Test
     void findByIdTest() throws Exception {
-        when(commentService.findById(1)).thenReturn(new CommentReturnDTO());
+        when(commentService.findById(1, false)).thenReturn(List.of(new CommentReturnDTO()));
 
         mvc.perform(get("/comments/{id}", 1))
                 .andExpect(status().isOk());
@@ -76,7 +77,8 @@ public class CommentControllerTest {
     void findingCommentsByPostId() throws Exception {
         when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO()));
 
-        mvc.perform(get("/comments/posts/{id}", 2))
+        mvc.perform(get("/comments/{id}", 2)
+                        .param("post", "true"))
                 .andExpect(status().isOk());
     }
 }

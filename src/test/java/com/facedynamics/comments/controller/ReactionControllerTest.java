@@ -54,7 +54,7 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionForEntityTest() throws Exception {
-        when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
+        when(reactionsService.findReactions(1, EntityType.post, false, false))
                 .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
         mvc.perform(get("/reactions/{id}", 1)
@@ -65,12 +65,13 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionsByUserTest() throws Exception {
-        when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
+        when(reactionsService.findReactions(1, EntityType.post, true, true))
                 .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
-        mvc.perform(get("/reactions/users/{id}", 1)
+        mvc.perform(get("/reactions/{id}", 1)
                 .param("entityType", "post")
-                .param("isLike", "true"))
+                .param("isLike", "true")
+                        .param("user", "true"))
                 .andExpect(status().isOk());
 
 

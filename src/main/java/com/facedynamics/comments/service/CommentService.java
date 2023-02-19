@@ -32,10 +32,14 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public CommentReturnDTO findById(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
+    public List<CommentReturnDTO> findById(int id, boolean post) {
+        List<CommentReturnDTO> comments;
+        if (post) {
+            comments = findCommentsByPostId(id);
+        } else {
+            comments = List.of(findByCommentId(id));
+        }
+        return comments;
     }
 
     @Transactional
@@ -59,5 +63,10 @@ public class CommentService {
                     + postId + " were not found");
         }
         return mapper.commentToReturnDTO(comments);
+    }
+    public CommentReturnDTO findByCommentId(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        }));
     }
 }

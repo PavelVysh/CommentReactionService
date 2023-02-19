@@ -63,15 +63,15 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        CommentReturnDTO status = commentService.findById(2);
+        List<CommentReturnDTO> status = commentService.findById(2, false);
 
-        assertEquals("didn't find an existing comment","test text" , status.getText());
+        assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
     }
     @Test
     void findByInUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3, false),
                 "Should throw NotFoundException");
     }
     @Test

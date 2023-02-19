@@ -25,18 +25,13 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public CommentReturnDTO findById(@PathVariable int id) {
-        return commentService.findById(id);
+    public List<CommentReturnDTO> findById(@PathVariable int id, @RequestParam(required = false)boolean post) {
+        return commentService.findById(id, post);
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
         return "%d comment(s) have been deleted"
                 .formatted(commentService.deleteById(id, type));
-    }
-
-    @GetMapping("/posts/{postId}")
-    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
-        return commentService.findCommentsByPostId(postId);
     }
 }

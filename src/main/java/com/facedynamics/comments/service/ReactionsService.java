@@ -29,12 +29,15 @@ public class ReactionsService {
         return mapper.reactionToSaveDTO(repository.save(reaction));
     }
 
-    public List<ReactionReturnDTO> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
-        if (reactions.size() < 1) {
-            throw new NotFoundException("Reactions not found");
+    public List<ReactionReturnDTO> findReactions(int entityId,
+                                                          EntityType entityType,
+                                                          boolean isLike,
+                                                          boolean byUser) {
+        if (byUser) {
+             return findByUser(entityId, entityType, isLike);
+        } else {
+            return findByEntity(entityId, entityType, isLike);
         }
-        return mapper.reactionToReturnDTO(reactions);
     }
 
     @Transactional
@@ -47,14 +50,6 @@ public class ReactionsService {
 
     }
 
-    public List<ReactionReturnDTO> findAllByUserIdAndType(int userId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike);
-        if (reactions.size() < 1) {
-            throw new NotFoundException("Reaction not found");
-        }
-        return mapper.reactionToReturnDTO(reactions);
-    }
-
     private boolean checkEntityExists(Reaction reaction) {
         return switch (reaction.getEntityType().name()) {
             case "comment" -> commentRepository.existsById(reaction.getEntityId());
@@ -62,5 +57,18 @@ public class ReactionsService {
             default -> false;
         };
     }
-
+    public List<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike) {
+        List<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
+        if (reactions.size() < 1) {
+            throw new NotFoundException("Reactions not found");
+        }
+        return mapper.reactionToReturnDTO(reactions);
+    }
+    public List<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike) {
+        List<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike);
+        if (reactions.size() < 1) {
+            throw new NotFoundException("Reaction not found");
+        }
+        return mapper.reactionToReturnDTO(reactions);
+    }
 }
