@@ -1,6 +1,7 @@
 package integrational;
 
 import com.facedynamics.comments.CommentsApplication;
+import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +40,10 @@ public class ReactionTests {
 
     @Test
     void reactionsControllerGetByUserIDMethodTest() throws Exception {
-        mvc.perform(get("/reactions/users/{userId}", 1)
+        mvc.perform(get("/reactions/{userId}", 1)
                         .param("isLike", "false")
-                        .param("entityType", "comment"))
+                        .param("entityType", "comment")
+                        .param("user", "true"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -105,7 +107,7 @@ public class ReactionTests {
 
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
-        Reaction[] reactions = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(contentAsString, Reaction[].class);
+        ReactionReturnDTO[] reactions = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(contentAsString, ReactionReturnDTO[].class);
 
         assertFalse("didn't switch like to dislike", reactions[0].isLike());
         assertEquals("new Reaction created instead of switch",444 , reactions[0].getEntityId());

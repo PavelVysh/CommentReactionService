@@ -13,6 +13,9 @@ public class ReactionReturnDTO {
     private EntityType entityType;
     private LocalDateTime updateTime;
     private Boolean like;
+    private int pageSize;
+    private int currentPage;
+    private int totalPages;
     public Boolean isLike() {
         return like;
     }

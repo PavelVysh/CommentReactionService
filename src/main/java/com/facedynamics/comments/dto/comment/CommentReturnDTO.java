@@ -16,5 +16,8 @@ public class CommentReturnDTO {
     private LocalDateTime createdAt;
     private int likes, dislikes;
     private String text;
+    private int pageSize;
+    private int currentPage;
+    private int totalPages;
     private List<Comment> comments;
 }

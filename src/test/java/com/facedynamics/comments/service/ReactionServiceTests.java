@@ -56,7 +56,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
                 .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
 
-        List<ReactionReturnDTO> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
+        List<ReactionReturnDTO> response = reactionsService.findReactions(2, EntityType.post, true, false);
         assertEquals("finding reactions for entity", 2, response.size());
     }
     @Test
@@ -65,7 +65,7 @@ public class ReactionServiceTests {
                 .thenReturn(Collections.emptyList());
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findReactionsForEntity(2, EntityType.post, true),
+                reactionsService.findReactions(2, EntityType.post, true, false),
                 "Should throw NotFoundException");
     }
     @Test
@@ -90,7 +90,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
                 .thenReturn(Arrays.asList(new Reaction(), reaction));
 
-        List<ReactionReturnDTO> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
+        List<ReactionReturnDTO> response = reactionsService.findReactions(1, EntityType.post, true, true);
 
         assertEquals("Finding reactions successfully", 2, response.size());
     }
@@ -100,7 +100,7 @@ public class ReactionServiceTests {
                 .thenReturn(Collections.emptyList());
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findAllByUserIdAndType(1, EntityType.post, true),
+                reactionsService.findReactions(1, EntityType.post, true, true),
                 "Should throw NotFoundException");
     }
 }

@@ -25,8 +25,9 @@ public class ReactionsController {
     @GetMapping("/{entityId}")
     public List<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
-                                                         @RequestParam boolean isLike) {
-        return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
+                                                         @RequestParam boolean isLike,
+                                                         @RequestParam(required = false) boolean byUser) {
+        return reactionsService.findReactions(entityId, entityType, isLike, byUser);
     }
 
     @DeleteMapping("/{entityId}")
@@ -36,10 +37,4 @@ public class ReactionsController {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 
-    @GetMapping("/users/{userId}")
-    public List<ReactionReturnDTO> getReactionsByUser(@PathVariable int userId,
-                                             @RequestParam EntityType entityType,
-                                             @RequestParam boolean isLike) {
-        return reactionsService.findAllByUserIdAndType(userId, entityType, isLike);
-    }
 }

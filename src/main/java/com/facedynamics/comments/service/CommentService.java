@@ -10,6 +10,9 @@ import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,10 +35,14 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public CommentReturnDTO findById(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
+    public List<CommentReturnDTO> findById(int id, boolean post, int page, int size) {
+        List<CommentReturnDTO> comments;
+        if (post) {
+            comments = findCommentsByPostId(id, PageRequest.of(page, size));
+        } else {
+            comments = List.of(findByCommentId(id));
+        }
+        return comments;
     }
 
     @Transactional
@@ -52,12 +59,24 @@ public class CommentService {
         return deleted;
     }
 
-    public List<CommentReturnDTO> findCommentsByPostId(int postId) {
-        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
-        if (comments.size() < 1) {
+    public List<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findCommentsByPostId(postId, pageable);
+        if (comments.isEmpty()) {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
-        return mapper.commentToReturnDTO(comments);
+
+        List<CommentReturnDTO> commentDTOs = mapper.commentToReturnDTO(comments);
+        for (CommentReturnDTO comment : commentDTOs) {
+            comment.setPageSize(pageable.getPageSize());
+            comment.setTotalPages(comments.getTotalPages());
+            comment.setCurrentPage(pageable.getPageNumber());
+        }
+        return commentDTOs;
+    }
+    public CommentReturnDTO findByCommentId(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        }));
     }
 }

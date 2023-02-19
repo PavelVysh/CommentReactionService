@@ -1,7 +1,7 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.CommentService;
@@ -25,18 +25,16 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public CommentReturnDTO findById(@PathVariable int id) {
-        return commentService.findById(id);
+    public List<CommentReturnDTO> findById(@PathVariable int id,
+                                           @RequestParam(required = false)boolean post,
+                                           @RequestParam(required = false, defaultValue = "0") int page,
+                                           @RequestParam(required = false, defaultValue = "10")int size) {
+        return commentService.findById(id, post, page, size);
     }
 
     @DeleteMapping("/{id}")
     public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
         return "%d comment(s) have been deleted"
                 .formatted(commentService.deleteById(id, type));
-    }
-
-    @GetMapping("/posts/{postId}")
-    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
-        return commentService.findCommentsByPostId(postId);
     }
 }
