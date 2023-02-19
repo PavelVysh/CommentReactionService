@@ -7,19 +7,21 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
 public class ExceptionController {
+    public static final String PROBLEMS = "problems";
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ProblemDetail validationProblem(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setProperty("problems", errors);
+        problemDetail.setProperty(PROBLEMS, errors);
         return problemDetail;
     }
     @ExceptionHandler(NotFoundException.class)
@@ -29,11 +31,15 @@ public class ExceptionController {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setProperty("problems", new Error(ex.getMessage(), ex.getParameterName()));
+        problemDetail.setProperty(PROBLEMS, new Error(ex.getMessage(), ex.getParameterName()));
         return  problemDetail;
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
+    }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
     }
 }

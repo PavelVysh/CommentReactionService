@@ -121,7 +121,9 @@ public class CommentTests {
     }
     @Test
     void requestWithBadParamsInJsonBody() throws Exception {
-        mvc.perform(get("/comments/asd"))
-                .andExpect(status().isBadRequest());
+        MvcResult result = mvc.perform(get("/comments/asd"))
+                .andExpect(status().isBadRequest()).andReturn();
+        assertTrue("bad message check",result.getResponse().getContentAsString()
+                .contains("Failed to convert value of type"));
     }
 }
