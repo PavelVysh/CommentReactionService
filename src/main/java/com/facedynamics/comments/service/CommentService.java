@@ -11,7 +11,7 @@ import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -35,14 +35,12 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public List<CommentReturnDTO> findById(int id,boolean post, PageRequest page) {
-        List<CommentReturnDTO> comments;
+    public Page<CommentReturnDTO> findById(int id, boolean post, Pageable page) {
         if (post) {
-            comments = findCommentsByPostId(id, page);
+            return findCommentsByPostId(id, page);
         } else {
-            comments = List.of(findByCommentId(id));
+            return new PageImpl<>(List.of(findByCommentId(id)));
         }
-        return comments;
     }
 
     @Transactional
@@ -59,19 +57,13 @@ public class CommentService {
         return deleted;
     }
 
-    public List<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
+    public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
         Page<Comment> comments = commentRepository.findCommentsByPostId(postId, pageable);
         if (comments.isEmpty()) {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
-        List<CommentReturnDTO> commentDTOs = mapper.commentToReturnDTO(comments);
-        for (CommentReturnDTO comment : commentDTOs) {
-            comment.setPageSize(pageable.getPageSize());
-            comment.setTotalPages(comments.getTotalPages());
-            comment.setCurrentPage(pageable.getPageNumber());
-        }
-        return commentDTOs;
+        return mapper.commentToReturnDTO(comments);
     }
     public CommentReturnDTO findByCommentId(int id) {
         return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {

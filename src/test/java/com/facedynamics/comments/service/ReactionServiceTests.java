@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -56,9 +57,9 @@ public class ReactionServiceTests {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(new Reaction(), new Reaction())));
 
-        List<ReactionReturnDTO> response = reactionsService.findReactions(2, EntityType.post, true, false,
+        Page<ReactionReturnDTO> response = reactionsService.findReactions(2, EntityType.post, true, false,
                 PageRequest.of(0, 10));
-        assertEquals("finding reactions for entity", 2, response.size());
+        assertEquals("finding reactions for entity", 2L, response.getTotalElements());
     }
     @Test
     void findingReactionTestNotFoundTest() {
@@ -92,10 +93,10 @@ public class ReactionServiceTests {
                 PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(new Reaction(), reaction)));
 
-        List<ReactionReturnDTO> response = reactionsService.findReactions(1, EntityType.post, true,
+        Page<ReactionReturnDTO> response = reactionsService.findReactions(1, EntityType.post, true,
                 true, PageRequest.of(0, 10));
 
-        assertEquals("Finding reactions successfully", 2, response.size());
+        assertEquals("Finding reactions successfully", 2L, response.getTotalElements());
     }
     @Test
     void findByUserIdAndTypeFailTest() {

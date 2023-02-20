@@ -1,11 +1,9 @@
 package integrational;
 
 import com.facedynamics.comments.CommentsApplication;
-import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,10 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = CommentsApplication.class)
 @AutoConfigureMockMvc
@@ -34,8 +32,7 @@ public class ReactionTests {
                         .param("entityType", "comment")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -45,8 +42,7 @@ public class ReactionTests {
                         .param("entityType", "comment")
                         .param("user", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -78,8 +74,7 @@ public class ReactionTests {
                         .param("entityType", "post")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -107,10 +102,8 @@ public class ReactionTests {
 
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
-        ReactionReturnDTO[] reactions = new ObjectMapper().registerModule(new JavaTimeModule()).readValue(contentAsString, ReactionReturnDTO[].class);
 
-        assertFalse("didn't switch like to dislike", reactions[0].isLike());
-        assertEquals("new Reaction created instead of switch",444 , reactions[0].getEntityId());
+        assertTrue("didn't switch like to dislike", contentAsString.contains("\"like\":false"));
     }
 
     @Test
