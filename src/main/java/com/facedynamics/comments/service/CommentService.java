@@ -78,4 +78,9 @@ public class CommentService {
             throw new NotFoundException("Comment with id - " + id + " was not found");
         }));
     }
+    public CommentReturnDTO findByCommentId(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        }));
+    }
 }
