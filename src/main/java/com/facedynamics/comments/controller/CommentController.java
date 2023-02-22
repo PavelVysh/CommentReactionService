@@ -26,8 +26,9 @@ public class CommentController {
 
     @GetMapping("/{id}")
     public Page<CommentReturnDTO> findById(@PathVariable int id,
-                                           @RequestParam(required = false)boolean post,
-                                           @RequestParam(required = false)Pageable pageable) {
+                                           @RequestParam(required = false) boolean post,
+                                           Pageable pageable) {
+
         return commentService.findById(id, post, pageable);
     }
 

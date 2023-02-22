@@ -27,7 +27,7 @@ public class ReactionsController {
                                                          @RequestParam EntityType entityType,
                                                          @RequestParam boolean isLike,
                                                          @RequestParam(required = false) boolean byUser,
-                                                         @RequestParam(required = false) Pageable pageable) {
+                                                         Pageable pageable) {
         return reactionsService.findReactions(entityId, entityType, isLike, byUser, pageable);
     }
 
