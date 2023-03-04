@@ -11,11 +11,8 @@ import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -35,12 +32,10 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public Page<CommentReturnDTO> findById(int id, boolean post, Pageable page) {
-        if (post) {
-            return findCommentsByPostId(id, page);
-        } else {
-            return new PageImpl<>(List.of(findByCommentId(id)));
-        }
+    public CommentReturnDTO findById(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        }));
     }
 
     @Transactional
@@ -64,10 +59,5 @@ public class CommentService {
                     + postId + " were not found");
         }
         return mapper.commentToReturnDTO(comments);
-    }
-    public CommentReturnDTO findByCommentId(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
     }
 }

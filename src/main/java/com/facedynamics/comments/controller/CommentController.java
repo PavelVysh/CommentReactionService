@@ -12,27 +12,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/comments")
 @AllArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
 
-    @PostMapping
+    @PostMapping("/comments")
     public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
     }
 
-    @GetMapping("/{id}")
-    public Page<CommentReturnDTO> findById(@PathVariable int id,
-                                           @RequestParam(required = false) boolean post,
-                                           Pageable pageable) {
-
-        return commentService.findById(id, post, pageable);
+    @GetMapping("/comments/{id}")
+    public CommentReturnDTO findById(@PathVariable int id) {
+        return commentService.findById(id);
+    }
+    @GetMapping("/posts/{id}/comments")
+    public Page<CommentReturnDTO> findByPostId(@PathVariable int id, Pageable pageable) {
+        return commentService.findCommentsByPostId(id, pageable);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/comments/{id}")
     public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
         return "%d comment(s) have been deleted"
                 .formatted(commentService.deleteById(id, type));
