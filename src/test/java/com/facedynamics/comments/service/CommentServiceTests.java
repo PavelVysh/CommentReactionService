@@ -16,10 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -27,6 +24,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class CommentServiceTests {
+    public static final String ROWS_AFFECTED = "rowsAffected";
     @Mock
     private static CommentRepository commentRepository;
     @Mock
@@ -77,9 +75,9 @@ public class CommentServiceTests {
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        int response = commentService.deleteByCommentId(1);
+        Map<String, Integer> response = commentService.deleteByCommentId(1);
 
-        assertEquals("Deletion of a comment by id", 1 , response);
+        assertEquals("Deletion of a comment by id", 1 , response.get(ROWS_AFFECTED));
 
     }
     @Test
@@ -87,14 +85,14 @@ public class CommentServiceTests {
         when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
         assertEquals("should say that 0 been deleted", 0,
-                commentService.deleteByCommentId(666));
+                commentService.deleteByCommentId(666).get(ROWS_AFFECTED));
     }
     @Test
     void deleteByPostIDNotSuccessfulTest() {
         when(commentRepository.deleteByPostId(2)).thenReturn(0);
 
         assertEquals("should say 0 been deleted",
-                0, commentService.deleteByPostId(2));
+                0, commentService.deleteByPostId(2).get(ROWS_AFFECTED));
     }
     @Test
     void findCommentsByPostIdSuccessfulTest() {

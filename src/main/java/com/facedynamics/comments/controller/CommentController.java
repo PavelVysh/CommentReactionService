@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping
@@ -29,14 +30,12 @@ public class CommentController {
     }
 
     @DeleteMapping("comments/{id}")
-    public String deleteById(@PathVariable int id) {
-        return "%d comment(s) have been deleted"
-                .formatted(commentService.deleteByCommentId(id));
+    public Map<String, Integer> deleteById(@PathVariable int id) {
+        return commentService.deleteByCommentId(id);
     }
     @DeleteMapping("/posts/{postId}/comments")
-    public String deleteByPostId(@PathVariable int postId) {
-        return "%d comment(s) have been deleted"
-                .formatted(commentService.deleteByPostId(postId));
+    public Map<String, Integer> deleteByPostId(@PathVariable int postId) {
+        return commentService.deleteByPostId(postId);
     }
 
     @GetMapping("comments/posts/{postId}")

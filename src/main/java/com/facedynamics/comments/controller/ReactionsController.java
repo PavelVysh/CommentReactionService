@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/reactions")
@@ -30,9 +31,9 @@ public class ReactionsController {
     }
 
     @DeleteMapping("/{entityId}")
-    public String deleteReaction(@PathVariable int entityId,
-                                        @RequestParam int userId,
-                                        @RequestParam EntityType entityType) {
+    public Map<String, Integer> deleteReaction(@PathVariable int entityId,
+                                               @RequestParam int userId,
+                                               @RequestParam EntityType entityType) {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 

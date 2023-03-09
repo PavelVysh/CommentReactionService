@@ -13,7 +13,9 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -38,13 +40,10 @@ public class ReactionsService {
     }
 
     @Transactional
-    public String deleteReaction(int entityId, EntityType entityType, int userId) {
-        if (repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId) > 0) {
-            return "Reaction was successfully deleted";
-        } else {
-            throw new NotFoundException("Reaction was not found");
-        }
-
+    public Map<String, Integer> deleteReaction(int entityId, EntityType entityType, int userId) {
+        Map<String, Integer> deleted = new HashMap<>();
+        deleted.put("rowsAffected", repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
+        return deleted;
     }
 
     public List<ReactionReturnDTO> findAllByUserIdAndType(int userId, EntityType entityType, boolean isLike) {

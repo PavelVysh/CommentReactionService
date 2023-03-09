@@ -18,6 +18,7 @@ import org.mockito.quality.Strictness;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -26,6 +27,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ReactionServiceTests {
+    public static final String ROWS_AFFECTED = "rowsAffected";
     @Mock
     private ReactionsRepository reactionsRepository;
     @Mock
@@ -73,17 +75,16 @@ public class ReactionServiceTests {
         when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
                 .thenReturn(1);
 
-        String response = reactionsService.deleteReaction(4, EntityType.comment, 33);
+        Map<String, Integer> response = reactionsService.deleteReaction(4, EntityType.comment, 33);
 
-        assertEquals("delete successfully test", "Reaction was successfully deleted", response);
+        assertEquals("delete successfully test", 1, response.get(ROWS_AFFECTED));
     }
     @Test
     void deleteReactionFailTest() {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> reactionsService.deleteReaction(2, EntityType.post, 1)
-                , "Should throw NotFoundException");
+        assertEquals("should delete 0", 0, reactionsService.deleteReaction(2, EntityType.post, 1).get(ROWS_AFFECTED));
     }
     @Test
     void findByUserIdAndTypeSuccessfulTest() {

@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -77,8 +79,10 @@ public class ReactionControllerTest {
     }
     @Test
     void deleteReactionTest() throws Exception {
+        Map<String, Integer> deleted = new HashMap<>();
+        deleted.put("rowsAffected", 1);
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
-                .thenReturn("test text");
+                .thenReturn(deleted);
 
         mvc.perform(delete("/reactions/{id}", 1)
                 .param("entityType", "post")

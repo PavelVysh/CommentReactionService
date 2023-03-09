@@ -12,7 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -39,14 +41,18 @@ public class CommentService {
     }
 
     @Transactional
-    public int deleteByCommentId(int id) {
-        return commentRepository.deleteById(id);
+    public Map<String, Integer> deleteByCommentId(int id) {
+        HashMap<String, Integer> deleted = new HashMap<>();
+        deleted.put("rowsAffected", commentRepository.deleteById(id));
+        return deleted;
     }
 
     @Transactional
-    public int deleteByPostId(int postId) {
+    public Map<String, Integer> deleteByPostId(int postId) {
+        HashMap<String, Integer> deleted = new HashMap<>();
+        deleted.put("rowsAffected", commentRepository.deleteById(postId));
         deleteReactionsForPost(postId);
-        return commentRepository.deleteByPostId(postId);
+        return deleted;
     }
 
     public List<CommentReturnDTO> findCommentsByPostId(int postId) {
