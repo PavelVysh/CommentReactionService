@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -9,7 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping
@@ -30,11 +30,11 @@ public class CommentController {
     }
 
     @DeleteMapping("comments/{id}")
-    public Map<String, Integer> deleteById(@PathVariable int id) {
+    public CommentDeleteDTO deleteById(@PathVariable int id) {
         return commentService.deleteByCommentId(id);
     }
     @DeleteMapping("/posts/{postId}/comments")
-    public Map<String, Integer> deleteByPostId(@PathVariable int postId) {
+    public CommentDeleteDTO deleteByPostId(@PathVariable int postId) {
         return commentService.deleteByPostId(postId);
     }
 

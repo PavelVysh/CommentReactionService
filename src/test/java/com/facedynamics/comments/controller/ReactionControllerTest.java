@@ -1,6 +1,7 @@
 package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
@@ -17,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -79,8 +78,7 @@ public class ReactionControllerTest {
     }
     @Test
     void deleteReactionTest() throws Exception {
-        Map<String, Integer> deleted = new HashMap<>();
-        deleted.put("rowsAffected", 1);
+        ReactionDeleteDTO deleted = new ReactionDeleteDTO(2);
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
                 .thenReturn(deleted);
 

@@ -1,6 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -24,7 +25,6 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class CommentServiceTests {
-    public static final String ROWS_AFFECTED = "rowsAffected";
     @Mock
     private static CommentRepository commentRepository;
     @Mock
@@ -75,9 +75,9 @@ public class CommentServiceTests {
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        Map<String, Integer> response = commentService.deleteByCommentId(1);
+        CommentDeleteDTO response = commentService.deleteByCommentId(1);
 
-        assertEquals("Deletion of a comment by id", 1 , response.get(ROWS_AFFECTED));
+        assertEquals("Deletion of a comment by id", 1 , response.getRowsAffected());
 
     }
     @Test
@@ -85,14 +85,14 @@ public class CommentServiceTests {
         when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
         assertEquals("should say that 0 been deleted", 0,
-                commentService.deleteByCommentId(666).get(ROWS_AFFECTED));
+                commentService.deleteByCommentId(666).getRowsAffected());
     }
     @Test
     void deleteByPostIDNotSuccessfulTest() {
         when(commentRepository.deleteByPostId(2)).thenReturn(0);
 
         assertEquals("should say 0 been deleted",
-                0, commentService.deleteByPostId(2).get(ROWS_AFFECTED));
+                0, commentService.deleteByPostId(2).getRowsAffected());
     }
     @Test
     void findCommentsByPostIdSuccessfulTest() {

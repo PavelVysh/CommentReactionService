@@ -1,6 +1,7 @@
 package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
@@ -17,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -65,8 +65,7 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        HashMap<String, Integer> deleted = new HashMap<>();
-        deleted.put("rowsAffected:", 2);
+        CommentDeleteDTO deleted = new CommentDeleteDTO(2);
 
         when(commentService.deleteByCommentId(1)).thenReturn(deleted);
 

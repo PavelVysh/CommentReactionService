@@ -1,6 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -12,9 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -41,18 +40,14 @@ public class CommentService {
     }
 
     @Transactional
-    public Map<String, Integer> deleteByCommentId(int id) {
-        HashMap<String, Integer> deleted = new HashMap<>();
-        deleted.put("rowsAffected", commentRepository.deleteById(id));
-        return deleted;
+    public CommentDeleteDTO deleteByCommentId(int id) {
+        return new CommentDeleteDTO(commentRepository.deleteById(id));
     }
 
     @Transactional
-    public Map<String, Integer> deleteByPostId(int postId) {
-        HashMap<String, Integer> deleted = new HashMap<>();
-        deleted.put("rowsAffected", commentRepository.deleteById(postId));
+    public CommentDeleteDTO deleteByPostId(int postId) {
         deleteReactionsForPost(postId);
-        return deleted;
+        return new CommentDeleteDTO(commentRepository.deleteByPostId(postId));
     }
 
     public List<CommentReturnDTO> findCommentsByPostId(int postId) {

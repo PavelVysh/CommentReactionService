@@ -1,6 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -13,9 +14,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -40,10 +39,8 @@ public class ReactionsService {
     }
 
     @Transactional
-    public Map<String, Integer> deleteReaction(int entityId, EntityType entityType, int userId) {
-        Map<String, Integer> deleted = new HashMap<>();
-        deleted.put("rowsAffected", repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
-        return deleted;
+    public ReactionDeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
+        return new ReactionDeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
     }
 
     public List<ReactionReturnDTO> findAllByUserIdAndType(int userId, EntityType entityType, boolean isLike) {

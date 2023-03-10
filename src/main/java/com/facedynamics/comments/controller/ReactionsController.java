@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -10,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/reactions")
@@ -31,9 +31,9 @@ public class ReactionsController {
     }
 
     @DeleteMapping("/{entityId}")
-    public Map<String, Integer> deleteReaction(@PathVariable int entityId,
-                                               @RequestParam int userId,
-                                               @RequestParam EntityType entityType) {
+    public ReactionDeleteDTO deleteReaction(@PathVariable int entityId,
+                                            @RequestParam int userId,
+                                            @RequestParam EntityType entityType) {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 
