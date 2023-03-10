@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Comment</title>
+</head>
+<body>
+<form action="http://localhost:8080/comments" method="POST" id="firstForm">
+    <div>
+        <label for="postId">Post Id</label>
+        <input type="text" name="postId" id="postId">
+    </div>
+    <div>
+        <label for="userId">User Id</label>
+        <input type="text" name="userId" id="userId">
+    </div>
+    <div>
+        <label for="text">Text</label>
+        <input type="text" name="text" id="text">
+    </div>
+    <div>
+        <label for="parentId">Parent Id</label>
+        <input type="text" name="parentId" id="parentId">
+    </div>
+    <button type="submit">Submit</button>
+</form>
+<script>
+    const form = document.getElementById('firstForm'); //get the form element
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); //prevent the form from submitting normally
+
+        const data = { //create a JavaScript object with data from the form
+            postId: form.elements.postId.value,
+            userId: form.elements.userId.value,
+            text: form.elements.text.value,
+            parentId: form.elements.parentId.value
+        };
+
+        const options = { //set options for the fetch function
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data) //convert the data object to JSON
+        };
+
+        fetch('http://localhost:8080/comments', options) //send the data to the server
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                form.reset();
+            })
+            .catch(error => console.error(error));
+    });
+</script>
+</body>
+</html>
