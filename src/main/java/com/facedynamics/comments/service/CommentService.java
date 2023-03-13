@@ -30,9 +30,10 @@ public class CommentService {
     private Mapper mapper;
 
     public CommentSaveDTO save(Comment comment) {
-        checkIfParentExists(comment);
+        PostDTO postDTO = feignMock.getPostById(comment.getPostId());
+        checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
-        sendCommentCreatedNotification(comment);
+        sendCommentCreatedNotification(comment, postDTO);
         return mapper.commentToCommentDTO(savedComment);
     }
 
@@ -64,19 +65,17 @@ public class CommentService {
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
     }
-    private void sendCommentCreatedNotification(Comment comment) {
-        PostDTO postDTO = feignMock.getPostById(comment.getPostId());
+    private void sendCommentCreatedNotification(Comment comment, PostDTO postDTO) {
         NotificationCreateDTO notification = new NotificationCreateDTO(postDTO.getUserId(), "comment");
         notification.createDetails(comment.getUserId(), postDTO.getText(), comment.getText(), comment.getCreatedAt());
-        System.out.println(postDTO.getUserId() + postDTO.getText());
         feignReal.createNotification(notification);
     }
-    private void checkIfParentExists(Comment comment) {
+    private void checkIfParentExists(Comment comment, PostDTO postDTO) {
         if (comment.getParentId() != null) {
             commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
                 throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
             });
-        } else if (feignMock.getPostById(comment.getPostId()).getUserId() == 0) {
+        } else if (postDTO.getUserId() == 0) {
             throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
         }
     }
