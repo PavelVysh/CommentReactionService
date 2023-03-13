@@ -13,3 +13,29 @@ services:
       - '3306:3306'
     expose:
       - '3306'
+  comments:
+    image: docker.io/library/comments:0.0.1-SNAPSHOT
+    restart: on-failure
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+  mysql_db:
+    image: mysql
+    container_name: mysql_notification_db
+    environment:
+      TZ: 'Europe/Kiev'
+      MYSQL_DATABASE: 'notification_db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'pluralsight'
+      MYSQL_ROOT_PASSWORD: 'pluralsight'
+    restart: on-failure
+    ports:
+      - '3307:3306'
+    expose:
+      - '3307'
+  notification-service:
+    image: docker.io/library/notifications:0.0.1-SNAPSHOT
+    depends_on:
+      - mysql_db
+    restart: on-failure

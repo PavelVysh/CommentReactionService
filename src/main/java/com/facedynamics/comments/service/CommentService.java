@@ -9,7 +9,8 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.FeignClientImpl;
+import com.facedynamics.comments.feign.FeignClientMockImpl;
+import com.facedynamics.comments.feign.FeignClientRealImpl;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
@@ -24,15 +25,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
-    private final FeignClientImpl feign;
+    private final FeignClientMockImpl feignMock;
+    private final FeignClientRealImpl feignReal;
     private Mapper mapper;
 
     public CommentSaveDTO save(Comment comment) {
-        if (comment.getParentId() != null) {
-            commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
-                throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
-            });
-        }
+        checkIfParentExists(comment);
         Comment savedComment = commentRepository.save(comment);
         sendCommentCreatedNotification(comment);
         return mapper.commentToCommentDTO(savedComment);
@@ -67,9 +65,19 @@ public class CommentService {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
     }
     private void sendCommentCreatedNotification(Comment comment) {
-        PostDTO postDTO = feign.getPost(comment.getPostId());
+        PostDTO postDTO = feignMock.getPostById(comment.getPostId());
         NotificationCreateDTO notification = new NotificationCreateDTO(postDTO.getUserId(), "comment");
         notification.createDetails(comment.getUserId(), postDTO.getText(), comment.getText(), comment.getCreatedAt());
-        feign.createNotification(notification);
+        System.out.println(postDTO.getUserId() + postDTO.getText());
+        feignReal.createNotification(notification);
+    }
+    private void checkIfParentExists(Comment comment) {
+        if (comment.getParentId() != null) {
+            commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
+                throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
+            });
+        } else if (feignMock.getPostById(comment.getPostId()).getUserId() == 0) {
+            throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
+        }
     }
 }
