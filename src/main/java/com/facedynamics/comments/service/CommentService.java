@@ -4,9 +4,12 @@ import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
+import com.facedynamics.comments.dto.notification.NotificationCreateDTO;
+import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.feign.FeignClientImpl;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
@@ -21,6 +24,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
+    private final FeignClientImpl feign;
     private Mapper mapper;
 
     public CommentSaveDTO save(Comment comment) {
@@ -30,6 +34,7 @@ public class CommentService {
             });
         }
         Comment savedComment = commentRepository.save(comment);
+        sendCommentCreatedNotification(comment);
         return mapper.commentToCommentDTO(savedComment);
     }
 
@@ -60,5 +65,11 @@ public class CommentService {
     }
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
+    }
+    private void sendCommentCreatedNotification(Comment comment) {
+        PostDTO postDTO = feign.getPost(comment.getPostId());
+        NotificationCreateDTO notification = new NotificationCreateDTO(postDTO.getUserId(), "comment");
+        notification.createDetails(comment.getUserId(), postDTO.getText(), comment.getText(), comment.getCreatedAt());
+        feign.createNotification(notification);
     }
 }

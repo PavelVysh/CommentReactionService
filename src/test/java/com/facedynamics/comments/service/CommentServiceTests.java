@@ -6,6 +6,7 @@ import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.feign.FeignClientImpl;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +34,14 @@ public class CommentServiceTests {
     private static CommentRepository commentRepository;
     @Mock
     private static ReactionsRepository reactionsRepository;
+    @Mock
+    private static FeignClientImpl feignClient;
 
     private static CommentService commentService;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository,reactionsRepository, mapper);
+        commentService = new CommentService(commentRepository, reactionsRepository, feignClient, mapper);
     }
 
     @Test
