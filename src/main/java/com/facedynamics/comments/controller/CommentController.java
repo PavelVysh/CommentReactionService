@@ -3,7 +3,6 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
-import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -12,11 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping
 @AllArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
-
 
     @PostMapping("/comments")
     public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
@@ -27,6 +26,7 @@ public class CommentController {
     public CommentReturnDTO findById(@PathVariable int id) {
         return commentService.findById(id);
     }
+
     @GetMapping("/posts/{id}/comments")
     public Page<CommentReturnDTO> findByPostId(@PathVariable int id, Pageable pageable) {
         return commentService.findCommentsByPostId(id, pageable);
@@ -35,6 +35,12 @@ public class CommentController {
     @DeleteMapping("/comments/{id}")
     public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
         return "%d comment(s) have been deleted"
-                .formatted(commentService.deleteById(id, type));
+            .formatted(commentService.deleteByCommentId(id));
+    }
+
+    @DeleteMapping("/posts/{postId}/comments")
+    public String deleteByPostId(@PathVariable int postId) {
+        return "%d comment(s) have been deleted"
+             .formatted(commentService.deleteByPostId(postId));
     }
 }
