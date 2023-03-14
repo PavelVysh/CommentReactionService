@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ReactionControllerTest {
 
+    public static final String REACTIONS = "/reactions";
     @MockBean
     private ReactionsService reactionsService;
     @Autowired
@@ -45,7 +46,7 @@ public class ReactionControllerTest {
         Reaction reactionWithId = new Reaction();
 
         when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
-        mvc.perform(post("/reactions")
+        mvc.perform(post(REACTIONS)
                 .content(objectMapper.writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -57,7 +58,7 @@ public class ReactionControllerTest {
         when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
                 .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
-        mvc.perform(get("/reactions/{id}", 1)
+        mvc.perform(get(REACTIONS + "/{id}", 1)
                 .param("entityType", "post")
                 .param("isLike", "false"))
                 .andExpect(status().isOk());
@@ -68,7 +69,7 @@ public class ReactionControllerTest {
         when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
                 .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
 
-        mvc.perform(get("/reactions/users/{id}", 1)
+        mvc.perform(get(REACTIONS + "/users/{id}", 1)
                 .param("entityType", "post")
                 .param("isLike", "true"))
                 .andExpect(status().isOk());
@@ -80,7 +81,7 @@ public class ReactionControllerTest {
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
                 .thenReturn("test text");
 
-        mvc.perform(delete("/reactions/{id}", 1)
+        mvc.perform(delete(REACTIONS + "/{id}", 1)
                 .param("entityType", "post")
                 .param("userId", "2"))
                 .andExpect(status().isOk());

@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CommentController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class CommentControllerTest {
+    public static final String COMMENTS = "/comments";
     @MockBean
     private CommentService commentService;
     @Autowired
@@ -47,7 +48,7 @@ public class CommentControllerTest {
     void saveTest() throws Exception {
         when(commentService.save(comment)).thenReturn(mapper.commentToCommentDTO(comment));
 
-        mvc.perform(post("/comments")
+        mvc.perform(post(COMMENTS)
                         .content(objectMapper.writeValueAsString(comment))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -58,7 +59,7 @@ public class CommentControllerTest {
     void findByIdTest() throws Exception {
         when(commentService.findById(1)).thenReturn(new CommentReturnDTO());
 
-        mvc.perform(get("/comments/{id}", 1))
+        mvc.perform(get(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
     }
 
@@ -66,7 +67,7 @@ public class CommentControllerTest {
     void deleteByIdTest() throws Exception {
         when(commentService.deleteById(1)).thenReturn("OK");
 
-        mvc.perform(delete("/comments/{id}", 1))
+        mvc.perform(delete(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
     }
 
@@ -74,7 +75,7 @@ public class CommentControllerTest {
     void findingCommentsByPostId() throws Exception {
         when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO()));
 
-        mvc.perform(get("/comments/posts/{id}", 2))
+        mvc.perform(get(COMMENTS + "/posts/{id}", 2))
                 .andExpect(status().isOk());
     }
 }

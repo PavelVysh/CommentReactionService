@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql({"/dataForTests.sql"})
 public class CommentTests {
 
+    public static final String COMMENTS = "/comments";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -34,7 +35,7 @@ public class CommentTests {
     @Test
     void likesDislikesAssignedTest() throws Exception {
 
-        ResultActions resultActions = mvc.perform(get("/comments/1"))
+        ResultActions resultActions = mvc.perform(get(COMMENTS + "/1"))
                 .andExpect(status().isOk());
 
         MvcResult result = resultActions.andReturn();
@@ -53,7 +54,7 @@ public class CommentTests {
         comment.setUserId(123);
         comment.setPostId(321);
         comment.setText("i am a sample text to match");
-        ResultActions resultActions = mvc.perform(post("/comments")
+        ResultActions resultActions = mvc.perform(post(COMMENTS)
                 .content(new ObjectMapper().writeValueAsString(comment))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -62,7 +63,7 @@ public class CommentTests {
         int idOfSavedComment = objectMapper.readValue(
                 result.getResponse().getContentAsString(), Comment.class).getId();
 
-        mvc.perform(get("/comments/{id}", idOfSavedComment))
+        mvc.perform(get(COMMENTS + "/{id}", idOfSavedComment))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.text", equalTo("i am a sample text to match")));
@@ -70,16 +71,16 @@ public class CommentTests {
 
     @Test
     void commentControllerDeleteMethodTest() throws Exception {
-        mvc.perform(delete("/comments/{id}", 1))
+        mvc.perform(delete(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
 
-        mvc.perform(get("/comments/{id}", 1))
+        mvc.perform(get(COMMENTS + "/{id}", 1))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void commentControllerGetListMethodTest() throws Exception {
-        mvc.perform(get("/comments/posts/{id}", 4))
+        mvc.perform(get(COMMENTS + "/posts/{id}", 4))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -92,7 +93,7 @@ public class CommentTests {
         comment.setPostId(789);
         comment.setText("i");
 
-        mvc.perform(post("/comments")
+        mvc.perform(post(COMMENTS)
                         .content(new ObjectMapper().writeValueAsString(comment))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -101,7 +102,7 @@ public class CommentTests {
 
     @Test
     void deletingNonExistingCommentTest() throws Exception {
-        MvcResult result = mvc.perform(delete("/comments/{id}", 5678))
+        MvcResult result = mvc.perform(delete(COMMENTS + "/{id}", 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
 
@@ -112,7 +113,7 @@ public class CommentTests {
 
     @Test
     void findCommentsForNonExistingPost() throws Exception {
-        MvcResult result = mvc.perform(get("/comments/posts/{postId}", 5678))
+        MvcResult result = mvc.perform(get(COMMENTS + "/posts/{postId}", 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
         assertTrue("should be message about comments non existing for post {postID}",
@@ -121,7 +122,7 @@ public class CommentTests {
     }
     @Test
     void requestWithBadParamsInJsonBody() throws Exception {
-        MvcResult result = mvc.perform(get("/comments/asd"))
+        MvcResult result = mvc.perform(get(COMMENTS + "/asd"))
                 .andExpect(status().isBadRequest()).andReturn();
         assertTrue("bad message check",result.getResponse().getContentAsString()
                 .contains("Failed to convert value of type"));

@@ -1,4 +1,4 @@
-package com.facedynamics.comments.exeption;
+package com.facedynamics.comments.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

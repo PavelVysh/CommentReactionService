@@ -4,7 +4,7 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.entity.Comment;
-import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

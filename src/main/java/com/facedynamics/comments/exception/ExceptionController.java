@@ -1,4 +1,4 @@
-package com.facedynamics.comments.exeption;
+package com.facedynamics.comments.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

@@ -24,12 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Sql({"/dataForTests.sql"})
 public class ReactionTests {
+    public static final String REACTIONS = "/reactions";
     @Autowired
     private MockMvc mvc;
 
     @Test
     void reactionsControllerGetByEntityIdMethodTest() throws Exception {
-        mvc.perform(get("/reactions/{entityId}", 1)
+        mvc.perform(get(REACTIONS + "/{entityId}", 1)
                         .param("entityType", "comment")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
@@ -39,7 +40,7 @@ public class ReactionTests {
 
     @Test
     void reactionsControllerGetByUserIDMethodTest() throws Exception {
-        mvc.perform(get("/reactions/users/{userId}", 1)
+        mvc.perform(get(REACTIONS + "/users/{userId}", 1)
                         .param("isLike", "false")
                         .param("entityType", "comment"))
                 .andExpect(status().isOk())
@@ -49,11 +50,11 @@ public class ReactionTests {
 
     @Test
     void reactionsControllerDeleteMethodTest() throws Exception {
-        mvc.perform(delete("/reactions/{entityId}", 2)
+        mvc.perform(delete(REACTIONS + "/{entityId}", 2)
                         .param("userId", "333")
                         .param("entityType", "comment"))
                 .andExpect(status().isOk());
-        mvc.perform(get("/reactions/{entityId}", 2)
+        mvc.perform(get(REACTIONS + "/{entityId}", 2)
                         .param("entityType", "comment")
                         .param("isLike", "true"))
                 .andExpect(status().isNotFound());
@@ -67,12 +68,12 @@ public class ReactionTests {
         reaction.setUserId(333);
         reaction.setEntityType(EntityType.post);
 
-        mvc.perform(post("/reactions")
+        mvc.perform(post(REACTIONS)
                 .content(new ObjectMapper().writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-        mvc.perform(get("/reactions/{entityId}", 555)
+        mvc.perform(get(REACTIONS + "/{entityId}", 555)
                         .param("entityType", "post")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
@@ -87,18 +88,18 @@ public class ReactionTests {
         reaction.setEntityId(444);
         reaction.setUserId(22);
         reaction.setEntityType(EntityType.post);
-        mvc.perform(post("/reactions")
+        mvc.perform(post(REACTIONS)
                 .content(new ObjectMapper().writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
         reaction.setLike(false);
-        mvc.perform(post("/reactions")
+        mvc.perform(post(REACTIONS)
                 .content(new ObjectMapper().writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
-        ResultActions resultActions = mvc.perform(get("/reactions/{entityId}", 444)
+        ResultActions resultActions = mvc.perform(get(REACTIONS + "/{entityId}", 444)
                         .param("entityType", "post")
                         .param("isLike", "false"))
                 .andExpect(status().isOk());
@@ -113,7 +114,7 @@ public class ReactionTests {
 
     @Test
     void deleteNonExistingReactionTest() throws Exception {
-        MvcResult result = mvc.perform(delete("/reactions/{entityId}", 5678)
+        MvcResult result = mvc.perform(delete(REACTIONS + "/{entityId}", 5678)
                         .param("entityType", "post")
                         .param("userId", "1"))
                 .andExpect(status().isNotFound())
@@ -124,12 +125,12 @@ public class ReactionTests {
     }
     @Test
     void deleteReactionBadRequestTest() throws Exception {
-        mvc.perform(delete("/reactions/{entityId}", 3))
+        mvc.perform(delete(REACTIONS + "/{entityId}", 3))
                 .andExpect(status().isBadRequest());
     }
     @Test
     void requestWithNoBodyTest() throws Exception {
-        mvc.perform(post("/reactions"))
+        mvc.perform(post(REACTIONS))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").exists());
     }
