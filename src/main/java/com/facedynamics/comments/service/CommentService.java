@@ -44,17 +44,14 @@ public class CommentService {
     }
 
     @Transactional
-    public int deleteById(int id, EntityType entityType) {
-        int deleted;
-        switch (entityType) {
-            case comment -> deleted = commentRepository.deleteById(id);
-            case post -> {
-                deleted = commentRepository.deleteByPostId(id);
-                reactionsRepository.deleteByEntityIdAndEntityType(id, entityType);
-            }
-            default -> deleted = 0;
-        }
-        return deleted;
+    public int deleteByCommentId(int id) {
+        return commentRepository.deleteById(id);
+    }
+
+    @Transactional
+    public int deleteByPostId(int postId) {
+        deleteReactionsForPost(postId);
+        return commentRepository.deleteByPostId(postId);
     }
 
     public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
@@ -65,6 +62,10 @@ public class CommentService {
         }
         return mapper.commentToReturnDTO(comments);
     }
+
+    private int deleteReactionsForPost(int postId) {
+        return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
+
     public CommentReturnDTO findByCommentId(int id) {
         return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
             throw new NotFoundException("Comment with id - " + id + " was not found");
