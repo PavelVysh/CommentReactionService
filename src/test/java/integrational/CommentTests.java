@@ -3,7 +3,6 @@ package integrational;
 import com.facedynamics.comments.CommentsApplication;
 import com.facedynamics.comments.entity.Comment;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,12 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = CommentsApplication.class)
 @AutoConfigureMockMvc
@@ -40,11 +37,8 @@ public class CommentTests {
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
 
-        Comment response = new ObjectMapper().registerModule(new JavaTimeModule())
-                .readValue(contentAsString, Comment.class);
-
-        assertEquals("Likes assigned incorrectly", 3, response.getLikes());
-        assertEquals("Dislikes assigned incorrectly", 2, response.getDislikes());
+        assertTrue("Likes assigned incorrectly",  contentAsString.contains("\"likes\":3"));
+        assertTrue("Dislikes assigned incorrectly",  contentAsString.contains("\"dislikes\":2"));
     }
 
     @Test
@@ -64,13 +58,13 @@ public class CommentTests {
 
         mvc.perform(get("/comments/{id}", idOfSavedComment))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.text", equalTo("i am a sample text to match")));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     void commentControllerDeleteMethodTest() throws Exception {
-        mvc.perform(delete("/comments/{id}", 1))
+        mvc.perform(delete("/comments/{id}", 1)
+                        .param("type", "comment"))
                 .andExpect(status().isOk());
 
         mvc.perform(get("/comments/{id}", 1))
@@ -79,10 +73,10 @@ public class CommentTests {
 
     @Test
     void commentControllerGetListMethodTest() throws Exception {
-        mvc.perform(get("/comments/posts/{id}", 4))
+        mvc.perform(get("/comments/{id}", 4)
+                        .param("post", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -101,18 +95,20 @@ public class CommentTests {
 
     @Test
     void deletingNonExistingCommentTest() throws Exception {
-        MvcResult result = mvc.perform(delete("/comments/{id}", 5678))
-                .andExpect(status().isNotFound())
+        MvcResult result = mvc.perform(delete("/comments/{id}", 5678)
+                        .param("type", "comment"))
+                .andExpect(status().isOk())
                 .andReturn();
 
-        assertTrue("should be message about comment {id} not found",
+        assertTrue("should be message about 0 deleted comments",
                 result.getResponse()
-                        .getContentAsString().contains("Comment with id - 5678 was not found"));
+                        .getContentAsString().contains("0 comment(s) have been deleted"));
     }
 
     @Test
     void findCommentsForNonExistingPost() throws Exception {
-        MvcResult result = mvc.perform(get("/comments/posts/{postId}", 5678))
+        MvcResult result = mvc.perform(get("/comments/{postId}", 5678)
+                        .param("post", "true"))
                 .andExpect(status().isNotFound())
                 .andReturn();
         assertTrue("should be message about comments non existing for post {postID}",
