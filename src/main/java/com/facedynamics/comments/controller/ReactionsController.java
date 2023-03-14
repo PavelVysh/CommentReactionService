@@ -7,9 +7,9 @@ import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/reactions")
@@ -23,10 +23,12 @@ public class ReactionsController {
         return reactionsService.save(reaction);
     }
     @GetMapping("/{entityId}")
-    public List<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
+    public Page<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
-                                                         @RequestParam boolean isLike) {
-        return reactionsService.findReactionsForEntity(entityId, entityType, isLike);
+                                                         @RequestParam boolean isLike,
+                                                         @RequestParam(required = false) boolean byUser,
+                                                         Pageable pageable) {
+        return reactionsService.findReactions(entityId, entityType, isLike, byUser, pageable);
     }
 
     @DeleteMapping("/{entityId}")
@@ -36,10 +38,4 @@ public class ReactionsController {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 
-    @GetMapping("/users/{userId}")
-    public List<ReactionReturnDTO> getReactionsByUser(@PathVariable int userId,
-                                             @RequestParam EntityType entityType,
-                                             @RequestParam boolean isLike) {
-        return reactionsService.findAllByUserIdAndType(userId, entityType, isLike);
-    }
 }

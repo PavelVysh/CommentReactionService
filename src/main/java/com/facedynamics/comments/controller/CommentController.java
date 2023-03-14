@@ -6,9 +6,9 @@ import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping
@@ -27,6 +27,11 @@ public class CommentController {
     public CommentReturnDTO findById(@PathVariable int id) {
         return commentService.findById(id);
     }
+    
+    @GetMapping("comments/posts/{postId}")
+    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
+        return commentService.findCommentsByPostId(postId);
+    }
 
     @DeleteMapping("comments/{id}")
     public String deleteById(@PathVariable int id) {
@@ -37,10 +42,5 @@ public class CommentController {
     public String deleteByPostId(@PathVariable int postId) {
         return "%d comment(s) have been deleted"
                 .formatted(commentService.deleteByPostId(postId));
-    }
-
-    @GetMapping("comments/posts/{postId}")
-    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
-        return commentService.findCommentsByPostId(postId);
     }
 }

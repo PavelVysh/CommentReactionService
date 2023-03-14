@@ -13,10 +13,14 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -56,7 +60,9 @@ public class CommentControllerTest {
 
     @Test
     void findByIdTest() throws Exception {
-        when(commentService.findById(1)).thenReturn(new CommentReturnDTO());
+        when(commentService.findById(1, false, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(new CommentReturnDTO())) {
+                });
 
         mvc.perform(get("/comments/{id}", 1))
                 .andExpect(status().isOk());
@@ -73,9 +79,11 @@ public class CommentControllerTest {
 
     @Test
     void findingCommentsByPostId() throws Exception {
-        when(commentService.findCommentsByPostId(1)).thenReturn(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO()));
+        when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
+                .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
-        mvc.perform(get("/comments/posts/{id}", 2))
+        mvc.perform(get("/comments/{id}", 2)
+                        .param("post", "true"))
                 .andExpect(status().isOk());
     }
 }
