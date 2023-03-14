@@ -1,11 +1,12 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.comment.CommentSaveDTO;
-import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.comment.CommentReturnDTO;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
+import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,9 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +28,14 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 public class CommentServiceTests {
     @Mock
     private static CommentRepository commentRepository;
+    @Mock
+    private static ReactionsRepository reactionsRepository;
 
     private static CommentService commentService;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository, mapper);
+        commentService = new CommentService(commentRepository,reactionsRepository, mapper);
     }
 
     @Test
@@ -59,51 +61,59 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        CommentReturnDTO status = commentService.findById(2);
+        List<CommentReturnDTO> status = commentService.findById(
+                2, false, PageRequest.of(0, 5, Sort.by("id"))).getContent();
 
-        assertEquals("didn't find an existing comment","test text" , status.getText());
+        assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
     }
     @Test
-    void findByInUnSuccessfulTest() {
+    void findByIdUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, PageRequest.of(0, 5)),
                 "Should throw NotFoundException");
     }
     @Test
     void deleteByIDSuccessfulTest() {
-        Comment comment = new Comment();
-        comment.setText("test text");
-        when(commentRepository.findById(1)).thenReturn(Optional.of(comment));
+        when(commentRepository.deleteById(1)).thenReturn(1);
 
-        String response = commentService.deleteById(1);
+        int response = commentService.deleteByCommentId(1);
 
-        assertEquals("Deletion of a comment by id", "test text" , response);
+        assertEquals("Deletion of a comment by id", 1 , response);
 
     }
     @Test
     void deleteByIdNotSuccessfulTest() {
-        when(commentRepository.findById(666)).thenReturn(Optional.empty());
+        when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
-        assertThrows(NotFoundException.class, () -> commentService.deleteById(666),
-                "Should throw NotFoundException");
+        assertEquals("should say that 0 been deleted", 0,
+                commentService.deleteByCommentId(666));
+    }
+    @Test
+    void deleteByPostIDNotSuccessfulTest() {
+        when(commentRepository.deleteByPostId(2)).thenReturn(0);
+
+        assertEquals("should say 0 been deleted",
+                0, commentService.deleteByPostId(2));
     }
     @Test
     void findCommentsByPostIdSuccessfulTest() {
         Comment comment1 = new Comment();
         Comment comment2 = new Comment();
+        Page<Comment> comments = new PageImpl<>(List.of(comment1, comment2));
 
-        when(commentRepository.findCommentsByPostId(1)).thenReturn(new ArrayList<>(Arrays.asList(comment1, comment2)));
+        when(commentRepository.findCommentsByPostId(1, Pageable.ofSize(10))).thenReturn(comments);
 
-        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1);
+        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1, Pageable.ofSize(10))
+                .getContent();
 
         assertEquals("should have found two comments", 2, commentsFound.size());
     }
     @Test
     void findCommentsByPostIdUnSuccessfulTest() {
-        when(commentRepository.findCommentsByPostId(666)).thenReturn(new ArrayList<>());
+        when(commentRepository.findCommentsByPostId(666, Pageable.ofSize(5))).thenReturn(Page.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666),
+        assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666, Pageable.ofSize(5)),
                 "Should throw NotFoundException");
     }
     @Test

@@ -10,10 +10,10 @@ import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.AllArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -29,12 +29,16 @@ public class ReactionsService {
         return mapper.reactionToSaveDTO(repository.save(reaction));
     }
 
-    public List<ReactionReturnDTO> findReactionsForEntity(int entityId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike);
-        if (reactions.size() < 1) {
-            throw new NotFoundException("Reactions not found");
+    public Page<ReactionReturnDTO> findReactions(int entityId,
+                                                 EntityType entityType,
+                                                 boolean isLike,
+                                                 boolean byUser,
+                                                 Pageable pageable) {
+        if (byUser) {
+             return findByUser(entityId, entityType, isLike, pageable);
+        } else {
+            return findByEntity(entityId, entityType, isLike, pageable);
         }
-        return mapper.reactionToReturnDTO(reactions);
     }
 
     @Transactional
@@ -47,14 +51,6 @@ public class ReactionsService {
 
     }
 
-    public List<ReactionReturnDTO> findAllByUserIdAndType(int userId, EntityType entityType, boolean isLike) {
-        List<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike);
-        if (reactions.size() < 1) {
-            throw new NotFoundException("Reaction not found");
-        }
-        return mapper.reactionToReturnDTO(reactions);
-    }
-
     private boolean checkEntityExists(Reaction reaction) {
         return switch (reaction.getEntityType().name()) {
             case "comment" -> commentRepository.existsById(reaction.getEntityId());
@@ -62,5 +58,18 @@ public class ReactionsService {
             default -> false;
         };
     }
-
+    public Page<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike, Pageable pageable) {
+        Page<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike, pageable);
+        if (reactions.isEmpty()) {
+            throw new NotFoundException("Reactions not found");
+        }
+        return mapper.reactionToReturnDTO(reactions);
+    }
+    public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, Pageable pageable) {
+        Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageable);
+        if (reactions.isEmpty()) {
+            throw new NotFoundException("Reaction not found");
+        }
+        return mapper.reactionToReturnDTO(reactions);
+    }
 }

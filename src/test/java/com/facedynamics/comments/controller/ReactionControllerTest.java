@@ -13,6 +13,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,8 +57,8 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionForEntityTest() throws Exception {
-        when(reactionsService.findReactionsForEntity(1, EntityType.post, false))
-                .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
+        when(reactionsService.findReactions(1, EntityType.post, false, false, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get(REACTIONS + "/{id}", 1)
                 .param("entityType", "post")
@@ -66,12 +68,13 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionsByUserTest() throws Exception {
-        when(reactionsService.findAllByUserIdAndType(1, EntityType.post, true))
-                .thenReturn(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO()));
+        when(reactionsService.findReactions(1, EntityType.post, true, true, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get(REACTIONS + "/users/{id}", 1)
                 .param("entityType", "post")
-                .param("isLike", "true"))
+                .param("isLike", "true")
+                        .param("user", "true"))
                 .andExpect(status().isOk());
 
 

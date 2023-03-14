@@ -17,5 +17,8 @@ CREATE TABLE IF NOT EXISTS reactions
     is_like     BOOLEAN,
     PRIMARY KEY (user_id, entity_id, entity_type)
 );
-ALTER TABLE reactions
-    ADD CONSTRAINT uniq_only UNIQUE (user_id, entity_id, entity_type);
+
+CREATE TRIGGER cascade_delete_reactions Before DELETE ON comments
+    for each row
+    delete from reactions
+    where entity_type='comment' AND entity_id=OLD.id;
