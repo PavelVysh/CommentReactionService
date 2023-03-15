@@ -13,6 +13,9 @@ import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,10 +38,12 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public CommentReturnDTO findById(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
+    public Page<CommentReturnDTO> findById(int id, boolean post, Pageable page) {
+        if (post) {
+            return findCommentsByPostId(id, page);
+        } else {
+            return new PageImpl<>(List.of(findByCommentId(id)));
+        }
     }
 
     @Transactional
@@ -52,9 +57,9 @@ public class CommentService {
         return new CommentDeleteDTO(commentRepository.deleteByPostId(postId));
     }
 
-    public List<CommentReturnDTO> findCommentsByPostId(int postId) {
-        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
-        if (comments.size() < 1) {
+    public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findCommentsByPostId(postId, pageable);
+        if (comments.isEmpty()) {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
@@ -63,6 +68,11 @@ public class CommentService {
 
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
+
+    public CommentReturnDTO findByCommentId(int id) {
+        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
+            throw new NotFoundException("Comment with id - " + id + " was not found");
+        }));
     }
 
     private void checkIfParentExists(Comment comment, PostDTO postDTO) {

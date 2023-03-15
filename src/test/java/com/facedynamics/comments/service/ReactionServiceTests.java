@@ -15,9 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,19 +55,20 @@ public class ReactionServiceTests {
     }
     @Test
     void findingReactionTestSuccessfulTest() {
-        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
-                .thenReturn(Arrays.asList(new Reaction(), new Reaction()));
+        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(new Reaction(), new Reaction())));
 
-        List<ReactionReturnDTO> response = reactionsService.findReactionsForEntity(2, EntityType.post, true);
-        assertEquals("finding reactions for entity", 2, response.size());
+        Page<ReactionReturnDTO> response = reactionsService.findReactions(2, EntityType.post, true, false,
+                PageRequest.of(0, 10));
+        assertEquals("finding reactions for entity", 2L, response.getTotalElements());
     }
     @Test
     void findingReactionTestNotFoundTest() {
-        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true))
-                .thenReturn(Collections.emptyList());
+        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of()));
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findReactionsForEntity(2, EntityType.post, true),
+                reactionsService.findReactions(2, EntityType.post, true, false, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
     @Test
@@ -87,20 +89,22 @@ public class ReactionServiceTests {
     }
     @Test
     void findByUserIdAndTypeSuccessfulTest() {
-        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
-                .thenReturn(Arrays.asList(new Reaction(), reaction));
+        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true,
+                PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of(new Reaction(), reaction)));
 
-        List<ReactionReturnDTO> response = reactionsService.findAllByUserIdAndType(1, EntityType.post, true);
+        Page<ReactionReturnDTO> response = reactionsService.findReactions(1, EntityType.post, true,
+                true, PageRequest.of(0, 10));
 
-        assertEquals("Finding reactions successfully", 2, response.size());
+        assertEquals("Finding reactions successfully", 2L, response.getTotalElements());
     }
     @Test
     void findByUserIdAndTypeFailTest() {
-        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true))
-                .thenReturn(Collections.emptyList());
+        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true, PageRequest.of(0, 10)))
+                .thenReturn(new PageImpl<>(List.of()));
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findAllByUserIdAndType(1, EntityType.post, true),
+                reactionsService.findReactions(1, EntityType.post, true, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
 }

@@ -18,9 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.springframework.data.domain.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -73,15 +74,16 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        CommentReturnDTO status = commentService.findById(2);
+        List<CommentReturnDTO> status = commentService.findById(
+                2, false, PageRequest.of(0, 5, Sort.by("id"))).getContent();
 
-        assertEquals("didn't find an existing comment","test text" , status.getText());
+        assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
     }
     @Test
-    void findByInUnSuccessfulTest() {
+    void findByIdUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, PageRequest.of(0, 5)),
                 "Should throw NotFoundException");
     }
     @Test
@@ -111,18 +113,20 @@ public class CommentServiceTests {
     void findCommentsByPostIdSuccessfulTest() {
         Comment comment1 = new Comment();
         Comment comment2 = new Comment();
+        Page<Comment> comments = new PageImpl<>(List.of(comment1, comment2));
 
-        when(commentRepository.findCommentsByPostId(1)).thenReturn(new ArrayList<>(Arrays.asList(comment1, comment2)));
+        when(commentRepository.findCommentsByPostId(1, Pageable.ofSize(10))).thenReturn(comments);
 
-        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1);
+        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1, Pageable.ofSize(10))
+                .getContent();
 
         assertEquals("should have found two comments", 2, commentsFound.size());
     }
     @Test
     void findCommentsByPostIdUnSuccessfulTest() {
-        when(commentRepository.findCommentsByPostId(666)).thenReturn(new ArrayList<>());
+        when(commentRepository.findCommentsByPostId(666, Pageable.ofSize(5))).thenReturn(Page.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666),
+        assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666, Pageable.ofSize(5)),
                 "Should throw NotFoundException");
     }
     @Test
