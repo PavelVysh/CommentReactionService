@@ -8,7 +8,6 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.FeignClientMockImpl;
-import com.facedynamics.comments.feign.FeignClientRealImpl;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Arrays;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -39,13 +37,13 @@ public class CommentServiceTests {
     @Mock
     private static FeignClientMockImpl feignClient;
     @Mock
-    private static FeignClientRealImpl feignClientReal;
+    private Notification notification;
 
     private static CommentService commentService;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository, reactionsRepository, feignClient, feignClientReal, mapper);
+        commentService = new CommentService(commentRepository, reactionsRepository, feignClient, mapper, notification);
     }
 
     @Test

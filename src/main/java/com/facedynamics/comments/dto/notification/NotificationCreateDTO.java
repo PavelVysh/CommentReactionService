@@ -23,6 +23,13 @@ public class NotificationCreateDTO {
                               LocalDateTime createdAt) {
         details = new Details(userId, postText, commentText, createdAt);
     }
+    public void createDetails(int userId,
+                              String postText,
+                              String commentText,
+                              String replyText,
+                              LocalDateTime createdAt) {
+        details = new Details(userId, postText, commentText, replyText, createdAt);
+    }
 }
 @Getter
 @Setter
@@ -31,5 +38,13 @@ class Details {
     private int userId;
     private String postText;
     private String commentText;
+    private String replyText;
     private LocalDateTime createdAt;
+
+    public Details(int userId, String postText, String commentText, LocalDateTime createdAt) {
+        this.userId = userId;
+        this.postText = postText;
+        this.commentText = commentText;
+        this.createdAt = createdAt;
+    }
 }
