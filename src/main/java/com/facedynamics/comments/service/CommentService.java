@@ -8,17 +8,14 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.FeignClientMockImpl;
+import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -26,24 +23,23 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
-    private final FeignClientMockImpl feignMock;
+    private final PostsClient postsClient;
     private Mapper mapper;
-    private Notification notification;
+    private NotificationService notification;
 
     public CommentSaveDTO save(Comment comment) {
-        PostDTO postDTO = feignMock.getPostById(comment.getPostId());
+        PostDTO postDTO = postsClient.getPostById(comment.getPostId());
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
         notification.send(savedComment, postDTO);
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public Page<CommentReturnDTO> findById(int id, boolean post, Pageable page) {
-        if (post) {
-            return findCommentsByPostId(id, page);
-        } else {
-            return new PageImpl<>(List.of(findByCommentId(id)));
-        }
+    public CommentReturnDTO findById(int id) {
+            return commentRepository.findById(id)
+                    .map(comment -> mapper.commentToReturnDTO(comment))
+                    .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
+
     }
 
     @Transactional
@@ -68,11 +64,6 @@ public class CommentService {
 
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
-
-    public CommentReturnDTO findByCommentId(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
     }
 
     private void checkIfParentExists(Comment comment, PostDTO postDTO) {
@@ -80,7 +71,7 @@ public class CommentService {
             commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
                 throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
             });
-        } else if (postDTO.getUserId() == 0) {
+        } else if (postDTO.getUserId() < 1) {
             throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
         }
     }

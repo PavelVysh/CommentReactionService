@@ -30,8 +30,8 @@ public class CommentController {
     }
     
     @GetMapping("comments/posts/{postId}")
-    public List<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId) {
-        return commentService.findCommentsByPostId(postId);
+    public Page<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId, Pageable pageable) {
+        return commentService.findCommentsByPostId(postId, pageable);
     }
 
     @DeleteMapping("comments/{id}")

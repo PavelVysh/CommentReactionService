@@ -1,12 +1,12 @@
 package com.facedynamics.comments.feign;
 
-import com.facedynamics.comments.dto.notification.NotificationCreateDTO;
+import com.facedynamics.comments.dto.notification.NotificationDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "feign", url = "${feign.notification.url}")
-public interface FeignClientRealImpl {
+@FeignClient(name = "feign", url = "${notifications.url}")
+public interface NotificationsClient {
     @RequestMapping(method = RequestMethod.POST, value = "/notifications")
-    void createNotification(NotificationCreateDTO notificationCreateDTO);
+    void sendNotification(NotificationDTO notificationDTO);
 }

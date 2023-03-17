@@ -7,7 +7,7 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.FeignClientMockImpl;
+import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import java.util.ArrayList;
-import java.util.Arrays;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,9 +36,9 @@ public class CommentServiceTests {
     @Mock
     private static ReactionsRepository reactionsRepository;
     @Mock
-    private static FeignClientMockImpl feignClient;
+    private static PostsClient feignClient;
     @Mock
-    private Notification notification;
+    private NotificationService notification;
 
     private static CommentService commentService;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
@@ -74,16 +74,16 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        List<CommentReturnDTO> status = commentService.findById(
-                2, false, PageRequest.of(0, 5, Sort.by("id"))).getContent();
+        CommentReturnDTO status = commentService.findById(
+                2);
 
-        assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
+        assertEquals("didn't find an existing comment","test text" , status.getText());
     }
     @Test
     void findByIdUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, PageRequest.of(0, 5)),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3),
                 "Should throw NotFoundException");
     }
     @Test
