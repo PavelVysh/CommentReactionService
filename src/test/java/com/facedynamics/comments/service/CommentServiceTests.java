@@ -44,7 +44,12 @@ public class CommentServiceTests {
     private final CommentMapper mapper = Mappers.getMapper(CommentMapper.class);
     @BeforeEach
     void init() {
-        commentService = new CommentService(commentRepository, reactionsRepository, feignClient, mapper, notification);
+        commentService = new CommentService(
+                commentRepository,
+                reactionsRepository,
+                feignClient,
+                mapper,
+                notification);
     }
 
     @Test

@@ -71,7 +71,7 @@ public class CommentService {
             commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
                 throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
             });
-        } else if (postDTO.getUserId() < 1) {
+        } else if (postDTO.getUserId() == null) {
             throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
         }
     }
