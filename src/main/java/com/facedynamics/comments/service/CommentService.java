@@ -33,10 +33,11 @@ public class CommentService {
     }
 
     public CommentReturnDTO findById(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
+        return commentRepository.findById(id)
+                .map(comment -> mapper.commentToReturnDTO(comment))
+                .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
     }
+
 
     @Transactional
     public int deleteByCommentId(int id) {
@@ -60,10 +61,5 @@ public class CommentService {
 
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
-
-    public CommentReturnDTO findByCommentId(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
     }
 }

@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{id}")
-    public String deleteById(@PathVariable int id, @RequestParam EntityType type) {
+    public String deleteById(@PathVariable int id) {
         return "%d comment(s) have been deleted"
             .formatted(commentService.deleteByCommentId(id));
     }
