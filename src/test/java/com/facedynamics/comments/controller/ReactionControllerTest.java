@@ -1,6 +1,6 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.ReactionMapper;
 import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -35,7 +35,7 @@ public class ReactionControllerTest {
     private MockMvc mvc;
     @Autowired
     private ObjectMapper objectMapper;
-    private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    private final ReactionMapper mapper = Mappers.getMapper(ReactionMapper.class);
 
 
     @Test
@@ -47,7 +47,7 @@ public class ReactionControllerTest {
         reaction.setLike(true);
         Reaction reactionWithId = new Reaction();
 
-        when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
+        when(reactionsService.save(reaction)).thenReturn(mapper.toSaveDTO(reactionWithId));
         mvc.perform(post("/reactions")
                 .content(objectMapper.writeValueAsString(reaction))
                 .contentType(MediaType.APPLICATION_JSON)

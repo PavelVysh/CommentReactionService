@@ -1,6 +1,6 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.CommentMapper;
 import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
@@ -24,7 +24,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
     private final PostsClient postsClient;
-    private Mapper mapper;
+    private CommentMapper commentMapper;
     private NotificationService notification;
 
     public CommentSaveDTO save(Comment comment) {
@@ -32,12 +32,12 @@ public class CommentService {
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
         notification.send(savedComment, postDTO);
-        return mapper.commentToCommentDTO(savedComment);
+        return commentMapper.toSaveDTO(savedComment);
     }
 
     public CommentReturnDTO findById(int id) {
             return commentRepository.findById(id)
-                    .map(comment -> mapper.commentToReturnDTO(comment))
+                    .map(comment -> commentMapper.toReturnDTO(comment))
                     .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
 
     }
@@ -59,7 +59,7 @@ public class CommentService {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
-        return mapper.commentToReturnDTO(comments);
+        return commentMapper.toReturnDTO(comments);
     }
 
     private int deleteReactionsForPost(int postId) {

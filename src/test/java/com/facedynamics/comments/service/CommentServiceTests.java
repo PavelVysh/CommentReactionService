@@ -1,6 +1,6 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.CommentMapper;
 import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
@@ -41,7 +41,7 @@ public class CommentServiceTests {
     private NotificationService notification;
 
     private static CommentService commentService;
-    private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    private final CommentMapper mapper = Mappers.getMapper(CommentMapper.class);
     @BeforeEach
     void init() {
         commentService = new CommentService(commentRepository, reactionsRepository, feignClient, mapper, notification);

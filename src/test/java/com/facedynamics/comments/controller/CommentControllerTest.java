@@ -1,6 +1,6 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.CommentMapper;
 import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -35,7 +35,7 @@ public class CommentControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private Comment comment;
-    private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    private final CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
 
     @BeforeEach
     void init() {
@@ -48,7 +48,7 @@ public class CommentControllerTest {
 
     @Test
     void saveTest() throws Exception {
-        when(commentService.save(comment)).thenReturn(mapper.commentToCommentDTO(comment));
+        when(commentService.save(comment)).thenReturn(commentMapper.toSaveDTO(comment));
 
         mvc.perform(post("/comments")
                         .content(objectMapper.writeValueAsString(comment))

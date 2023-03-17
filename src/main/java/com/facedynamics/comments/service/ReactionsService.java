@@ -1,6 +1,6 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.Mapper;
+import com.facedynamics.comments.dto.ReactionMapper;
 import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
@@ -21,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReactionsService {
     private final ReactionsRepository repository;
     private final CommentRepository commentRepository;
-    private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    private final ReactionMapper reactionsMapper = Mappers.getMapper(ReactionMapper.class);
 
     public ReactionSaveDTO save(Reaction reaction) {
         if (!checkEntityExists(reaction)) {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
-        return mapper.reactionToSaveDTO(repository.save(reaction));
+        return reactionsMapper.toSaveDTO(repository.save(reaction));
     }
 
     public Page<ReactionReturnDTO> findReactions(int entityId,
@@ -59,13 +59,13 @@ public class ReactionsService {
         if (reactions.isEmpty()) {
             throw new NotFoundException("Reactions not found");
         }
-        return mapper.reactionToReturnDTO(reactions);
+        return reactionsMapper.toReturnDTO(reactions);
     }
     public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, Pageable pageable) {
         Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageable);
         if (reactions.isEmpty()) {
             throw new NotFoundException("Reaction not found");
         }
-        return mapper.reactionToReturnDTO(reactions);
+        return reactionsMapper.toReturnDTO(reactions);
     }
 }
