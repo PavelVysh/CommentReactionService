@@ -28,6 +28,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
+
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class CommentServiceTests {
@@ -42,6 +43,7 @@ public class CommentServiceTests {
 
     private static CommentService commentService;
     private final CommentMapper mapper = Mappers.getMapper(CommentMapper.class);
+
     @BeforeEach
     void init() {
         commentService = new CommentService(
@@ -69,8 +71,9 @@ public class CommentServiceTests {
         CommentSaveDTO savedComment = commentService.save(comment);
 
         assertEquals("text of saved comment if off", comment.getText(), savedComment.getText());
-        assertEquals("id doesn't equals" ,1, savedComment.getId());
+        assertEquals("id doesn't equals", 1, savedComment.getId());
     }
+
     @Test
     void findByIdSuccessfulTest() {
         Comment comment = new Comment();
@@ -82,8 +85,9 @@ public class CommentServiceTests {
         CommentReturnDTO status = commentService.findById(
                 2);
 
-        assertEquals("didn't find an existing comment","test text" , status.getText());
+        assertEquals("didn't find an existing comment", "test text", status.getText());
     }
+
     @Test
     void findByIdUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
@@ -91,15 +95,17 @@ public class CommentServiceTests {
         assertThrows(NotFoundException.class, () -> commentService.findById(3),
                 "Should throw NotFoundException");
     }
+
     @Test
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
         CommentDeleteDTO response = commentService.deleteByCommentId(1);
 
-        assertEquals("Deletion of a comment by id", 1 , response.getRowsAffected());
+        assertEquals("Deletion of a comment by id", 1, response.getRowsAffected());
 
     }
+
     @Test
     void deleteByIdNotSuccessfulTest() {
         when(commentRepository.deleteByPostId(666)).thenReturn(0);
@@ -107,6 +113,7 @@ public class CommentServiceTests {
         assertEquals("should say that 0 been deleted", 0,
                 commentService.deleteByCommentId(666).getRowsAffected());
     }
+
     @Test
     void deleteByPostIDNotSuccessfulTest() {
         when(commentRepository.deleteByPostId(2)).thenReturn(0);
@@ -114,6 +121,7 @@ public class CommentServiceTests {
         assertEquals("should say 0 been deleted",
                 0, commentService.deleteByPostId(2).getRowsAffected());
     }
+
     @Test
     void findCommentsByPostIdSuccessfulTest() {
         Comment comment1 = new Comment();
@@ -127,6 +135,7 @@ public class CommentServiceTests {
 
         assertEquals("should have found two comments", 2, commentsFound.size());
     }
+
     @Test
     void findCommentsByPostIdUnSuccessfulTest() {
         when(commentRepository.findCommentsByPostId(666, Pageable.ofSize(5))).thenReturn(Page.empty());
@@ -134,6 +143,7 @@ public class CommentServiceTests {
         assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666, Pageable.ofSize(5)),
                 "Should throw NotFoundException");
     }
+
     @Test
     void absentParentTest() {
         Comment comment = new Comment();
