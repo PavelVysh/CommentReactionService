@@ -1,7 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
-import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -16,12 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Arrays;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -64,23 +64,22 @@ public class CommentServiceTests {
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        List<CommentReturnDTO> status = commentService.findById(
-                2, false, PageRequest.of(0, 5, Sort.by("id"))).getContent();
+        CommentReturnDTO status = commentService.findById(2);
 
-        assertEquals("didn't find an existing comment","test text" , status.get(0).getText());
+        assertEquals("didn't find an existing comment","test text" , status.getText());
     }
     @Test
     void findByIdUnSuccessfulTest() {
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findById(3, false, PageRequest.of(0, 5)),
+        assertThrows(NotFoundException.class, () -> commentService.findById(3),
                 "Should throw NotFoundException");
     }
     @Test
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        CommentDeleteDTO response = commentService.deleteByCommentId(1);
+        DeleteDTO response = commentService.deleteByCommentId(1);
 
         assertEquals("Deletion of a comment by id", 1 , response.getRowsAffected());
 

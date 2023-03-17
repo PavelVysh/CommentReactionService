@@ -1,6 +1,6 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -33,9 +33,9 @@ public class ReactionsController {
     }
 
     @DeleteMapping("/{entityId}")
-    public ReactionDeleteDTO deleteReaction(@PathVariable int entityId,
-                                            @RequestParam int userId,
-                                            @RequestParam EntityType entityType) {
+    public DeleteDTO deleteReaction(@PathVariable int entityId,
+                                    @RequestParam int userId,
+                                    @RequestParam EntityType entityType) {
         return reactionsService.deleteReaction(entityId, entityType, userId);
     }
 

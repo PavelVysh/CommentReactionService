@@ -1,4 +1,4 @@
-package com.facedynamics.comments.dto.comment;
+package com.facedynamics.comments.dto;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDeleteDTO {
+public class DeleteDTO {
 
     private int rowsAffected;
 }

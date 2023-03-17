@@ -1,7 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
-import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -12,11 +12,8 @@ import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -36,23 +33,20 @@ public class CommentService {
         return mapper.commentToCommentDTO(savedComment);
     }
 
-    public Page<CommentReturnDTO> findById(int id, boolean post, Pageable page) {
-        if (post) {
-            return findCommentsByPostId(id, page);
-        } else {
-            return new PageImpl<>(List.of(findByCommentId(id)));
-        }
+    public CommentReturnDTO findById(int id) {
+            return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(
+                    () -> new NotFoundException("")));
     }
 
     @Transactional
-    public CommentDeleteDTO deleteByCommentId(int id) {
-        return new CommentDeleteDTO(commentRepository.deleteById(id));
+    public DeleteDTO deleteByCommentId(int id) {
+        return new DeleteDTO(commentRepository.deleteById(id));
     }
 
     @Transactional
-    public CommentDeleteDTO deleteByPostId(int postId) {
+    public DeleteDTO deleteByPostId(int postId) {
         deleteReactionsForPost(postId);
-        return new CommentDeleteDTO(commentRepository.deleteByPostId(postId));
+        return new DeleteDTO(commentRepository.deleteByPostId(postId));
     }
 
     public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
@@ -66,10 +60,5 @@ public class CommentService {
 
     private int deleteReactionsForPost(int postId) {
         return reactionsRepository.deleteByEntityIdAndEntityType(postId, EntityType.post);
-
-    public CommentReturnDTO findByCommentId(int id) {
-        return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(() -> {
-            throw new NotFoundException("Comment with id - " + id + " was not found");
-        }));
     }
 }

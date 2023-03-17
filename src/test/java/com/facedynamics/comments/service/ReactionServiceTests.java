@@ -1,6 +1,6 @@
 package com.facedynamics.comments.service;
 
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -76,7 +76,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
                 .thenReturn(1);
 
-        ReactionDeleteDTO response = reactionsService.deleteReaction(4, EntityType.comment, 33);
+        DeleteDTO response = reactionsService.deleteReaction(4, EntityType.comment, 33);
 
         assertEquals("delete successfully test", 1, response.getRowsAffected());
     }

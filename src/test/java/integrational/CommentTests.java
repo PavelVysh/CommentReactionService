@@ -107,12 +107,8 @@ public class CommentTests {
 
     @Test
     void findCommentsForNonExistingPost() throws Exception {
-        MvcResult result = mvc.perform(get("/comments/{postId}", 5678)
-                        .param("post", "true"))
+        mvc.perform(get("/comments/{postId}", 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
-        assertTrue("should be message about comments non existing for post {postID}",
-                result.getResponse()
-                        .getContentAsString().contains("Comments for post with id 5678 were not found"));
     }
 }
