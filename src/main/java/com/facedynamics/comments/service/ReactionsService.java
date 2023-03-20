@@ -30,18 +30,6 @@ public class ReactionsService {
         return mapper.reactionToSaveDTO(repository.save(reaction));
     }
 
-    public Page<ReactionReturnDTO> findReactions(int entityId,
-                                                 EntityType entityType,
-                                                 boolean isLike,
-                                                 boolean byUser,
-                                                 Pageable pageable) {
-        if (byUser) {
-             return findByUser(entityId, entityType, isLike, pageable);
-        } else {
-            return findByEntity(entityId, entityType, isLike, pageable);
-        }
-    }
-
     @Transactional
     public DeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
         return new DeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
@@ -54,6 +42,7 @@ public class ReactionsService {
             default -> false;
         };
     }
+
     public Page<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike, Pageable pageable) {
         Page<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike, pageable);
         if (reactions.isEmpty()) {
@@ -61,6 +50,7 @@ public class ReactionsService {
         }
         return mapper.reactionToReturnDTO(reactions);
     }
+
     public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, Pageable pageable) {
         Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageable);
         if (reactions.isEmpty()) {

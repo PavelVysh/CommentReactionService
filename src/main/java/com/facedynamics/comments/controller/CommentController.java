@@ -18,7 +18,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-
     @PostMapping("/comments")
     public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
@@ -28,16 +27,17 @@ public class CommentController {
     public CommentReturnDTO findById(@PathVariable int id) {
         return commentService.findById(id);
     }
-    
-    @GetMapping("/comments/posts/{postId}")
-    public Page<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId, Pageable pageable) {
-        return commentService.findCommentsByPostId(postId, pageable);
+
+    @GetMapping("/posts/{id}/comments")
+    public Page<CommentReturnDTO> findByPostId(@PathVariable int id, Pageable pageable) {
+        return commentService.findCommentsByPostId(id, pageable);
     }
 
     @DeleteMapping("/comments/{id}")
     public DeleteDTO deleteById(@PathVariable int id) {
         return commentService.deleteByCommentId(id);
     }
+
     @DeleteMapping("/posts/{postId}/comments")
     public DeleteDTO deleteByPostId(@PathVariable int postId) {
         return commentService.deleteByPostId(postId);

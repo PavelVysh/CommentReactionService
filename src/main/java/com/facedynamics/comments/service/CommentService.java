@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -34,8 +35,9 @@ public class CommentService {
     }
 
     public CommentReturnDTO findById(int id) {
-            return mapper.commentToReturnDTO(commentRepository.findById(id).orElseThrow(
-                    () -> new NotFoundException("")));
+        return commentRepository.findById(id)
+                .map(comment -> mapper.commentToReturnDTO(comment))
+                .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
     }
 
     @Transactional
