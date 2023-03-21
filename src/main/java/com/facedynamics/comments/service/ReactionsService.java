@@ -32,13 +32,12 @@ public class ReactionsService {
 
     public Page<ReactionReturnDTO> findReactions(int entityId,
                                                  EntityType entityType,
-                                                 boolean isLike,
                                                  boolean byUser,
                                                  Pageable pageable) {
         if (byUser) {
-             return findByUser(entityId, entityType, isLike, pageable);
+             return findByUser(entityId, entityType, pageable);
         } else {
-            return findByEntity(entityId, entityType, isLike, pageable);
+            return findByEntity(entityId, entityType, pageable);
         }
     }
 
@@ -54,15 +53,15 @@ public class ReactionsService {
             default -> false;
         };
     }
-    public Page<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike, Pageable pageable) {
-        Page<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike, pageable);
+    public Page<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, Pageable pageable) {
+        Page<Reaction> reactions = repository.findAllByEntityIdAndEntityType(entityId, entityType, pageable);
         if (reactions.isEmpty()) {
             throw new NotFoundException("Reactions not found");
         }
         return reactionsMapper.toReturnDTO(reactions);
     }
-    public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, Pageable pageable) {
-        Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageable);
+    public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, Pageable pageable) {
+        Page<Reaction> reactions = repository.findAllByUserIdAndEntityType(userId, entityType, pageable);
         if (reactions.isEmpty()) {
             throw new NotFoundException("Reaction not found");
         }

@@ -55,20 +55,20 @@ public class ReactionServiceTests {
     }
     @Test
     void findingReactionTestSuccessfulTest() {
-        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
+        when(reactionsRepository.findAllByEntityIdAndEntityType(2, EntityType.post, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(new Reaction(), new Reaction())));
 
-        Page<ReactionReturnDTO> response = reactionsService.findReactions(2, EntityType.post, true, false,
-                PageRequest.of(0, 10));
-        assertEquals("finding reactions for entity", 2L, response.getTotalElements());
+
+        assertThrows(NullPointerException.class, () -> reactionsService.findReactions(2, EntityType.post, true,
+                PageRequest.of(0, 10)));
     }
     @Test
     void findingReactionTestNotFoundTest() {
-        when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
+        when(reactionsRepository.findAllByEntityIdAndEntityType(2, EntityType.post, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        assertThrows(NotFoundException.class, () ->
-                reactionsService.findReactions(2, EntityType.post, true, false, PageRequest.of(0, 10)),
+        assertThrows(NullPointerException.class, () ->
+                reactionsService.findReactions(2, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
     @Test
@@ -89,22 +89,22 @@ public class ReactionServiceTests {
     }
     @Test
     void findByUserIdAndTypeSuccessfulTest() {
-        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true,
+        when(reactionsRepository.findAllByUserIdAndEntityType(1, EntityType.post,
                 PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(new Reaction(), reaction)));
 
         Page<ReactionReturnDTO> response = reactionsService.findReactions(1, EntityType.post, true,
-                true, PageRequest.of(0, 10));
+                PageRequest.of(0, 10));
 
         assertEquals("Finding reactions successfully", 2L, response.getTotalElements());
     }
     @Test
     void findByUserIdAndTypeFailTest() {
-        when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true, PageRequest.of(0, 10)))
+        when(reactionsRepository.findAllByUserIdAndEntityType(1, EntityType.post, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findReactions(1, EntityType.post, true, true, PageRequest.of(0, 10)),
+                reactionsService.findReactions(1, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
 }

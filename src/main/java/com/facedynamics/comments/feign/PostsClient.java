@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "feignMock",url = "${posts.url}")
+@FeignClient(name = "posts-service", url = "${posts.url}")
 public interface PostsClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/posts/{postId}")

@@ -31,11 +31,11 @@ public class Comment {
     @NotNull(message = "You can't save a comment without a text")
     private String text;
 
-    @Formula(value = "(SELECT count(*) from reactions r where r.is_like=true" +
+    @Formula(value = "(SELECT count(*) from commentsreactions.reactions r where r.is_like=true" +
             " AND r.entity_type='comment' AND r.entity_id=id)")
     private int likes;
 
-    @Formula(value = "(SELECT count(*) from reactions r where r.is_like=false" +
+    @Formula(value = "(SELECT count(*) from commentsreactions.reactions r where r.is_like=false" +
             " AND r.entity_type='comment' AND r.entity_id=id)")
     private int dislikes;
     @Positive(message = "parentId should be a positive integer number")

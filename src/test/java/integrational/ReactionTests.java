@@ -54,7 +54,7 @@ public class ReactionTests {
         mvc.perform(get("/reactions/{entityId}", 2)
                         .param("entityType", "comment")
                         .param("isLike", "true"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReactionsRepository extends JpaRepository<Reaction, Integer> {
-    Page<Reaction> findAllByEntityIdAndEntityTypeAndLike(int entityId, EntityType entityType, boolean isLike, Pageable pageable);
+    Page<Reaction> findAllByEntityIdAndEntityType(int entityId, EntityType entityType, Pageable pageable);
 
-    Page<Reaction> findAllByUserIdAndEntityTypeAndLike(int userId, EntityType entityType, boolean isLike, Pageable pageable);
+    Page<Reaction> findAllByUserIdAndEntityType(int userId, EntityType entityType, Pageable pageable);
 
     boolean existsByEntityIdAndEntityTypeAndUserId(int entityId, EntityType entityType, int userId);
 

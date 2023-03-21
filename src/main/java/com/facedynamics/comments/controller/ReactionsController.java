@@ -26,10 +26,9 @@ public class ReactionsController {
     @GetMapping("/{entityId}")
     public Page<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
-                                                         @RequestParam boolean isLike,
                                                          @RequestParam(required = false) boolean byUser,
                                                          Pageable pageable) {
-        return reactionsService.findReactions(entityId, entityType, isLike, byUser, pageable);
+        return reactionsService.findReactions(entityId, entityType, byUser, pageable);
     }
 
     @DeleteMapping("/{entityId}")

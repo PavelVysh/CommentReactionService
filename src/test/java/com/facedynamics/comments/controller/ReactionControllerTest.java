@@ -57,7 +57,7 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionForEntityTest() throws Exception {
-        when(reactionsService.findReactions(1, EntityType.post, false, false, PageRequest.of(0, 10)))
+        when(reactionsService.findReactions(1, EntityType.post, false, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get("/reactions/{id}", 1)
@@ -68,7 +68,7 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionsByUserTest() throws Exception {
-        when(reactionsService.findReactions(1, EntityType.post, true, true, PageRequest.of(0, 10)))
+        when(reactionsService.findReactions(1, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get("/reactions/{id}", 1)

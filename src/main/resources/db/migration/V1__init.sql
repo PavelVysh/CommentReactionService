@@ -1,6 +1,7 @@
-CREATE TABLE IF NOT EXISTS comments
+CREATE SCHEMA IF NOT EXISTS commentsreactions;
+CREATE TABLE IF NOT EXISTS commentsreactions.comments
 (
-    id         INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id         SERIAL PRIMARY KEY ,
     parent_id  INTEGER,
     post_id    INTEGER      NOT NULL,
     user_id    INTEGER      NOT NULL,
@@ -8,7 +9,7 @@ CREATE TABLE IF NOT EXISTS comments
     text       VARCHAR(500) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS reactions
+CREATE TABLE IF NOT EXISTS commentsreactions.reactions
 (
     user_id     INTEGER,
     entity_id   INTEGER,
@@ -18,7 +19,3 @@ CREATE TABLE IF NOT EXISTS reactions
     PRIMARY KEY (user_id, entity_id, entity_type)
 );
 
-CREATE TRIGGER cascade_delete_reactions Before DELETE ON comments
-    for each row
-    delete from reactions
-    where entity_type='comment' AND entity_id=OLD.id;
