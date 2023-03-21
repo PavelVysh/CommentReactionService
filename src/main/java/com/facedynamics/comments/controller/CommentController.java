@@ -24,17 +24,17 @@ public class CommentController {
         return commentService.save(comment);
     }
 
-    @GetMapping("comments/{id}")
+    @GetMapping("/comments/{id}")
     public CommentReturnDTO findById(@PathVariable int id) {
         return commentService.findById(id);
     }
     
-    @GetMapping("comments/posts/{postId}")
+    @GetMapping("/comments/posts/{postId}")
     public Page<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId, Pageable pageable) {
         return commentService.findCommentsByPostId(postId, pageable);
     }
 
-    @DeleteMapping("comments/{id}")
+    @DeleteMapping("/comments/{id}")
     public CommentDeleteDTO deleteById(@PathVariable int id) {
         return commentService.deleteByCommentId(id);
     }

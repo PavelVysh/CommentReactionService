@@ -16,7 +16,7 @@ import java.util.List;
 
 @ControllerAdvice
 public class ExceptionController {
-    @Value(value = "${application.name}")
+    @Value(value = "${spring.application.name}")
     private String serviceName;
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
