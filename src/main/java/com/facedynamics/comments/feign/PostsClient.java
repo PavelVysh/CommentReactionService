@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "posts-service", url = "${posts.url}")
+@FeignClient("posts-service")
 public interface PostsClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/posts/{postId}")
