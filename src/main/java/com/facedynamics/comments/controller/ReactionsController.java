@@ -12,26 +12,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/reactions")
 @AllArgsConstructor
 public class ReactionsController {
 
     private final ReactionsService reactionsService;
 
-    @PostMapping
+    @PostMapping("/reactions")
     public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
-    @GetMapping("/{entityId}")
+    @GetMapping("/reactions/{entityId}")
     public Page<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
                                                          @RequestParam boolean isLike,
-                                                         @RequestParam(required = false) boolean byUser,
                                                          Pageable pageable) {
-        return reactionsService.findReactions(entityId, entityType, isLike, byUser, pageable);
+        return reactionsService.findByEntity(entityId, entityType, isLike, pageable);
+    }
+    @GetMapping("/users/{userId}/reactions")
+    public Page<ReactionReturnDTO> getReactionsByUserId(@PathVariable int userId,
+                                                        @RequestParam EntityType entityType,
+                                                        @RequestParam boolean isLike,
+                                                        Pageable pageable) {
+        return reactionsService.findByUser(userId, entityType, isLike, pageable);
     }
 
-    @DeleteMapping("/{entityId}")
+    @DeleteMapping("/reactions/{entityId}")
     public String deleteReaction(@PathVariable int entityId,
                                         @RequestParam int userId,
                                         @RequestParam EntityType entityType) {
