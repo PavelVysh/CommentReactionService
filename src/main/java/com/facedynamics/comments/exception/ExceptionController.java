@@ -17,7 +17,7 @@ public class ExceptionController {
     public static final String PROBLEMS = "problems";
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ProblemDetail validationProblem(MethodArgumentNotValidException ex) {
+    protected ProblemDetail handleValidationProblem(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
@@ -41,5 +41,9 @@ public class ExceptionController {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
+    }
+    @ExceptionHandler(Exception.class)
+    protected ProblemDetail handleGeneralException(Exception exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exc.getMessage());
     }
 }
