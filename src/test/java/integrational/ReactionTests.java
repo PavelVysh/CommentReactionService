@@ -37,7 +37,7 @@ public class ReactionTests {
 
     @Test
     void reactionsControllerGetByUserIDMethodTest() throws Exception {
-        mvc.perform(get(REACTIONS + "/users/{userId}", 1)
+        mvc.perform(get("/users/{userId}" + REACTIONS, 1)
                         .param("isLike", "false")
                         .param("entityType", "comment")
                         .param("user", "true"))

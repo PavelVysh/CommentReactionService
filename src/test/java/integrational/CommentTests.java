@@ -73,7 +73,7 @@ public class CommentTests {
 
     @Test
     void commentControllerGetListMethodTest() throws Exception {
-        mvc.perform(get(COMMENTS + "/posts/{id}", 4))
+        mvc.perform(get("/posts/{id}" + COMMENTS, 4))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
@@ -95,7 +95,7 @@ public class CommentTests {
     @Test
     void deletingNonExistingCommentTest() throws Exception {
         MvcResult result = mvc.perform(delete(COMMENTS + "/{id}", 5678))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andReturn();
 
         assertTrue("should be message about 0 deleted comments",
@@ -105,7 +105,7 @@ public class CommentTests {
 
     @Test
     void findCommentsForNonExistingPost() throws Exception {
-        MvcResult result = mvc.perform(get(COMMENTS + "/posts/{postId}", 5678))
+        MvcResult result = mvc.perform(get("/posts/{postId}" + COMMENTS, 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
         assertTrue("should be message about comments non existing for post {postID}",

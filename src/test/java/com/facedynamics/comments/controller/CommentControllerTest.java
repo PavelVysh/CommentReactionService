@@ -79,7 +79,7 @@ public class CommentControllerTest {
         when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
-        mvc.perform(get(COMMENTS + "/posts/{id}", 2))
+        mvc.perform(get("/posts/{id}" + COMMENTS, 2))
                 .andExpect(status().isOk());
     }
 }

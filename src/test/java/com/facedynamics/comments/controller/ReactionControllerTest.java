@@ -71,7 +71,7 @@ public class ReactionControllerTest {
         when(reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
-        mvc.perform(get(REACTIONS + "/users/{id}", 1)
+        mvc.perform(get("/users/{id}" + REACTIONS, 1)
                 .param("entityType", "post")
                 .param("isLike", "true"))
                 .andExpect(status().isOk());
