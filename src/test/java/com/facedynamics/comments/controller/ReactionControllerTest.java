@@ -5,7 +5,7 @@ import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -20,9 +20,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ReactionsController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -43,7 +44,6 @@ public class ReactionControllerTest {
             }
             """;
 
-
     @Test
     void saveTest() throws Exception {
         Reaction reaction = new Reaction();
@@ -51,15 +51,17 @@ public class ReactionControllerTest {
         reaction.setEntityId(2);
         reaction.setEntityType(EntityType.post);
         reaction.setLike(true);
-        Reaction reactionWithId = new Reaction();
 
-        when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
+        when(reactionsService.save(any())).thenReturn(mapper.reactionToSaveDTO(reaction));
 
         mvc.perform(post(REACTIONS)
                         .content(reactionJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.userId", is(1)))
+                .andExpect(jsonPath("$.entityId", is(2)));
         verify(reactionsService, times(1)).save(any());
     }
 
@@ -72,7 +74,8 @@ public class ReactionControllerTest {
                         .param("entityType", "post")
                         .param("isLike", "false")
                         .param("size", "10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0]", Matchers.aMapWithSize(5)));
 
         verify(reactionsService, times(1)).findByEntity(1, EntityType.post, false,
                 PageRequest.of(0, 10));
@@ -87,7 +90,8 @@ public class ReactionControllerTest {
                         .param("entityType", "post")
                         .param("isLike", "true")
                         .param("size", "10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0]", Matchers.aMapWithSize(5)));
         verify(reactionsService, times(1)).findByUser(1, EntityType.post, true,
                 PageRequest.of(0, 10));
     }
@@ -100,7 +104,8 @@ public class ReactionControllerTest {
         mvc.perform(delete(REACTIONS + "/{id}", 1)
                         .param("entityType", "post")
                         .param("userId", "2"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is("test text")));
         verify(reactionsService, times(1)).deleteReaction(1, EntityType.post, 2);
     }
 
@@ -145,9 +150,13 @@ public class ReactionControllerTest {
 
     @Test
     void deleteNonExistingReactionTest() throws Exception {
+        when(reactionsService.deleteReaction(555, EntityType.post, 333)).thenReturn("deleted 0");
+
         mvc.perform(delete(REACTIONS + "/{id}", 555)
                         .param("entityType", "post")
                         .param("userId",  "333"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("deleted 0"));
+        verify(reactionsService, times(1)).deleteReaction(555, EntityType.post, 333);
     }
 }

@@ -1,13 +1,10 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
-import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.service.CommentService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,7 @@ import java.util.Arrays;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = CommentController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -34,8 +31,6 @@ public class CommentControllerTest {
     private CommentService commentService;
     @Autowired
     private MockMvc mvc;
-    private Comment comment;
-    private final Mapper mapper = Mappers.getMapper(Mapper.class);
     public static final String commentJson = """
                 {
                 "userId": "1",
@@ -44,37 +39,51 @@ public class CommentControllerTest {
                 }
                 """;
 
-    @BeforeEach
-    void init() {
-        comment = new Comment();
-        comment.setId(1);
-        comment.setText("haha");
-        comment.setPostId(1);
-        comment.setUserId(1);
-    }
-
     @Test
-    void saveTest() throws Exception {
-        when(commentService.save(comment)).thenReturn(mapper.commentToCommentDTO(comment));
+    void saveCorrectDataTest() throws Exception {
+        CommentSaveDTO comment = new CommentSaveDTO();
+        comment.setId(5);
 
-        mvc.perform(post(COMMENTS)
-                        .content(commentJson)
+        when(commentService.save(any())).thenReturn(comment);
+
+        MvcResult result = mvc.perform(post(COMMENTS)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .content(commentJson))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
         verify(commentService, times(1)).save(any());
+        assertTrue("should be same id", result.getResponse().getContentAsString().contains("\"id\":5"));
     }
-
+    @Test
+    void saveWithIncorrectDataTest() throws Exception {
+        String invalidComment = """
+                {
+                "id": 2
+                }
+                """;
+        MvcResult result = mvc.perform(post(COMMENTS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidComment))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+        assertTrue("error message check", result.getResponse().getContentAsString()
+                .contains("You can't save a comment without a text"));
+    }
     @Test
     void findByIdTest() throws Exception {
-        when(commentService.findById(1))
-                .thenReturn(new CommentReturnDTO());
+        CommentReturnDTO returnDTO = new CommentReturnDTO();
+        returnDTO.setId(5);
 
-        mvc.perform(get(COMMENTS + "/{id}", 1))
-                .andExpect(status().isOk());
-        verify(commentService, times(1)).findById(1);
+        when(commentService.findById(5))
+                .thenReturn(returnDTO);
+
+        mvc.perform(get(COMMENTS + "/{id}", 5))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value("5"));
+        verify(commentService, times(1)).findById(5);
     }
 
     @Test
@@ -82,7 +91,8 @@ public class CommentControllerTest {
         when(commentService.deleteByCommentId(1)).thenReturn(2);
 
         mvc.perform(delete(COMMENTS + "/{id}", 1))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string("2 comment(s) have been deleted"));
         verify(commentService, times(1)).deleteByCommentId(1);
     }
 
@@ -93,7 +103,9 @@ public class CommentControllerTest {
 
         mvc.perform(get("/posts/{id}" + COMMENTS, 1)
                         .param("size", "10"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isNotEmpty());
         verify(commentService, times(1)).findCommentsByPostId(1, Pageable.ofSize(10));
     }
 
@@ -103,12 +115,14 @@ public class CommentControllerTest {
                 {
                 "postId": "1",
                 "userId": "1"
+                }
                 """;
 
         mvc.perform(post(COMMENTS)
                         .content(invalidCommentJson)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.problems").isNotEmpty());
 
     }
 

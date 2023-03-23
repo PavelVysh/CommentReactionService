@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +33,8 @@ public class ReactionTests {
                         .param("entityType", "comment")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(3)));
     }
 
     @Test
@@ -42,7 +44,8 @@ public class ReactionTests {
                         .param("entityType", "comment")
                         .param("user", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
@@ -74,7 +77,10 @@ public class ReactionTests {
                         .param("entityType", "post")
                         .param("isLike", "true"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content[0].entityType", is("post")))
+                .andExpect(jsonPath("$.content[0].userId", is(333)))
+                .andExpect(jsonPath("$.content[0].entityId", is(555)));
     }
 
     @Test
@@ -98,7 +104,8 @@ public class ReactionTests {
         ResultActions resultActions = mvc.perform(get(REACTIONS + "/{entityId}", 444)
                         .param("entityType", "post")
                         .param("isLike", "false"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].like", is(false)));
 
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
@@ -120,7 +127,9 @@ public class ReactionTests {
     @Test
     void deleteReactionBadRequestTest() throws Exception {
         mvc.perform(delete(REACTIONS + "/{entityId}", 3))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail",
+                        is("Required request parameter 'userId' for method parameter type int is not present")));
     }
     @Test
     void requestWithNoBodyTest() throws Exception {
