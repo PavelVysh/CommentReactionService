@@ -22,7 +22,7 @@ public class ExceptionController {
     Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ProblemDetail handleValidationProblem(MethodArgumentNotValidException ex) {
+    protected ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
