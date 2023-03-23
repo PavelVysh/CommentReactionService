@@ -5,7 +5,6 @@ import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.service.CommentService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -35,10 +34,15 @@ public class CommentControllerTest {
     private CommentService commentService;
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private ObjectMapper objectMapper;
     private Comment comment;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    public static final String commentJson = """
+                {
+                "userId": "1",
+                "text": "haha",
+                "postId": "1"
+                }
+                """;
 
     @BeforeEach
     void init() {
@@ -54,7 +58,7 @@ public class CommentControllerTest {
         when(commentService.save(comment)).thenReturn(mapper.commentToCommentDTO(comment));
 
         mvc.perform(post(COMMENTS)
-                        .content(objectMapper.writeValueAsString(comment))
+                        .content(commentJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -95,12 +99,14 @@ public class CommentControllerTest {
 
     @Test
     void saveCommentWithoutTextTest() throws Exception {
-        Comment invalidComment = new Comment();
-        invalidComment.setPostId(1);
-        invalidComment.setUserId(1);
+        String invalidCommentJson = """
+                {
+                "postId": "1",
+                "userId": "1"
+                """;
 
         mvc.perform(post(COMMENTS)
-                        .content(objectMapper.writeValueAsString(invalidComment))
+                        .content(invalidCommentJson)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 

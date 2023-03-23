@@ -33,9 +33,15 @@ public class ReactionControllerTest {
     private ReactionsService reactionsService;
     @Autowired
     private MockMvc mvc;
-    @Autowired
-    private ObjectMapper objectMapper;
     private final Mapper mapper = Mappers.getMapper(Mapper.class);
+    public static final String reactionJson = """
+            {
+            "userId": 1,
+            "entityId": 2,
+            "entityType": "post",
+            "like": true
+            }
+            """;
 
 
     @Test
@@ -48,8 +54,9 @@ public class ReactionControllerTest {
         Reaction reactionWithId = new Reaction();
 
         when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
+
         mvc.perform(post(REACTIONS)
-                        .content(objectMapper.writeValueAsString(reaction))
+                        .content(reactionJson)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -107,13 +114,14 @@ public class ReactionControllerTest {
 
     @Test
     void invalidUserIdRequestTest() throws Exception {
-        Reaction reaction = new Reaction();
-        reaction.setEntityId(2);
-        reaction.setEntityType(EntityType.post);
-        reaction.setLike(true);
+        String reactionJsonInvalid = """
+                "entityId": 2,
+                "entityType": post,
+                "like": true
+                """;
 
         mvc.perform(post(REACTIONS)
-                        .content(objectMapper.writeValueAsString(reaction))
+                        .content(reactionJsonInvalid)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
