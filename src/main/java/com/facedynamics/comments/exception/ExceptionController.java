@@ -37,9 +37,7 @@ public class ExceptionController {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setProperty(PROBLEMS, new Error(ex.getMessage(), ex.getParameterName()));
-        return problemDetail;
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
