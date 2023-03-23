@@ -43,5 +43,5 @@ public class Comment {
     private Integer parentId;
     @OneToMany(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    private List<Comment> comments;
+    private List<Comment> replies;
 }

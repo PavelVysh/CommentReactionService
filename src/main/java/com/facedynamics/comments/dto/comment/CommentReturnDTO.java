@@ -16,5 +16,5 @@ public class CommentReturnDTO {
     private LocalDateTime createdAt;
     private int likes, dislikes;
     private String text;
-    private List<Comment> comments;
+    private List<Comment> replies;
 }

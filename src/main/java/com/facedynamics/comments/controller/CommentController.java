@@ -29,7 +29,7 @@ public class CommentController {
         return commentService.findById(id);
     }
     
-    @GetMapping("/comments/posts/{postId}")
+    @GetMapping("/posts/{postId}/comments")
     public Page<CommentReturnDTO> findCommentsByPostId(@PathVariable int postId, Pageable pageable) {
         return commentService.findCommentsByPostId(postId, pageable);
     }
