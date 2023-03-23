@@ -49,44 +49,92 @@ public class ReactionControllerTest {
 
         when(reactionsService.save(reaction)).thenReturn(mapper.reactionToSaveDTO(reactionWithId));
         mvc.perform(post(REACTIONS)
-                .content(objectMapper.writeValueAsString(reaction))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(reaction))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
     }
+
     @Test
     void findReactionForEntityTest() throws Exception {
         when(reactionsService.findByEntity(1, EntityType.post, false, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get(REACTIONS + "/{id}", 1)
-                .param("entityType", "post")
-                .param("isLike", "false"))
+                        .param("entityType", "post")
+                        .param("isLike", "false"))
                 .andExpect(status().isOk());
 
     }
+
     @Test
     void findReactionsByUserTest() throws Exception {
         when(reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get("/users/{id}" + REACTIONS, 1)
-                .param("entityType", "post")
-                .param("isLike", "true"))
+                        .param("entityType", "post")
+                        .param("isLike", "true"))
                 .andExpect(status().isOk());
 
-
     }
+
     @Test
     void deleteReactionTest() throws Exception {
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
                 .thenReturn("test text");
 
         mvc.perform(delete(REACTIONS + "/{id}", 1)
-                .param("entityType", "post")
-                .param("userId", "2"))
+                        .param("entityType", "post")
+                        .param("userId", "2"))
                 .andExpect(status().isOk());
 
-        }
+    }
+
+    @Test
+    void emptyBodySaveTest() throws Exception {
+        mvc.perform(post(REACTIONS)
+                        .content("")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void invalidUserIdRequestTest() throws Exception {
+        Reaction reaction = new Reaction();
+        reaction.setEntityId(2);
+        reaction.setEntityType(EntityType.post);
+        reaction.setLike(true);
+
+        mvc.perform(post(REACTIONS)
+                        .content(objectMapper.writeValueAsString(reaction))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void invalidEntityTypeTest() throws Exception {
+        mvc.perform(get(REACTIONS + "/{id}", 1)
+                        .param("entityType", "shmost")
+                        .param("isLike", "false"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void invalidIsLikeTest() throws Exception {
+        mvc.perform(get(REACTIONS + "/{id}", 1)
+                        .param("entityType", "post")
+                        .param("isLike", "maybe"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deleteNonExistingReactionTest() throws Exception {
+        mvc.perform(delete(REACTIONS + "/{id}", 555)
+                        .param("entityType", "post")
+                        .param("userId",  "333"))
+                .andExpect(status().isOk());
+    }
 }

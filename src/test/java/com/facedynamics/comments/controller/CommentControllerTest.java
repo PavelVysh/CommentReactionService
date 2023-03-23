@@ -3,6 +3,7 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
+import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,10 +18,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,5 +84,51 @@ public class CommentControllerTest {
 
         mvc.perform(get("/posts/{id}" + COMMENTS, 2))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void saveCommentWithoutTextTest() throws Exception {
+        Comment invalidComment = new Comment();
+        invalidComment.setPostId(1);
+        invalidComment.setUserId(1);
+
+        mvc.perform(post(COMMENTS)
+                        .content(objectMapper.writeValueAsString(invalidComment))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findByIdNonExistentCommentTest() throws Exception {
+        when(commentService.findById(2))
+                .thenThrow(new NotFoundException("Comment not found with id 2"));
+
+        MvcResult result = mvc.perform(get(COMMENTS + "/{id}", 2))
+                .andExpect(status().isNotFound())
+                .andReturn();
+        assertTrue("Should contain a message about non existing comment",
+                result.getResponse().getContentAsString().contains("Comment not found with id 2"));
+    }
+
+    @Test
+    void deleteNonExistentCommentTest() throws Exception {
+        when(commentService.deleteByCommentId(2)).thenReturn(0);
+
+        MvcResult result = mvc.perform(delete(COMMENTS + "/{id}", 2))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue("Should contain a message that 0 comments have been deleted", result.getResponse()
+                .getContentAsString().contains("0 comment(s) have been deleted"));
+    }
+
+    @Test
+    void deleteByNonExistentPostIdTest() throws Exception {
+        when(commentService.deleteByPostId(2)).thenReturn(0);
+
+        MvcResult result = mvc.perform(delete("/posts/{postId}" + COMMENTS, 2))
+                .andExpect(status().isOk())
+                .andReturn();
+        assertTrue("Should contain a message that 0 posts have been deleted",
+                result.getResponse().getContentAsString().contains("0 comment(s) have been deleted"));
     }
 }
