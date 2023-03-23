@@ -23,7 +23,7 @@ public class NotificationService {
         } else {
             notification = createReplyNotification(comment);
         }
-        notificationsClient.sendNotification(notification);
+        notificationsClient.send(notification);
     }
 
     private NotificationDTO createReplyNotification(Comment reply) {

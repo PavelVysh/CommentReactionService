@@ -66,7 +66,7 @@ public class CommentServiceTests {
         postDTO.setUserId(3);
 
         when(commentRepository.save(comment)).thenReturn(comment);
-        when(feignClient.getPostById(321)).thenReturn(postDTO);
+        when(feignClient.getById(321)).thenReturn(postDTO);
 
         CommentSaveDTO savedComment = commentService.save(comment);
 

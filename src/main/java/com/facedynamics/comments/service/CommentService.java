@@ -28,7 +28,7 @@ public class CommentService {
     private NotificationService notification;
 
     public CommentSaveDTO save(Comment comment) {
-        PostDTO postDTO = postsClient.getPostById(comment.getPostId());
+        PostDTO postDTO = postsClient.getById(comment.getPostId());
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
         notification.send(savedComment, postDTO);

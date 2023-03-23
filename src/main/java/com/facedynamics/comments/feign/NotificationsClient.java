@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name = "feign", url = "${notifications.url}")
 public interface NotificationsClient {
     @RequestMapping(method = RequestMethod.POST, value = "/notifications")
-    void sendNotification(NotificationDTO notificationDTO);
+    void send(NotificationDTO notificationDTO);
 }

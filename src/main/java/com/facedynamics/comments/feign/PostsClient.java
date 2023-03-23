@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface PostsClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/posts/{postId}")
-    PostDTO getPostById(@PathVariable int postId);
+    PostDTO getById(@PathVariable int postId);
 }
