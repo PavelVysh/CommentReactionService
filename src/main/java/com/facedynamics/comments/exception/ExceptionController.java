@@ -1,5 +1,7 @@
 package com.facedynamics.comments.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,6 +17,9 @@ import java.util.List;
 @ControllerAdvice
 public class ExceptionController {
     public static final String PROBLEMS = "problems";
+    public static final String GENERAL_PROBLEM_MESSAGE = "Internal error occurred";
+    public static final String ERROR = "{} exception was thrown with message {}";
+    Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     protected ProblemDetail handleValidationProblem(MethodArgumentNotValidException ex) {
@@ -44,6 +49,7 @@ public class ExceptionController {
     }
     @ExceptionHandler(Exception.class)
     protected ProblemDetail handleGeneralException(Exception exc) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exc.getMessage());
+        logger.error(ERROR, exc.getClass(), exc.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, GENERAL_PROBLEM_MESSAGE);
     }
 }
