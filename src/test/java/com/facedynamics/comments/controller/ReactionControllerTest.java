@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,7 +53,7 @@ public class ReactionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
+        verify(reactionsService, times(1)).save(any());
     }
 
     @Test
@@ -63,9 +63,12 @@ public class ReactionControllerTest {
 
         mvc.perform(get(REACTIONS + "/{id}", 1)
                         .param("entityType", "post")
-                        .param("isLike", "false"))
+                        .param("isLike", "false")
+                        .param("size", "10"))
                 .andExpect(status().isOk());
 
+        verify(reactionsService, times(1)).findByEntity(1, EntityType.post, false,
+                PageRequest.of(0, 10));
     }
 
     @Test
@@ -75,9 +78,11 @@ public class ReactionControllerTest {
 
         mvc.perform(get("/users/{id}" + REACTIONS, 1)
                         .param("entityType", "post")
-                        .param("isLike", "true"))
+                        .param("isLike", "true")
+                        .param("size", "10"))
                 .andExpect(status().isOk());
-
+        verify(reactionsService, times(1)).findByUser(1, EntityType.post, true,
+                PageRequest.of(0, 10));
     }
 
     @Test
@@ -89,7 +94,7 @@ public class ReactionControllerTest {
                         .param("entityType", "post")
                         .param("userId", "2"))
                 .andExpect(status().isOk());
-
+        verify(reactionsService, times(1)).deleteReaction(1, EntityType.post, 2);
     }
 
     @Test

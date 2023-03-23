@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +57,10 @@ public class CommentControllerTest {
                         .content(objectMapper.writeValueAsString(comment))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(commentService, times(1)).save(any());
     }
 
     @Test
@@ -67,6 +70,7 @@ public class CommentControllerTest {
 
         mvc.perform(get(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
+        verify(commentService, times(1)).findById(1);
     }
 
     @Test
@@ -75,6 +79,7 @@ public class CommentControllerTest {
 
         mvc.perform(delete(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
+        verify(commentService, times(1)).deleteByCommentId(1);
     }
 
     @Test
@@ -82,8 +87,10 @@ public class CommentControllerTest {
         when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
-        mvc.perform(get("/posts/{id}" + COMMENTS, 2))
+        mvc.perform(get("/posts/{id}" + COMMENTS, 1)
+                        .param("size", "10"))
                 .andExpect(status().isOk());
+        verify(commentService, times(1)).findCommentsByPostId(1, Pageable.ofSize(10));
     }
 
     @Test
@@ -96,6 +103,7 @@ public class CommentControllerTest {
                         .content(objectMapper.writeValueAsString(invalidComment))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+
     }
 
     @Test
@@ -106,6 +114,9 @@ public class CommentControllerTest {
         MvcResult result = mvc.perform(get(COMMENTS + "/{id}", 2))
                 .andExpect(status().isNotFound())
                 .andReturn();
+
+        verify(commentService, times(1)).findById(2);
+
         assertTrue("Should contain a message about non existing comment",
                 result.getResponse().getContentAsString().contains("Comment not found with id 2"));
     }
@@ -117,6 +128,9 @@ public class CommentControllerTest {
         MvcResult result = mvc.perform(delete(COMMENTS + "/{id}", 2))
                 .andExpect(status().isOk())
                 .andReturn();
+
+        verify(commentService, times(1)).deleteByCommentId(2);
+
         assertTrue("Should contain a message that 0 comments have been deleted", result.getResponse()
                 .getContentAsString().contains("0 comment(s) have been deleted"));
     }
@@ -128,6 +142,9 @@ public class CommentControllerTest {
         MvcResult result = mvc.perform(delete("/posts/{postId}" + COMMENTS, 2))
                 .andExpect(status().isOk())
                 .andReturn();
+
+        verify(commentService, times(1)).deleteByPostId(2);
+
         assertTrue("Should contain a message that 0 posts have been deleted",
                 result.getResponse().getContentAsString().contains("0 comment(s) have been deleted"));
     }
