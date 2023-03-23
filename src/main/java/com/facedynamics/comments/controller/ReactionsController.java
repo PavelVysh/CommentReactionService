@@ -19,18 +19,18 @@ public class ReactionsController {
     private final ReactionsService reactionsService;
 
     @PostMapping("/reactions")
-    public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
+    public ReactionSaveDTO create(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
     @GetMapping("/reactions/{entityId}")
-    public Page<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
+    public Page<ReactionReturnDTO> findByEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
                                                          @RequestParam boolean isLike,
                                                          Pageable pageable) {
         return reactionsService.findByEntity(entityId, entityType, isLike, pageable);
     }
     @GetMapping("/users/{userId}/reactions")
-    public Page<ReactionReturnDTO> getReactionsByUserId(@PathVariable int userId,
+    public Page<ReactionReturnDTO> findByUserId(@PathVariable int userId,
                                                         @RequestParam EntityType entityType,
                                                         @RequestParam boolean isLike,
                                                         Pageable pageable) {
@@ -38,10 +38,10 @@ public class ReactionsController {
     }
 
     @DeleteMapping("/reactions/{entityId}")
-    public DeleteDTO deleteReaction(@PathVariable int entityId,
+    public DeleteDTO delete(@PathVariable int entityId,
                                         @RequestParam int userId,
                                         @RequestParam EntityType entityType) {
-        return reactionsService.deleteReaction(entityId, entityType, userId);
+        return reactionsService.delete(entityId, entityType, userId);
     }
 
 }

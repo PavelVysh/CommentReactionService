@@ -70,7 +70,7 @@ public class CommentControllerTest {
     void deleteByIdTest() throws Exception {
         DeleteDTO deleted = new DeleteDTO(2);
 
-        when(commentService.deleteByCommentId(1)).thenReturn(deleted);
+        when(commentService.deleteById(1)).thenReturn(deleted);
 
         mvc.perform(delete("/comments/{id}", 1)
                         .param("type", "comment"))
@@ -79,7 +79,7 @@ public class CommentControllerTest {
 
     @Test
     void findingCommentsByPostId() throws Exception {
-        when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
+        when(commentService.findByPostId(1, Pageable.ofSize(10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
         mvc.perform(get("/comments/{id}", 2)

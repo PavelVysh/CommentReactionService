@@ -41,7 +41,7 @@ public class CommentService {
     }
 
     @Transactional
-    public DeleteDTO deleteByCommentId(int id) {
+    public DeleteDTO deleteById(int id) {
         return new DeleteDTO(commentRepository.deleteById(id));
     }
 
@@ -51,7 +51,7 @@ public class CommentService {
         return new DeleteDTO(commentRepository.deleteByPostId(postId));
     }
 
-    public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
+    public Page<CommentReturnDTO> findByPostId(int postId, Pageable pageable) {
         Page<Comment> comments = commentRepository.findCommentsByPostId(postId, pageable);
         if (comments.isEmpty()) {
             throw new NotFoundException("Comments for post with id "

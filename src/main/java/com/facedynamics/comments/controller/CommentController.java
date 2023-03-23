@@ -12,14 +12,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
 @AllArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
     @PostMapping("/comments")
-    public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
+    public CommentSaveDTO create(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
     }
 
@@ -30,12 +29,12 @@ public class CommentController {
 
     @GetMapping("/posts/{id}/comments")
     public Page<CommentReturnDTO> findByPostId(@PathVariable int id, Pageable pageable) {
-        return commentService.findCommentsByPostId(id, pageable);
+        return commentService.findByPostId(id, pageable);
     }
 
     @DeleteMapping("/comments/{id}")
     public DeleteDTO deleteById(@PathVariable int id) {
-        return commentService.deleteByCommentId(id);
+        return commentService.deleteById(id);
     }
 
     @DeleteMapping("/posts/{postId}/comments")

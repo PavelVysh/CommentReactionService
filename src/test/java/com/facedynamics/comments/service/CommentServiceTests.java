@@ -79,7 +79,7 @@ public class CommentServiceTests {
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        DeleteDTO response = commentService.deleteByCommentId(1);
+        DeleteDTO response = commentService.deleteById(1);
 
         assertEquals("Deletion of a comment by id", 1 , response.getRowsAffected());
 
@@ -89,7 +89,7 @@ public class CommentServiceTests {
         when(commentRepository.deleteByPostId(666)).thenReturn(0);
 
         assertEquals("should say that 0 been deleted", 0,
-                commentService.deleteByCommentId(666).getRowsAffected());
+                commentService.deleteById(666).getRowsAffected());
     }
     @Test
     void deleteByPostIDNotSuccessfulTest() {
@@ -106,7 +106,7 @@ public class CommentServiceTests {
 
         when(commentRepository.findCommentsByPostId(1, Pageable.ofSize(10))).thenReturn(comments);
 
-        List<CommentReturnDTO> commentsFound = commentService.findCommentsByPostId(1, Pageable.ofSize(10))
+        List<CommentReturnDTO> commentsFound = commentService.findByPostId(1, Pageable.ofSize(10))
                 .getContent();
 
         assertEquals("should have found two comments", 2, commentsFound.size());
@@ -115,7 +115,7 @@ public class CommentServiceTests {
     void findCommentsByPostIdUnSuccessfulTest() {
         when(commentRepository.findCommentsByPostId(666, Pageable.ofSize(5))).thenReturn(Page.empty());
 
-        assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666, Pageable.ofSize(5)),
+        assertThrows(NotFoundException.class, () -> commentService.findByPostId(666, Pageable.ofSize(5)),
                 "Should throw NotFoundException");
     }
     @Test

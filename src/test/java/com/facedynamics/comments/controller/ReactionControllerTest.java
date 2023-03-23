@@ -81,7 +81,7 @@ public class ReactionControllerTest {
     @Test
     void deleteReactionTest() throws Exception {
         DeleteDTO deleted = new DeleteDTO(2);
-        when(reactionsService.deleteReaction(1, EntityType.post, 2))
+        when(reactionsService.delete(1, EntityType.post, 2))
                 .thenReturn(deleted);
 
         mvc.perform(delete("/reactions/{id}", 1)

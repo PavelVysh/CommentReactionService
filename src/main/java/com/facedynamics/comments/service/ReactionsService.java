@@ -31,7 +31,7 @@ public class ReactionsService {
     }
 
     @Transactional
-    public DeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
+    public DeleteDTO delete(int entityId, EntityType entityType, int userId) {
         return new DeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
     }
 

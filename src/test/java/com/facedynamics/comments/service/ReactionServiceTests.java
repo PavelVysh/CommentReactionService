@@ -76,7 +76,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
                 .thenReturn(1);
 
-        DeleteDTO response = reactionsService.deleteReaction(4, EntityType.comment, 33);
+        DeleteDTO response = reactionsService.delete(4, EntityType.comment, 33);
 
         assertEquals("delete successfully test", 1, response.getRowsAffected());
     }
@@ -85,7 +85,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(false);
 
-        assertEquals("should delete 0", 0, reactionsService.deleteReaction(2, EntityType.post, 1).getRowsAffected());
+        assertEquals("should delete 0", 0, reactionsService.delete(2, EntityType.post, 1).getRowsAffected());
     }
     @Test
     void findByUserIdAndTypeSuccessfulTest() {
