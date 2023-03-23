@@ -38,8 +38,8 @@ public class CommentTests {
         MvcResult result = resultActions.andReturn();
         String contentAsString = result.getResponse().getContentAsString();
 
-        assertTrue("Likes assigned incorrectly",  contentAsString.contains("\"likes\":3"));
-        assertTrue("Dislikes assigned incorrectly",  contentAsString.contains("\"dislikes\":2"));
+        assertTrue("Likes assigned incorrectly", contentAsString.contains("\"likes\":3"));
+        assertTrue("Dislikes assigned incorrectly", contentAsString.contains("\"dislikes\":2"));
     }
 
     @Test
@@ -112,11 +112,12 @@ public class CommentTests {
                 result.getResponse()
                         .getContentAsString().contains("Comments for post with id 5678 were not found"));
     }
+
     @Test
     void requestWithBadParamsInJsonBody() throws Exception {
         MvcResult result = mvc.perform(get(COMMENTS + "/asd"))
                 .andExpect(status().isBadRequest()).andReturn();
-        assertTrue("bad message check",result.getResponse().getContentAsString()
+        assertTrue("bad message check", result.getResponse().getContentAsString()
                 .contains("Failed to convert value of type"));
     }
 }

@@ -43,6 +43,7 @@ public class ReactionServiceTests {
         reaction.setEntityId(2);
         reaction.setLike(true);
     }
+
     @Test
     void saveReactionTest() {
 
@@ -52,6 +53,7 @@ public class ReactionServiceTests {
 
         assertEquals("Saving reaction test", 2, afterSave.getEntityId());
     }
+
     @Test
     void findingReactionTestSuccessfulTest() {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
@@ -61,15 +63,17 @@ public class ReactionServiceTests {
                 PageRequest.of(0, 10));
         assertEquals("finding reactions for entity", 2L, response.getTotalElements());
     }
+
     @Test
     void findingReactionTestNotFoundTest() {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findByEntity(2, EntityType.post, true, PageRequest.of(0, 10)),
+                        reactionsService.findByEntity(2, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
+
     @Test
     void deleteReactionSuccessfulTest() {
         when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
@@ -79,6 +83,7 @@ public class ReactionServiceTests {
 
         assertEquals("delete successfully test", "Reaction was successfully deleted", response);
     }
+
     @Test
     void deleteReactionFailTest() {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
@@ -87,6 +92,7 @@ public class ReactionServiceTests {
         assertThrows(NotFoundException.class, () -> reactionsService.deleteReaction(2, EntityType.post, 1)
                 , "Should throw NotFoundException");
     }
+
     @Test
     void findByUserIdAndTypeSuccessfulTest() {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true,
@@ -97,13 +103,14 @@ public class ReactionServiceTests {
 
         assertEquals("Finding reactions successfully", 2L, response.getTotalElements());
     }
+
     @Test
     void findByUserIdAndTypeFailTest() {
         when(reactionsRepository.findAllByUserIdAndEntityTypeAndLike(1, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of()));
 
         assertThrows(NotFoundException.class, () ->
-                reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)),
+                        reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
     }
 }

@@ -154,7 +154,7 @@ public class ReactionControllerTest {
 
         mvc.perform(delete(REACTIONS + "/{id}", 555)
                         .param("entityType", "post")
-                        .param("userId",  "333"))
+                        .param("userId", "333"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("deleted 0"));
         verify(reactionsService, times(1)).deleteReaction(555, EntityType.post, 333);

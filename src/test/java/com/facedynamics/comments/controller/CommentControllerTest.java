@@ -32,12 +32,12 @@ public class CommentControllerTest {
     @Autowired
     private MockMvc mvc;
     public static final String commentJson = """
-                {
-                "userId": "1",
-                "text": "haha",
-                "postId": "1"
-                }
-                """;
+            {
+            "userId": "1",
+            "text": "haha",
+            "postId": "1"
+            }
+            """;
 
     @Test
     void saveCorrectDataTest() throws Exception {
@@ -56,6 +56,7 @@ public class CommentControllerTest {
         verify(commentService, times(1)).save(any());
         assertTrue("should be same id", result.getResponse().getContentAsString().contains("\"id\":5"));
     }
+
     @Test
     void saveWithIncorrectDataTest() throws Exception {
         String invalidComment = """
@@ -64,13 +65,14 @@ public class CommentControllerTest {
                 }
                 """;
         MvcResult result = mvc.perform(post(COMMENTS)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(invalidComment))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidComment))
                 .andExpect(status().isBadRequest())
                 .andReturn();
         assertTrue("error message check", result.getResponse().getContentAsString()
                 .contains("You can't save a comment without a text"));
     }
+
     @Test
     void findByIdTest() throws Exception {
         CommentReturnDTO returnDTO = new CommentReturnDTO();

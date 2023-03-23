@@ -124,6 +124,7 @@ public class ReactionTests {
         assertTrue("tried to delete a non existing reaction",
                 result.getResponse().getContentAsString().contains("Reaction was not found"));
     }
+
     @Test
     void deleteReactionBadRequestTest() throws Exception {
         mvc.perform(delete(REACTIONS + "/{entityId}", 3))
@@ -131,6 +132,7 @@ public class ReactionTests {
                 .andExpect(jsonPath("$.detail",
                         is("Required request parameter 'userId' for method parameter type int is not present")));
     }
+
     @Test
     void requestWithNoBodyTest() throws Exception {
         mvc.perform(post(REACTIONS))
