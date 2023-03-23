@@ -29,24 +29,30 @@ public class ExceptionController {
         problemDetail.setProperty(PROBLEMS, errors);
         return problemDetail;
     }
+
     @ExceptionHandler(NotFoundException.class)
     protected ProblemDetail handleNotFoundException(NotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     protected ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty(PROBLEMS, new Error(ex.getMessage(), ex.getParameterName()));
-        return  problemDetail;
+        return problemDetail;
     }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
     }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Message: " + exc.getMessage() +
+                ". Field: " + exc.getName());
     }
+
     @ExceptionHandler(Exception.class)
     protected ProblemDetail handleGeneralException(Exception exc) {
         logger.error(ERROR, exc.getClass(), exc.getMessage());
