@@ -10,9 +10,12 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class NotificationDetails {
-    private int userId;
+    private String type;
+    private int commentId;
+    private int replyId;
+    private int postId;
     private String postText;
     private String commentText;
     private String replyText;
-    private LocalDateTime createdAt;
+    private LocalDateTime entityCreatedAt;
 }

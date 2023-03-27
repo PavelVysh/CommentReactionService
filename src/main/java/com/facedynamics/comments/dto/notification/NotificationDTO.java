@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class NotificationDTO {
-    private final int ownerId;
-    private final String notificationType;
-    private NotificationDetails details;
+    private final int recipientId;
+    private final int createdBy;
+    private NotificationDetails content;
 
 }
