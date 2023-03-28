@@ -11,7 +11,6 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
-import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,18 +31,14 @@ public class CommentService {
         PostDTO postDTO = postsClient.getPostById(comment.getPostId());
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
-        try {
-            notification.send(savedComment, postDTO);
-        } catch (FeignException e) {
-            System.out.println(e.getMessage());
-        }
+        notification.send(savedComment, postDTO);
         return commentMapper.toSaveDTO(savedComment);
     }
 
     public CommentReturnDTO findById(int id) {
-            return commentRepository.findById(id)
-                    .map(comment -> commentMapper.toReturnDTO(comment))
-                    .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
+        return commentRepository.findById(id)
+                .map(comment -> commentMapper.toReturnDTO(comment))
+                .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
 
     }
 

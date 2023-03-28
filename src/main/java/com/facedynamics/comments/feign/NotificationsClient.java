@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @FeignClient("notifications-service")
 public interface NotificationsClient {
-    @RequestMapping(method = RequestMethod.POST, value = "/notifications")
-    void sendNotification(NotificationDTO notificationDTO);
+    @RequestMapping(method = RequestMethod.POST, value = "/api/v1/notifications")
+    void send(NotificationDTO notificationDTO);
 }

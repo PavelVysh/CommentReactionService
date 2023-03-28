@@ -9,7 +9,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class NotificationDTO {
     private final int recipientId;
-    private final int createdBy;
+    private final int createdById;
     private NotificationDetails content;
 
 }

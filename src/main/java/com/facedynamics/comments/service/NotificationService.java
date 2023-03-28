@@ -7,11 +7,11 @@ import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.NotificationsClient;
 import com.facedynamics.comments.repository.CommentRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
-@Component
-@RequiredArgsConstructor
+@Service
+@AllArgsConstructor
 public class NotificationService {
     private final NotificationsClient notificationsClient;
     private final CommentRepository commentRepository;
@@ -23,7 +23,7 @@ public class NotificationService {
         } else {
             notification = createReplyNotification(comment);
         }
-        notificationsClient.sendNotification(notification);
+        notificationsClient.send(notification);
     }
 
     private NotificationDTO createReplyNotification(Comment reply) {
