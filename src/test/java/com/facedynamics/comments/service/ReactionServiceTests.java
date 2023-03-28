@@ -32,12 +32,14 @@ public class ReactionServiceTests {
     private ReactionsRepository reactionsRepository;
     @Mock
     private CommentRepository commentRepository;
+    @Mock
+    private NotificationService notificationService;
     private ReactionsService reactionsService;
     private Reaction reaction;
 
     @BeforeEach
     void init() {
-        reactionsService = new ReactionsService(reactionsRepository, commentRepository);
+        reactionsService = new ReactionsService(reactionsRepository, commentRepository, notificationService);
         reaction = new Reaction();
         reaction.setUserId(1);
         reaction.setEntityType(EntityType.post);

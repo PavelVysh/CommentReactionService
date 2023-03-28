@@ -21,11 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReactionsService {
     private final ReactionsRepository repository;
     private final CommentRepository commentRepository;
+    private final NotificationService notificationService;
     private final ReactionMapper reactionsMapper = Mappers.getMapper(ReactionMapper.class);
 
     public ReactionSaveDTO save(Reaction reaction) {
         if (!checkEntityExists(reaction)) {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
+        }
+        if (notificationRequired(reaction)) {
+            notificationService.send(reaction);
         }
         return reactionsMapper.toSaveDTO(repository.save(reaction));
     }
@@ -66,5 +70,11 @@ public class ReactionsService {
             throw new NotFoundException("Reaction not found");
         }
         return reactionsMapper.toReturnDTO(reactions);
+    }
+    public boolean notificationRequired(Reaction reaction) {
+        return !repository.existsByEntityIdAndEntityTypeAndUserId(
+                reaction.getEntityId(),
+                reaction.getEntityType(),
+                reaction.getUserId());
     }
 }

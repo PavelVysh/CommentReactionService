@@ -18,4 +18,5 @@ public class NotificationDetails {
     private String commentText;
     private String replyText;
     private LocalDateTime entityCreatedAt;
+    private Boolean isLike;
 }
