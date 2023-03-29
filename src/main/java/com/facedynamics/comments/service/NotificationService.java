@@ -51,10 +51,17 @@ public class NotificationService {
         notificationDTO.setContent(NotificationDetails.builder()
                 .type(getType(reaction))
                 .isLike(reaction.isLike())
+                .entityCreatedAt(reaction.getUpdateTime())
                 .build());
         switch (notificationDTO.getContent().getType().split("_")[0]) {
-            case "COMMENT" -> notificationDTO.getContent().setCommentId(reaction.getEntityId());
-            case "POST" -> notificationDTO.getContent().setPostId(reaction.getEntityId());
+            case "COMMENT" -> {
+                notificationDTO.getContent().setCommentId(reaction.getEntityId());
+                notificationDTO.getContent().setCommentText(commentRepository.findById(reaction.getEntityId()).get().getText());
+            }
+            case "POST" -> {
+                notificationDTO.getContent().setPostId(reaction.getEntityId());
+                notificationDTO.getContent().setPostText(postsClient.getPostById(reaction.getEntityId()).getText());
+            }
         }
 
         return notificationDTO;
