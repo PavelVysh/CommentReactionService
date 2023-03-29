@@ -47,24 +47,32 @@ public class NotificationService {
     }
 
     private NotificationDTO createReactionNotification(Reaction reaction) {
-        NotificationDTO notificationDTO = new NotificationDTO(getRecipient(reaction), reaction.getUserId());
+        NotificationDTO notificationDTO = new NotificationDTO(0, reaction.getUserId());
         notificationDTO.setContent(NotificationDetails.builder()
                 .type(getType(reaction))
                 .isLike(reaction.isLike())
                 .entityCreatedAt(reaction.getUpdateTime())
                 .build());
         switch (notificationDTO.getContent().getType().split("_")[0]) {
-            case "COMMENT" -> {
-                notificationDTO.getContent().setCommentId(reaction.getEntityId());
-                notificationDTO.getContent().setCommentText(commentRepository.findById(reaction.getEntityId()).get().getText());
-            }
-            case "POST" -> {
-                notificationDTO.getContent().setPostId(reaction.getEntityId());
-                notificationDTO.getContent().setPostText(postsClient.getPostById(reaction.getEntityId()).getText());
-            }
+            case "COMMENT" -> createNotificationForComment(reaction, notificationDTO);
+            case "POST" -> createNotificationForPost(reaction, notificationDTO);
         }
-
         return notificationDTO;
+    }
+
+    private void createNotificationForPost(Reaction reaction, NotificationDTO notificationDTO) {
+        PostDTO postDTO = postsClient.getPostById(reaction.getEntityId());
+        notificationDTO.getContent().setPostId(reaction.getEntityId());
+        notificationDTO.getContent().setPostText(postDTO.getText());
+        notificationDTO.setRecipientId(postDTO.getUserId());
+    }
+
+    private void createNotificationForComment(Reaction reaction, NotificationDTO notificationDTO) {
+        Comment comment = commentRepository.findById(reaction.getEntityId())
+                .orElseThrow(() -> new NotFoundException("Comment not found"));
+        notificationDTO.getContent().setCommentId(reaction.getEntityId());
+        notificationDTO.getContent().setCommentText(commentRepository.findById(reaction.getEntityId()).get().getText());
+        notificationDTO.setRecipientId(comment.getUserId());
     }
 
     private String getType(Reaction reaction) {
@@ -75,15 +83,6 @@ public class NotificationService {
         }
         type.append(reaction.isLike() ? "LIKED" : "DISLIKED");
         return type.toString();
-    }
-
-    private int getRecipient(Reaction reaction) {
-        int recipientId = 0;
-        switch (reaction.getEntityType()) {
-            case comment -> recipientId = commentRepository.findById(reaction.getEntityId()).get().getUserId();
-            case post -> recipientId = postsClient.getPostById(reaction.getEntityId()).getUserId();
-        }
-        return recipientId;
     }
 
     private NotificationDTO createReplyNotification(Comment reply) {
