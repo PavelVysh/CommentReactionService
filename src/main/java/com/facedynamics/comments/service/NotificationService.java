@@ -52,6 +52,10 @@ public class NotificationService {
                 .type(getType(reaction))
                 .isLike(reaction.isLike())
                 .build());
+        switch (notificationDTO.getContent().getType().split("_")[0]) {
+            case "COMMENT" -> notificationDTO.getContent().setCommentId(reaction.getEntityId());
+            case "POST" -> notificationDTO.getContent().setPostId(reaction.getEntityId());
+        }
 
         return notificationDTO;
     }
