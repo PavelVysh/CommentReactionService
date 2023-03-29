@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class NotificationService {
-    Logger logger = LoggerFactory.getLogger(NotificationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
     private final NotificationsClient notificationsClient;
     private final CommentRepository commentRepository;
     private final PostsClient postsClient;

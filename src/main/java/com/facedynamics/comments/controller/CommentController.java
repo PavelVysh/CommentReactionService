@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,6 +38,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{id}")
+    @PreAuthorize("@authorization.isOwner(#id)")
     public CommentDeleteDTO deleteById(@PathVariable int id) {
         return commentService.deleteByCommentId(id);
     }

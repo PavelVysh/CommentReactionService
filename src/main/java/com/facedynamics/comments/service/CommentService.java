@@ -11,6 +11,7 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import com.facedynamics.comments.security.Authorization;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentDeleteDTO deleteByCommentId(int id) {
+    public CommentDeleteDTO deleteByCommentId(int id) {;
         return new CommentDeleteDTO(commentRepository.deleteById(id));
     }
 
