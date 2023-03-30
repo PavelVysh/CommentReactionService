@@ -6,6 +6,7 @@ import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
+import com.facedynamics.comments.events.NotificationEvent;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
@@ -31,7 +32,7 @@ public class ReactionsService {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
         if (notificationRequired(reaction)) {
-            eventPublisher.publishEvent(notificationService.create(reaction));
+            eventPublisher.publishEvent(new NotificationEvent(this, notificationService.create(reaction)));
         }
         return reactionsMapper.toSaveDTO(repository.save(reaction));
     }
