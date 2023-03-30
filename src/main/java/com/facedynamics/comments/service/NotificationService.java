@@ -40,20 +40,20 @@ public class NotificationService {
                 .entityCreatedAt(reaction.getUpdateTime())
                 .build());
         switch (notificationDTO.getContent().getType().split("_")[0]) {
-            case "COMMENT" -> createNotificationForComment(reaction, notificationDTO);
-            case "POST" -> createNotificationForPost(reaction, notificationDTO);
+            case "COMMENT" -> setNotificationDetailsComment(reaction, notificationDTO);
+            case "POST" -> setNotificationDetailsPost(reaction, notificationDTO);
         }
         return notificationDTO;
     }
 
-    private void createNotificationForPost(Reaction reaction, NotificationDTO notificationDTO) {
+    private void setNotificationDetailsPost(Reaction reaction, NotificationDTO notificationDTO) {
         PostDTO postDTO = postsClient.getPostById(reaction.getEntityId());
         notificationDTO.getContent().setPostId(reaction.getEntityId());
         notificationDTO.getContent().setPostText(postDTO.getText());
         notificationDTO.setRecipientId(postDTO.getUserId());
     }
 
-    private void createNotificationForComment(Reaction reaction, NotificationDTO notificationDTO) {
+    private void setNotificationDetailsComment(Reaction reaction, NotificationDTO notificationDTO) {
         Comment comment = commentRepository.findById(reaction.getEntityId())
                 .orElseThrow(() -> new NotFoundException("Comment not found"));
         notificationDTO.getContent().setCommentId(reaction.getEntityId());
