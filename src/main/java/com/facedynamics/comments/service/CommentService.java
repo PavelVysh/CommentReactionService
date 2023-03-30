@@ -7,12 +7,14 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
+import com.facedynamics.comments.events.NotificationEvent;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
     private final PostsClient postsClient;
+    private ApplicationEventPublisher eventPublisher;
     private CommentMapper commentMapper;
     private NotificationService notification;
 
@@ -31,7 +34,8 @@ public class CommentService {
         PostDTO postDTO = postsClient.getPostById(comment.getPostId());
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
-        notification.send(savedComment, postDTO);
+        eventPublisher.publishEvent(new NotificationEvent(this, notification.create(savedComment, postDTO)));
+
         return commentMapper.toSaveDTO(savedComment);
     }
 

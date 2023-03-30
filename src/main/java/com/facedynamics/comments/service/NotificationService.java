@@ -6,44 +6,30 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.NotificationsClient;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
-import feign.FeignException;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class NotificationService {
-    private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
-    private final NotificationsClient notificationsClient;
+
     private final CommentRepository commentRepository;
     private final PostsClient postsClient;
 
-    public void send(Comment comment, PostDTO postDTO) {
+    public NotificationDTO create(Comment comment, PostDTO postDTO) {
         NotificationDTO notification;
         if (comment.getParentId() == null) {
             notification = createCommentNotification(comment, postDTO);
         } else {
             notification = createReplyNotification(comment);
         }
-        try {
-            notificationsClient.send(notification);
-        } catch (FeignException exc) {
-            logger.error(exc.getMessage());
-        }
+        return notification;
     }
 
-    public void send(Reaction reaction) {
-        NotificationDTO notification = createReactionNotification(reaction);
-        try {
-            notificationsClient.send(notification);
-        } catch (FeignException exc) {
-            logger.error(exc.getMessage());
-        }
+    public NotificationDTO create(Reaction reaction) {
+        return createReactionNotification(reaction);
     }
 
     private NotificationDTO createReactionNotification(Reaction reaction) {

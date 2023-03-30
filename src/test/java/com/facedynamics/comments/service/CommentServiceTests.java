@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +41,8 @@ public class CommentServiceTests {
     private static PostsClient feignClient;
     @Mock
     private NotificationService notification;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private static CommentService commentService;
     private final CommentMapper mapper = Mappers.getMapper(CommentMapper.class);
@@ -50,6 +53,7 @@ public class CommentServiceTests {
                 commentRepository,
                 reactionsRepository,
                 feignClient,
+                eventPublisher,
                 mapper,
                 notification);
     }

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +35,15 @@ public class ReactionServiceTests {
     private CommentRepository commentRepository;
     @Mock
     private NotificationService notificationService;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     private ReactionsService reactionsService;
     private Reaction reaction;
 
     @BeforeEach
     void init() {
-        reactionsService = new ReactionsService(reactionsRepository, commentRepository, notificationService);
+        reactionsService = new ReactionsService(reactionsRepository, commentRepository, notificationService, eventPublisher);
         reaction = new Reaction();
         reaction.setUserId(1);
         reaction.setEntityType(EntityType.post);
