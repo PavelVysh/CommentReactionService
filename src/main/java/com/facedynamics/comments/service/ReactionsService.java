@@ -6,13 +6,12 @@ import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
-import com.facedynamics.comments.events.NotificationEvent;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.feign.NotificationsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import lombok.AllArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,15 +23,15 @@ public class ReactionsService {
     private final ReactionsRepository repository;
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
-    private final ApplicationEventPublisher eventPublisher;
+    private final NotificationsClient notificationsClient;
     private final ReactionMapper reactionsMapper = Mappers.getMapper(ReactionMapper.class);
 
     public ReactionSaveDTO save(Reaction reaction) {
         if (!checkEntityExists(reaction)) {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
-        if (notificationRequired(reaction)) {
-            eventPublisher.publishEvent(new NotificationEvent(this, notificationService.create(reaction)));
+        if (!notificationNotRequired(reaction)) {
+            notificationsClient.send(notificationService.create(reaction));
         }
         return reactionsMapper.toSaveDTO(repository.save(reaction));
     }
@@ -74,8 +73,8 @@ public class ReactionsService {
         }
         return reactionsMapper.toReturnDTO(reactions);
     }
-    public boolean notificationRequired(Reaction reaction) {
-        return !repository.existsByEntityIdAndEntityTypeAndUserId(
+    public boolean notificationNotRequired(Reaction reaction) {
+        return repository.existsByEntityIdAndEntityTypeAndUserId(
                 reaction.getEntityId(),
                 reaction.getEntityType(),
                 reaction.getUserId());

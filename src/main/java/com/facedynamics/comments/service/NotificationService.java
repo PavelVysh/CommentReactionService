@@ -11,6 +11,8 @@ import com.facedynamics.comments.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @AllArgsConstructor
 public class NotificationService {
@@ -37,7 +39,7 @@ public class NotificationService {
         notificationDTO.setContent(NotificationDetails.builder()
                 .type(getType(reaction))
                 .isLike(reaction.isLike())
-                .entityCreatedAt(reaction.getUpdateTime())
+                .entityCreatedAt(LocalDateTime.now())
                 .build());
         switch (notificationDTO.getContent().getType().split("_")[0]) {
             case "COMMENT" -> setNotificationDetailsComment(reaction, notificationDTO);
