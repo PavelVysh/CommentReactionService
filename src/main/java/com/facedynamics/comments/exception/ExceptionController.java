@@ -17,7 +17,7 @@ import java.util.List;
 @ControllerAdvice
 public class ExceptionController {
     public static final String PROBLEMS = "problems";
-    public static final String GENERAL_PROBLEM_MESSAGE = "Internal error occurred";
+    public static final String INTERNAL_ERROR_MESSAGE = "Internal error occurred";
     public static final String ERROR = "{} exception was thrown with message {}";
     Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
@@ -54,6 +54,6 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     protected ProblemDetail handleGeneralException(Exception exc) {
         logger.error(ERROR, exc.getClass(), exc.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, GENERAL_PROBLEM_MESSAGE);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_ERROR_MESSAGE);
     }
 }
