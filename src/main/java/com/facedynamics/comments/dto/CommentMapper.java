@@ -3,9 +3,10 @@ package com.facedynamics.comments.dto;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
+import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;
 
-@org.mapstruct.Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface CommentMapper {
 
     CommentSaveDTO toSaveDTO(Comment comment);
