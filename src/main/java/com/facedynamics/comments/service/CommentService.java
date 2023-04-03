@@ -68,9 +68,8 @@ public class CommentService {
 
     private void checkIfParentExists(Comment comment, PostDTO postDTO) {
         if (comment.getParentId() != null) {
-            commentRepository.findById(comment.getParentId()).orElseThrow(() -> {
-                throw new NotFoundException("Comment with id - " + comment.getParentId() + " was not found");
-            });
+            commentRepository.findById(comment.getParentId()).orElseThrow(() ->
+                    new NotFoundException("Comment with id - " + comment.getParentId() + " was not found"));
         } else if (postDTO.getUserId() == null) {
             throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
         }
