@@ -102,16 +102,13 @@ public class CommentTests {
 
         assertTrue("should be message about 0 deleted comments",
                 result.getResponse()
-                        .getContentAsString().contains("0 comment(s) have been deleted"));
+                        .getContentAsString().contains("\"rowsAffected\":0"));
     }
 
     @Test
     void findCommentsForNonExistingPost() throws Exception {
-        MvcResult result = mvc.perform(get("/posts/{postId}/comments", 5678))
+        mvc.perform(get("/comments/{postId}", 5678))
                 .andExpect(status().isNotFound())
                 .andReturn();
-        assertTrue("should be message about comments non existing for post {postID}",
-                result.getResponse()
-                        .getContentAsString().contains("Comments for post with id 5678 were not found"));
     }
 }

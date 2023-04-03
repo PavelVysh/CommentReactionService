@@ -111,11 +111,11 @@ public class ReactionTests {
         MvcResult result = mvc.perform(delete("/reactions/{entityId}", 5678)
                         .param("entityType", "post")
                         .param("userId", "1"))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andReturn();
 
         assertTrue("tried to delete a non existing reaction",
-                result.getResponse().getContentAsString().contains("Reaction was not found"));
+                result.getResponse().getContentAsString().contains("\"rowsAffected\":0"));
     }
 }
 

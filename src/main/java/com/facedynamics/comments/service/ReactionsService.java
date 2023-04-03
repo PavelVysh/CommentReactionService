@@ -1,5 +1,6 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
@@ -30,12 +31,8 @@ public class ReactionsService {
     }
 
     @Transactional
-    public String deleteReaction(int entityId, EntityType entityType, int userId) {
-        if (repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId) > 0) {
-            return "Reaction was successfully deleted";
-        } else {
-            throw new NotFoundException("Reaction was not found");
-        }
+    public DeleteDTO delete(int entityId, EntityType entityType, int userId) {
+        return new DeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
     }
 
     private boolean checkEntityExists(Reaction reaction) {

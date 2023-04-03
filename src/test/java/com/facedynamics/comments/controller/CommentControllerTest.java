@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -67,7 +68,9 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        when(commentService.deleteByCommentId(1)).thenReturn(2);
+        DeleteDTO deleted = new DeleteDTO(2);
+
+        when(commentService.deleteById(1)).thenReturn(deleted);
 
         mvc.perform(delete("/comments/{id}", 1)
                         .param("type", "comment"))
@@ -76,7 +79,7 @@ public class CommentControllerTest {
 
     @Test
     void findingCommentsByPostId() throws Exception {
-        when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
+        when(commentService.findByPostId(1, Pageable.ofSize(10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
         mvc.perform(get("/comments/{id}", 2)

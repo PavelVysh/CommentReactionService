@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -79,8 +80,9 @@ public class ReactionControllerTest {
     }
     @Test
     void deleteReactionTest() throws Exception {
-        when(reactionsService.deleteReaction(1, EntityType.post, 2))
-                .thenReturn("test text");
+        DeleteDTO deleted = new DeleteDTO(2);
+        when(reactionsService.delete(1, EntityType.post, 2))
+                .thenReturn(deleted);
 
         mvc.perform(delete("/reactions/{id}", 1)
                 .param("entityType", "post")

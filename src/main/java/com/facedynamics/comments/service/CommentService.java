@@ -1,5 +1,6 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.Mapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @AllArgsConstructor
@@ -38,19 +40,18 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("Comment with id - " + id + " was not found"));
     }
 
-
     @Transactional
-    public int deleteByCommentId(int id) {
-        return commentRepository.deleteById(id);
+    public DeleteDTO deleteById(int id) {
+        return new DeleteDTO(commentRepository.deleteById(id));
     }
 
     @Transactional
-    public int deleteByPostId(int postId) {
+    public DeleteDTO deleteByPostId(int postId) {
         deleteReactionsForPost(postId);
-        return commentRepository.deleteByPostId(postId);
+        return new DeleteDTO(commentRepository.deleteByPostId(postId));
     }
 
-    public Page<CommentReturnDTO> findCommentsByPostId(int postId, Pageable pageable) {
+    public Page<CommentReturnDTO> findByPostId(int postId, Pageable pageable) {
         Page<Comment> comments = commentRepository.findCommentsByPostId(postId, pageable);
         if (comments.isEmpty()) {
             throw new NotFoundException("Comments for post with id "
