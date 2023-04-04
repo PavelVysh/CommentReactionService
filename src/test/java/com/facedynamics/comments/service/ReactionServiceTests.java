@@ -1,5 +1,6 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -79,9 +80,9 @@ public class ReactionServiceTests {
         when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
                 .thenReturn(1);
 
-        String response = reactionsService.deleteReaction(4, EntityType.comment, 33);
+        DeleteDTO response = reactionsService.delete(4, EntityType.comment, 33);
 
-        assertEquals("delete successfully test", "Reaction was successfully deleted", response);
+        assertEquals("delete successfully test", 1, response.getRowsAffected());
     }
 
     @Test
@@ -89,8 +90,7 @@ public class ReactionServiceTests {
         when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
                 .thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> reactionsService.deleteReaction(2, EntityType.post, 1)
-                , "Should throw NotFoundException");
+        assertEquals("should delete 0", 0, reactionsService.delete(2, EntityType.post, 1).getRowsAffected());
     }
 
     @Test
