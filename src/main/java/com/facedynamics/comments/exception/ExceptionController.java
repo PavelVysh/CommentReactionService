@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,7 +27,7 @@ public class ExceptionController {
     protected ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
         ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation Problem");
         problemDetail.setProperty(PROBLEMS, errors);
         return problemDetail;
     }
@@ -49,7 +51,7 @@ public class ExceptionController {
     protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
         List<Error> errors = new ArrayList<>();
         errors.add(new Error(exc.getMessage(), exc.getName()));
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Wrong parameter type");
         problemDetail.setProperty(PROBLEMS, errors);
 
         return problemDetail;
@@ -59,5 +61,15 @@ public class ExceptionController {
     protected ProblemDetail handleGeneralException(Exception exc) {
         logger.error(ERROR, exc.getClass(), exc.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_ERROR_MESSAGE);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ProblemDetail handleMethodNotAllowedException(HttpRequestMethodNotSupportedException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.METHOD_NOT_ALLOWED, exc.getMessage());
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    protected ProblemDetail handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exc.getMessage());
     }
 }
