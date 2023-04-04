@@ -47,8 +47,12 @@ public class ExceptionController {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Message: " + exc.getMessage() +
-                ". Field: " + exc.getName());
+        List<Error> errors = new ArrayList<>();
+        errors.add(new Error(exc.getMessage(), exc.getName()));
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty(PROBLEMS, errors);
+
+        return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)

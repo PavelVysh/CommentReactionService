@@ -32,30 +32,34 @@ public class CommentControllerTest {
     private CommentService commentService;
     @Autowired
     private MockMvc mvc;
-    public static final String commentJson = """
-            {
-            "userId": "1",
-            "text": "haha",
-            "postId": "1"
-            }
-            """;
 
     @Test
     void saveCorrectDataTest() throws Exception {
         CommentSaveDTO comment = new CommentSaveDTO();
         comment.setId(5);
+        comment.setUserId(1);
+        comment.setText("haha");
+        comment.setPostId(1);
+
+        String commentJson = """
+                {
+                "userId": "1",
+                "text": "haha",
+                "postId": "1"
+                }
+                """;
 
         when(commentService.save(any())).thenReturn(comment);
 
-        MvcResult result = mvc.perform(post(COMMENTS)
+        mvc.perform(post(COMMENTS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(commentJson))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("{\"id\":5,\"userId\":1,\"postId\":1,\"text\":\"haha\"}"))
                 .andReturn();
 
         verify(commentService, times(1)).save(any());
-        assertTrue("should be same id", result.getResponse().getContentAsString().contains("\"id\":5"));
     }
 
     @Test
