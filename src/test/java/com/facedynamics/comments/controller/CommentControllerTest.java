@@ -1,5 +1,6 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.exception.NotFoundException;
@@ -90,17 +91,17 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        when(commentService.deleteByCommentId(1)).thenReturn(2);
+        when(commentService.deleteById(1)).thenReturn(new DeleteDTO(2));
 
         mvc.perform(delete(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk())
-                .andExpect(content().string("2 comment(s) have been deleted"));
-        verify(commentService, times(1)).deleteByCommentId(1);
+                .andExpect(content().string("{\"rowsAffected\":2}"));
+        verify(commentService, times(1)).deleteById(1);
     }
 
     @Test
     void findingCommentsByPostId() throws Exception {
-        when(commentService.findCommentsByPostId(1, Pageable.ofSize(10)))
+        when(commentService.findByPostId(1, Pageable.ofSize(10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
 
         mvc.perform(get("/posts/{id}" + COMMENTS, 1)
@@ -108,7 +109,7 @@ public class CommentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isNotEmpty());
-        verify(commentService, times(1)).findCommentsByPostId(1, Pageable.ofSize(10));
+        verify(commentService, times(1)).findByPostId(1, Pageable.ofSize(10));
     }
 
     @Test
@@ -145,21 +146,21 @@ public class CommentControllerTest {
 
     @Test
     void deleteNonExistentCommentTest() throws Exception {
-        when(commentService.deleteByCommentId(2)).thenReturn(0);
+        when(commentService.deleteById(2)).thenReturn(new DeleteDTO(0));
 
         MvcResult result = mvc.perform(delete(COMMENTS + "/{id}", 2))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(commentService, times(1)).deleteByCommentId(2);
+        verify(commentService, times(1)).deleteById(2);
 
         assertTrue("Should contain a message that 0 comments have been deleted", result.getResponse()
-                .getContentAsString().contains("0 comment(s) have been deleted"));
+                .getContentAsString().contains("\"rowsAffected\":0"));
     }
 
     @Test
     void deleteByNonExistentPostIdTest() throws Exception {
-        when(commentService.deleteByPostId(2)).thenReturn(0);
+        when(commentService.deleteByPostId(2)).thenReturn(new DeleteDTO(0));
 
         MvcResult result = mvc.perform(delete("/posts/{postId}" + COMMENTS, 2))
                 .andExpect(status().isOk())
@@ -168,6 +169,7 @@ public class CommentControllerTest {
         verify(commentService, times(1)).deleteByPostId(2);
 
         assertTrue("Should contain a message that 0 posts have been deleted",
-                result.getResponse().getContentAsString().contains("0 comment(s) have been deleted"));
+                result.getResponse().getContentAsString().contains("\"rowsAffected\":0"));
     }
 }
+

@@ -107,8 +107,8 @@ public class ReactionControllerTest {
                         .param("entityType", "post")
                         .param("userId", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is("test text")));
-        verify(reactionsService, times(1)).deleteReaction(1, EntityType.post, 2);
+                .andExpect(jsonPath("$.rowsAffected", is(2)));
+        verify(reactionsService, times(1)).delete(1, EntityType.post, 2);
     }
 
     @Test
@@ -152,13 +152,13 @@ public class ReactionControllerTest {
 
     @Test
     void deleteNonExistingReactionTest() throws Exception {
-        when(reactionsService.deleteReaction(555, EntityType.post, 333)).thenReturn("deleted 0");
+        when(reactionsService.delete(555, EntityType.post, 333)).thenReturn(new DeleteDTO(0));
 
         mvc.perform(delete(REACTIONS + "/{id}", 555)
                         .param("entityType", "post")
                         .param("userId", "333"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("deleted 0"));
-        verify(reactionsService, times(1)).deleteReaction(555, EntityType.post, 333);
+                .andExpect(content().string("{\"rowsAffected\":0}"));
+        verify(reactionsService, times(1)).delete(555, EntityType.post, 333);
     }
 }

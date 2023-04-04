@@ -100,7 +100,7 @@ public class CommentTests {
 
         assertTrue("should be message about 0 deleted comments",
                 result.getResponse()
-                        .getContentAsString().contains("0 comment(s) have been deleted"));
+                        .getContentAsString().contains("\"rowsAffected\":0"));
     }
 
     @Test
