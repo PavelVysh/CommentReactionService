@@ -3,6 +3,7 @@ package com.facedynamics.comments.controller;
 import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
+import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exception.NotFoundException;
 import com.facedynamics.comments.service.CommentService;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -63,25 +67,36 @@ public class CommentControllerTest {
     }
 
     @Test
-    void saveWithIncorrectDataTest() throws Exception {
+    void saveWithoutTextDataTest() throws Exception {
         String invalidComment = """
                 {
-                "id": 2
+                "userId": "1",
+                "postId": "1"
                 }
                 """;
-        MvcResult result = mvc.perform(post(COMMENTS)
+        mvc.perform(post(COMMENTS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidComment))
                 .andExpect(status().isBadRequest())
-                .andReturn();
-        assertTrue("error message check", result.getResponse().getContentAsString()
-                .contains("You can't save a comment without a text"));
+                .andExpect(jsonPath("$.problems[0].message")
+                        .value("You can't save a comment without a text"));
+    }
+
+    @Test
+    void saveWithIncorrectDataTypeTest() throws Exception {
+        mvc.perform(post(COMMENTS)
+                        .contentType(MediaType.TEXT_PLAIN))
+                .andExpect(status().isUnsupportedMediaType());
     }
 
     @Test
     void findByIdTest() throws Exception {
         CommentReturnDTO returnDTO = new CommentReturnDTO();
         returnDTO.setId(5);
+        returnDTO.setText("hello there");
+        returnDTO.setLikes(1);
+        returnDTO.setDislikes(2);
+        returnDTO.setPostId(9);
 
         when(commentService.findById(5))
                 .thenReturn(returnDTO);
@@ -89,48 +104,41 @@ public class CommentControllerTest {
         mvc.perform(get(COMMENTS + "/{id}", 5))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value("5"));
+                .andExpect(jsonPath("$.id").value("5"))
+                .andExpect(jsonPath("$.likes").value("1"))
+                .andExpect(jsonPath("$.dislikes").value("2"))
+                .andExpect(jsonPath("$.postId").value("9"))
+                .andExpect(jsonPath("$.text").value("hello there"));
+
         verify(commentService, times(1)).findById(5);
     }
 
     @Test
-    void deleteByIdTest() throws Exception {
-        when(commentService.deleteById(1)).thenReturn(new DeleteDTO(2));
-
-        mvc.perform(delete(COMMENTS + "/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(content().string("{\"rowsAffected\":2}"));
-        verify(commentService, times(1)).deleteById(1);
-    }
-
-    @Test
     void findingCommentsByPostId() throws Exception {
+        CommentReturnDTO commentReturnDTO = new CommentReturnDTO();
+        commentReturnDTO.setId(11);
+        commentReturnDTO.setText("comment text");
+        commentReturnDTO.setLikes(2);
+        commentReturnDTO.setDislikes(3);
+        commentReturnDTO.setPostId(5);
+        commentReturnDTO.setComments(List.of(new Comment(), new Comment()));
+
         when(commentService.findByPostId(1, Pageable.ofSize(10)))
-                .thenReturn(new PageImpl<>(Arrays.asList(new CommentReturnDTO(), new CommentReturnDTO())));
+                .thenReturn(new PageImpl<>(Arrays.asList(commentReturnDTO, new CommentReturnDTO())));
 
         mvc.perform(get("/posts/{id}" + COMMENTS, 1)
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isNotEmpty());
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].id").value(11))
+                .andExpect(jsonPath("$.content[0].text").value("comment text"))
+                .andExpect(jsonPath("$.content[0].likes").value(2))
+                .andExpect(jsonPath("$.content[0].dislikes").value(3))
+                .andExpect(jsonPath("$.content[0].postId").value(5))
+                .andExpect(jsonPath("$.content[0].comments", hasSize(2)));
+
         verify(commentService, times(1)).findByPostId(1, Pageable.ofSize(10));
-    }
-
-    @Test
-    void saveCommentWithoutTextTest() throws Exception {
-        String invalidCommentJson = """
-                {
-                "postId": "1",
-                "userId": "1"
-                }
-                """;
-
-        mvc.perform(post(COMMENTS)
-                        .content(invalidCommentJson)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.problems").isNotEmpty());
-
     }
 
     @Test
@@ -142,10 +150,21 @@ public class CommentControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        verify(commentService, times(1)).findById(2);
-
         assertTrue("Should contain a message about non existing comment",
                 result.getResponse().getContentAsString().contains("Comment not found with id 2"));
+
+        verify(commentService, times(1)).findById(2);
+    }
+
+    @Test
+    void deleteByIdTest() throws Exception {
+        when(commentService.deleteById(1)).thenReturn(new DeleteDTO(2));
+
+        mvc.perform(delete(COMMENTS + "/{id}", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().string("{\"rowsAffected\":2}"));
+
+        verify(commentService, times(1)).deleteById(1);
     }
 
     @Test
@@ -156,10 +175,10 @@ public class CommentControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(commentService, times(1)).deleteById(2);
-
         assertTrue("Should contain a message that 0 comments have been deleted", result.getResponse()
                 .getContentAsString().contains("\"rowsAffected\":0"));
+
+        verify(commentService, times(1)).deleteById(2);
     }
 
     @Test
@@ -170,10 +189,10 @@ public class CommentControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(commentService, times(1)).deleteByPostId(2);
-
         assertTrue("Should contain a message that 0 posts have been deleted",
                 result.getResponse().getContentAsString().contains("\"rowsAffected\":0"));
+
+        verify(commentService, times(1)).deleteByPostId(2);
     }
 }
 
