@@ -1,50 +1,75 @@
 package com.facedynamics.comments.exeption;
 
-import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
 public class ExceptionController {
-    @Value(value = "${spring.application.name}")
-    private String serviceName;
+    public static final String PROBLEMS = "problems";
+    public static final String INTERNAL_ERROR_MESSAGE = "Internal error occurred";
+    public static final String ERROR = "{} exception was thrown with message {}";
+    Logger logger = LoggerFactory.getLogger(ExceptionController.class);
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    protected ResponseEntity<List<Error>> validationProblem(MethodArgumentNotValidException ex) {
+    protected ProblemDetail handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<Error> errors = new ArrayList<>();
-        ex.getBindingResult().getAllErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), serviceName)));
-        return new ResponseEntity<>(new ValidationException(errors).getErrors(),
-                ex.getStatusCode());
+        ex.getBindingResult().getFieldErrors().forEach(x -> errors.add(new Error(x.getDefaultMessage(), x.getField())));
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation Problem");
+        problemDetail.setProperty(PROBLEMS, errors);
+        return problemDetail;
     }
-    @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Error> constraintProblem(ConstraintViolationException ex) {
-        return new ResponseEntity<>(new Error(ex.getSQL(), ex.getConstraintName()),
-                HttpStatus.CONFLICT);
-    }
-    @ExceptionHandler(HttpMessageConversionException.class)
-    protected ResponseEntity<Error> parseProblem(HttpMessageConversionException exc) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(exc.getMessage(), serviceName));
-    }
+
     @ExceptionHandler(NotFoundException.class)
-    protected ResponseEntity<Error> handleNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error(ex.getMessage(), serviceName));
+    protected ProblemDetail handleNotFoundException(NotFoundException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    protected ResponseEntity<Error> handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
-        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error(ex.getMessage(), serviceName));
+    protected ProblemDetail handleMissingServletRequestParameterException(MissingServletRequestParameterException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<Error> handleHttpMessageNotReadableException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Error("You must provide a valid JSON body", serviceName));
+    protected ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exc) {
+        List<Error> errors = new ArrayList<>();
+        errors.add(new Error(exc.getMessage(), exc.getName()));
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Wrong parameter type");
+        problemDetail.setProperty(PROBLEMS, errors);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(Exception.class)
+    protected ProblemDetail handleGeneralException(Exception exc) {
+        logger.error(ERROR, exc.getClass(), exc.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_ERROR_MESSAGE);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ProblemDetail handleMethodNotAllowedException(HttpRequestMethodNotSupportedException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.METHOD_NOT_ALLOWED, exc.getMessage());
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    protected ProblemDetail handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exc.getMessage());
     }
 }
