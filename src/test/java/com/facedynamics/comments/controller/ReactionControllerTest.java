@@ -6,7 +6,6 @@ import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;

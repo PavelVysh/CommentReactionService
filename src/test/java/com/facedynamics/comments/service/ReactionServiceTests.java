@@ -22,7 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +53,20 @@ public class ReactionServiceTests {
         ReactionSaveDTO afterSave = reactionsService.save(reaction);
 
         assertEquals("Saving reaction test", 2, afterSave.getEntityId());
+
+        verify(reactionsRepository, times(1)).save(reaction);
+    }
+
+    @Test
+    void saveReactionToNonExistingComment() {
+        Reaction noParentReaction = new Reaction();
+        noParentReaction.setEntityType(EntityType.comment);
+        noParentReaction.setEntityId(654);
+        noParentReaction.setUserId(321);
+
+        assertThrows(NotFoundException.class, () -> reactionsService.save(noParentReaction));
+
+        verify(commentRepository, times(1)).existsById(654);
     }
 
     @Test
@@ -62,7 +76,11 @@ public class ReactionServiceTests {
 
         Page<ReactionReturnDTO> response = reactionsService.findByEntity(2, EntityType.post, true,
                 PageRequest.of(0, 10));
+
         assertEquals("finding reactions for entity", 2L, response.getTotalElements());
+
+        verify(reactionsRepository, times(1))
+                .findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10));
     }
 
     @Test
@@ -73,24 +91,9 @@ public class ReactionServiceTests {
         assertThrows(NotFoundException.class, () ->
                         reactionsService.findByEntity(2, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
-    }
 
-    @Test
-    void deleteReactionSuccessfulTest() {
-        when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
-                .thenReturn(1);
-
-        DeleteDTO response = reactionsService.delete(4, EntityType.comment, 33);
-
-        assertEquals("delete successfully test", 1, response.getRowsAffected());
-    }
-
-    @Test
-    void deleteReactionFailTest() {
-        when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
-                .thenReturn(false);
-
-        assertEquals("should delete 0", 0, reactionsService.delete(2, EntityType.post, 1).getRowsAffected());
+        verify(reactionsRepository, times(1)).findAllByEntityIdAndEntityTypeAndLike(
+                anyInt(), any(), anyBoolean(), any());
     }
 
     @Test
@@ -102,6 +105,9 @@ public class ReactionServiceTests {
         Page<ReactionReturnDTO> response = reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10));
 
         assertEquals("Finding reactions successfully", 2L, response.getTotalElements());
+
+        verify(reactionsRepository, times(1)).findAllByUserIdAndEntityTypeAndLike(
+                anyInt(), any(), anyBoolean(), any());
     }
 
     @Test
@@ -112,5 +118,30 @@ public class ReactionServiceTests {
         assertThrows(NotFoundException.class, () ->
                         reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)),
                 "Should throw NotFoundException");
+
+        verify(reactionsRepository, times(1)).findAllByUserIdAndEntityTypeAndLike(anyInt(), any(), anyBoolean(), any());
     }
+
+    @Test
+    void deleteReactionSuccessfulTest() {
+        when(reactionsRepository.deleteByEntityIdAndEntityTypeAndUserId(4, EntityType.comment, 33))
+                .thenReturn(1);
+
+        DeleteDTO response = reactionsService.delete(4, EntityType.comment, 33);
+
+        assertEquals("delete successfully test", 1, response.getRowsAffected());
+
+        verify(reactionsRepository, times(1)).deleteByEntityIdAndEntityTypeAndUserId(anyInt(), any(), anyInt());
+    }
+
+    @Test
+    void deleteReactionFailTest() {
+        when(reactionsRepository.existsByEntityIdAndEntityTypeAndUserId(2, EntityType.post, 1))
+                .thenReturn(false);
+
+        assertEquals("should delete 0", 0, reactionsService.delete(2, EntityType.post, 1).getRowsAffected());
+
+        verify(reactionsRepository, times(1)).deleteByEntityIdAndEntityTypeAndUserId(anyInt(), any(), anyInt());
+    }
+
 }
