@@ -107,7 +107,7 @@ public class ReactionControllerTest {
     }
 
     @Test
-    void emptyBodySaveTest() throws Exception {
+    void saveEmptyBodyTest() throws Exception {
         mvc.perform(post(REACTIONS)
                         .content("")
                         .contentType(MediaType.APPLICATION_JSON))

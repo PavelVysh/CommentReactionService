@@ -30,7 +30,7 @@ public class CommentTests {
     private MockMvc mvc;
 
     @Test
-    void commentControllerPostTest() throws Exception {
+    void saveCommentTest() throws Exception {
         String stringComment = """
                 {
                 "userId": "123",
@@ -59,7 +59,7 @@ public class CommentTests {
     }
 
     @Test
-    void commentValidationTextFieldExceptionTest() throws Exception {
+    void saveCommentValidationTextFieldExceptionTest() throws Exception {
         String noTextComment = """
                 {
                 "userId": "456",
@@ -79,7 +79,7 @@ public class CommentTests {
 
 
     @Test
-    void commentControllerGetListMethodTest() throws Exception {
+    void findCommentsByPostIdTest() throws Exception {
         mvc.perform(get("/posts/{id}" + COMMENTS, 4))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -104,7 +104,7 @@ public class CommentTests {
     }
 
     @Test
-    void commentControllerDeleteMethodTest() throws Exception {
+    void deleteCommentTest() throws Exception {
         mvc.perform(delete(COMMENTS + "/{id}", 1))
                 .andExpect(status().isOk());
 
@@ -114,7 +114,7 @@ public class CommentTests {
     }
 
     @Test
-    void deletingNonExistingCommentTest() throws Exception {
+    void deleteNonExistingCommentTest() throws Exception {
         mvc.perform(delete(COMMENTS + "/{id}", 5678))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rowsAffected", is(0)));

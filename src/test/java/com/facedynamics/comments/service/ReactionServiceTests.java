@@ -70,7 +70,7 @@ public class ReactionServiceTests {
     }
 
     @Test
-    void findingReactionTestSuccessfulTest() {
+    void findReactionTestSuccessfulTest() {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of(new Reaction(), new Reaction())));
 
@@ -84,7 +84,7 @@ public class ReactionServiceTests {
     }
 
     @Test
-    void findingReactionTestNotFoundTest() {
+    void findReactionTestNotFoundTest() {
         when(reactionsRepository.findAllByEntityIdAndEntityTypeAndLike(2, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(List.of()));
 

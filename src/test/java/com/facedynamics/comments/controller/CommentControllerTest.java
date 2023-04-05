@@ -113,7 +113,7 @@ public class CommentControllerTest {
     }
 
     @Test
-    void findingCommentsByPostId() throws Exception {
+    void findCommentsByPostId() throws Exception {
         CommentReturnDTO commentReturnDTO = new CommentReturnDTO();
         commentReturnDTO.setId(11);
         commentReturnDTO.setText("comment text");
