@@ -12,6 +12,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,9 @@ public class ExceptionController {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     protected ProblemDetail handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exc) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exc.getMessage());
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    protected ProblemDetail handleAccessDeniedException(AccessDeniedException exc) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exc.getMessage());
     }
 }

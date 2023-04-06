@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class ReactionsController {
     private final ReactionsService reactionsService;
 
     @PostMapping
+    @PreAuthorize("@authorization.isUser(#reaction.userId)")
     public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
@@ -32,6 +34,7 @@ public class ReactionsController {
     }
 
     @DeleteMapping("/{entityId}")
+    @PreAuthorize("@authorization.isUser(#userId)")
     public ReactionDeleteDTO deleteReaction(@PathVariable int entityId,
                                             @RequestParam int userId,
                                             @RequestParam EntityType entityType) {

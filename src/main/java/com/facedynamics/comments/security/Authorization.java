@@ -2,8 +2,10 @@ package com.facedynamics.comments.security;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
+import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,22 +19,26 @@ import java.util.Optional;
 public class Authorization {
 
     private final CommentRepository commentRepository;
+    private final PostsClient postsClient;
 
     public boolean isOwner(int commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new NotFoundException("Entity with id - " + commentId + " doesn't exist"));
         Long userIdFromComment = Long.valueOf(comment.getUserId());
-        System.out.println("Current user " + getCurrentUserId());
         return Objects.equals(getCurrentUserId(), userIdFromComment);
     }
+    public boolean isUser(Long userId) {
+        return Objects.equals(userId, getCurrentUserId());
+    }
 
-    public boolean belongsToUser(int commentId) {
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        int userId = -1;
-        if (comment.isPresent()) {
-            userId = comment.get().getUserId();
+    public boolean isPostOwner(int postId) {
+        long postOwnerId;
+        try {
+            postOwnerId = postsClient.getPostById(postId).getUserId();
+        } catch (FeignException exc) {
+            throw new NotFoundException("Post with id - " + postId + " was not found");
         }
-        return Objects.equals(getCurrentUserId(), userId);
+        return Objects.equals(postOwnerId, getCurrentUserId());
     }
 
     private static Long getCurrentUserId() {

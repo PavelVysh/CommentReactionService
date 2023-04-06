@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +21,7 @@ public class CommentController {
 
 
     @PostMapping("/comments")
+    @PreAuthorize("@authorization.isUser(#comment.userId)")
     public CommentSaveDTO createComment(@RequestBody @Valid Comment comment) {
         return commentService.save(comment);
     }
@@ -43,6 +42,7 @@ public class CommentController {
         return commentService.deleteByCommentId(id);
     }
     @DeleteMapping("/posts/{postId}/comments")
+    @PreAuthorize("@authorization.isPostOwner(#postId)")
     public CommentDeleteDTO deleteByPostId(@PathVariable int postId) {
         return commentService.deleteByPostId(postId);
     }
