@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
+    @Query("SELECT c FROM Comment c where c.postId=:postId and c.parentId is null")
     Page<Comment> findCommentsByPostId(int postId, Pageable pageable);
     @Modifying
     @Query("DELETE FROM Comment c WHERE c.postId=:postId")

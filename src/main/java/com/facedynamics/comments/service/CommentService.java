@@ -16,8 +16,11 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -63,6 +66,7 @@ public class CommentService {
             throw new NotFoundException("Comments for post with id "
                     + postId + " were not found");
         }
+
         return commentMapper.toReturnDTO(comments);
     }
 
