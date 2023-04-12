@@ -12,15 +12,13 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
+import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +32,12 @@ public class CommentService {
     private NotificationService notification;
 
     public CommentSaveDTO save(Comment comment) {
-        PostDTO postDTO = postsClient.getPostById(comment.getPostId());
+        PostDTO postDTO;
+        try {
+            postDTO = postsClient.getPostById(comment.getPostId());
+        } catch (FeignException exc) {
+            throw new NotFoundException("Post with id - " + comment.getPostId() + " was not found");
+        }
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
         eventPublisher.publishEvent(new NotificationEvent(this, notification.create(savedComment, postDTO)));
