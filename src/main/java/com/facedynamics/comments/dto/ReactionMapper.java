@@ -3,9 +3,10 @@ package com.facedynamics.comments.dto;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
+import org.mapstruct.Mapper;
 import org.springframework.data.domain.Page;
 
-@org.mapstruct.Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring")
 public interface ReactionMapper {
 
     ReactionSaveDTO toSaveDTO(Reaction reaction);

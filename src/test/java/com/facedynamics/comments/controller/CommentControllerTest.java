@@ -1,7 +1,7 @@
 package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.dto.CommentMapper;
-import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.service.CommentService;
@@ -68,7 +68,7 @@ public class CommentControllerTest {
 
     @Test
     void deleteByIdTest() throws Exception {
-        CommentDeleteDTO deleted = new CommentDeleteDTO(2);
+        DeleteDTO deleted = new DeleteDTO(2);
 
         when(commentService.deleteByCommentId(1)).thenReturn(deleted);
 

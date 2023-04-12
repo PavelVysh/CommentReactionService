@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = CommentsApplication.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Sql({"/dataForTests.sql"})
 public class ReactionTests {
     @Autowired

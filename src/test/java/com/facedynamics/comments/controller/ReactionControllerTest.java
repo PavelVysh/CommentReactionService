@@ -1,7 +1,7 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.ReactionMapper;
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
@@ -81,7 +81,7 @@ public class ReactionControllerTest {
     }
     @Test
     void deleteReactionTest() throws Exception {
-        ReactionDeleteDTO deleted = new ReactionDeleteDTO(2);
+        DeleteDTO deleted = new DeleteDTO(2);
         when(reactionsService.deleteReaction(1, EntityType.post, 2))
                 .thenReturn(deleted);
 

@@ -1,7 +1,7 @@
 package com.facedynamics.comments.service;
 
 import com.facedynamics.comments.dto.CommentMapper;
-import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.post.PostDTO;
@@ -104,7 +104,7 @@ public class CommentServiceTests {
     void deleteByIDSuccessfulTest() {
         when(commentRepository.deleteById(1)).thenReturn(1);
 
-        CommentDeleteDTO response = commentService.deleteByCommentId(1);
+        DeleteDTO response = commentService.deleteByCommentId(1);
 
         assertEquals("Deletion of a comment by id", 1, response.getRowsAffected());
 

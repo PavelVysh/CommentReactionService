@@ -1,7 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.ReactionMapper;
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -48,8 +48,8 @@ public class ReactionsService {
     }
 
     @Transactional
-    public ReactionDeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
-        return new ReactionDeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
+    public DeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
+        return new DeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
     }
 
     private boolean checkEntityExists(Reaction reaction) {

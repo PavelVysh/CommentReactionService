@@ -1,6 +1,6 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.comment.CommentDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.entity.Comment;
@@ -38,12 +38,12 @@ public class CommentController {
 
     @DeleteMapping("/comments/{id}")
     @PreAuthorize("@authorization.isOwner(#id)")
-    public CommentDeleteDTO deleteById(@PathVariable int id) {
+    public DeleteDTO deleteById(@PathVariable int id) {
         return commentService.deleteByCommentId(id);
     }
     @DeleteMapping("/posts/{postId}/comments")
     @PreAuthorize("@authorization.isPostOwner(#postId)")
-    public CommentDeleteDTO deleteByPostId(@PathVariable int postId) {
+    public DeleteDTO deleteByPostId(@PathVariable int postId) {
         return commentService.deleteByPostId(postId);
     }
 }
