@@ -1,7 +1,7 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.ReactionMapper;
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -43,8 +43,8 @@ public class ReactionsService {
     }
 
     @Transactional
-    public ReactionDeleteDTO deleteReaction(int entityId, EntityType entityType, int userId) {
-        return new ReactionDeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
+    public DeleteDTO delete(int entityId, EntityType entityType, int userId) {
+        return new DeleteDTO(repository.deleteByEntityIdAndEntityTypeAndUserId(entityId, entityType, userId));
     }
 
     private boolean checkEntityExists(Reaction reaction) {
@@ -54,6 +54,7 @@ public class ReactionsService {
             default -> false;
         };
     }
+
     public Page<ReactionReturnDTO> findByEntity(int entityId, EntityType entityType, boolean isLike, Pageable pageable) {
         Page<Reaction> reactions = repository.findAllByEntityIdAndEntityTypeAndLike(entityId, entityType, isLike, pageable);
         if (reactions.isEmpty()) {
@@ -61,6 +62,7 @@ public class ReactionsService {
         }
         return reactionsMapper.toReturnDTO(reactions);
     }
+
     public Page<ReactionReturnDTO> findByUser(int userId, EntityType entityType, boolean isLike, Pageable pageable) {
         Page<Reaction> reactions = repository.findAllByUserIdAndEntityTypeAndLike(userId, entityType, isLike, pageable);
         if (reactions.isEmpty()) {

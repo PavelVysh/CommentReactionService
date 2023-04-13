@@ -1,7 +1,7 @@
 package com.facedynamics.comments.controller;
 
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.ReactionMapper;
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
@@ -57,7 +57,7 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionForEntityTest() throws Exception {
-        when(reactionsService.findReactions(1, EntityType.post, false, false, PageRequest.of(0, 10)))
+        when(reactionsService.findByEntity(1, EntityType.post, false, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get("/reactions/{id}", 1)
@@ -68,21 +68,20 @@ public class ReactionControllerTest {
     }
     @Test
     void findReactionsByUserTest() throws Exception {
-        when(reactionsService.findReactions(1, EntityType.post, true, true, PageRequest.of(0, 10)))
+        when(reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)))
                 .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
 
         mvc.perform(get("/reactions/{id}", 1)
                 .param("entityType", "post")
-                .param("isLike", "true")
-                        .param("user", "true"))
+                .param("isLike", "true"))
                 .andExpect(status().isOk());
 
 
     }
     @Test
     void deleteReactionTest() throws Exception {
-        ReactionDeleteDTO deleted = new ReactionDeleteDTO(2);
-        when(reactionsService.deleteReaction(1, EntityType.post, 2))
+        DeleteDTO deleted = new DeleteDTO(2);
+        when(reactionsService.delete(1, EntityType.post, 2))
                 .thenReturn(deleted);
 
         mvc.perform(delete("/reactions/{id}", 1)
