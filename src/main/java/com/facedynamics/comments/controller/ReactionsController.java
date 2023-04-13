@@ -1,6 +1,6 @@
 package com.facedynamics.comments.controller;
 
-import com.facedynamics.comments.dto.reaction.ReactionDeleteDTO;
+import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.dto.reaction.ReactionSaveDTO;
 import com.facedynamics.comments.entity.Reaction;
@@ -13,30 +13,35 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/reactions")
 @AllArgsConstructor
 public class ReactionsController {
 
     private final ReactionsService reactionsService;
 
-    @PostMapping
-    public ReactionSaveDTO createReaction(@RequestBody @Valid Reaction reaction) {
+    @PostMapping("/reactions")
+    public ReactionSaveDTO create(@RequestBody @Valid Reaction reaction) {
         return reactionsService.save(reaction);
     }
-    @GetMapping("/{entityId}")
-    public Page<ReactionReturnDTO> getReactionsForEntity(@PathVariable int entityId,
+    @GetMapping("/reactions/{entityId}")
+    public Page<ReactionReturnDTO> findByEntity(@PathVariable int entityId,
                                                          @RequestParam EntityType entityType,
                                                          @RequestParam boolean isLike,
-                                                         @RequestParam(required = false) boolean byUser,
                                                          Pageable pageable) {
-        return reactionsService.findReactions(entityId, entityType, isLike, byUser, pageable);
+        return reactionsService.findByEntity(entityId, entityType, isLike, pageable);
+    }
+    @GetMapping("/users/{userId}/reactions")
+    public Page<ReactionReturnDTO> findByUserId(@PathVariable int userId,
+                                                        @RequestParam EntityType entityType,
+                                                        @RequestParam boolean isLike,
+                                                        Pageable pageable) {
+        return reactionsService.findByUser(userId, entityType, isLike, pageable);
     }
 
-    @DeleteMapping("/{entityId}")
-    public ReactionDeleteDTO deleteReaction(@PathVariable int entityId,
-                                            @RequestParam int userId,
-                                            @RequestParam EntityType entityType) {
-        return reactionsService.deleteReaction(entityId, entityType, userId);
+    @DeleteMapping("/reactions/{entityId}")
+    public DeleteDTO delete(@PathVariable int entityId,
+                                        @RequestParam int userId,
+                                        @RequestParam EntityType entityType) {
+        return reactionsService.delete(entityId, entityType, userId);
     }
 
 }
