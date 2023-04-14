@@ -1,41 +1,43 @@
 version: '3.3'
 services:
-  db:
-    image: mysql:latest
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'db'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_ROOT_PASSWORD: 'password'
-      TZ: 'Europe/Kiev'
-    ports:
-      - '3306:3306'
-    expose:
-      - '3306'
-  comments:
-    image: docker.io/library/comments:0.0.1-SNAPSHOT
+  eureka:
+    image: pvyshnevetskyi/facedynamics:eureka0.0.3
     restart: on-failure
+  comments-reactions-service:
+    image: pvyshnevetskyi/facedynamics:comments0.0.5
+    restart: on-failure
+    depends_on:
+      eureka:
+        condition: service_started
+  posts-service:
+    image: pvyshnevetskyi/facedynamics:posts0.0.5
+    restart: on-failure
+    depends_on:
+      eureka:
+        condition: service_started
+  media-service:
+    image: pvyshnevetskyi/facedynamics:media0.0.5
+    restart: on-failure
+    depends_on:
+      eureka:
+        condition: service_started
+  gateway:
+    image: pvyshnevetskyi/facedynamics:gateway0.0.4
+    restart: on-failure
+    depends_on:
+      eureka:
+        condition: service_started
     ports:
       - '8080:8080'
-    depends_on:
-      - db
-  mysql_db:
-    image: mysql
-    container_name: mysql_notification_db
-    environment:
-      TZ: 'Europe/Kiev'
-      MYSQL_DATABASE: 'notification_db'
-      MYSQL_USER: 'user'
-      MYSQL_PASSWORD: 'pluralsight'
-      MYSQL_ROOT_PASSWORD: 'pluralsight'
+  notifications-service:
+    image: unfabled/facedynamics:notifications0.0.5
     restart: on-failure
-    ports:
-      - '3307:3306'
-    expose:
-      - '3307'
-  notification-service:
-    image: docker.io/library/notifications:0.0.1-SNAPSHOT
     depends_on:
-      - mysql_db
+      eureka:
+        condition: service_started
+  users-service:
+    image: unfabled/facedynamics:users0.0.5
     restart: on-failure
+    depends_on:
+      eureka:
+        condition: service_started
