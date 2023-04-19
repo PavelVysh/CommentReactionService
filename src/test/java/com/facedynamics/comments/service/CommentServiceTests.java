@@ -53,7 +53,6 @@ public class CommentServiceTests {
                 commentRepository,
                 reactionsRepository,
                 feignClient,
-                eventPublisher,
                 mapper,
                 notification);
     }
