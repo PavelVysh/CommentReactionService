@@ -27,9 +27,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ReactionsRepository reactionsRepository;
     private final PostsClient postsClient;
-    private ApplicationEventPublisher eventPublisher;
     private CommentMapper commentMapper;
-    private NotificationService notification;
+    private NotificationService notificationService;
 
     public CommentSaveDTO save(Comment comment) {
         PostDTO postDTO;
@@ -40,7 +39,7 @@ public class CommentService {
         }
         checkIfParentExists(comment, postDTO);
         Comment savedComment = commentRepository.save(comment);
-        eventPublisher.publishEvent(new NotificationEvent(this, notification.create(savedComment, postDTO)));
+        notificationService.sendToKafka(notificationService.create(savedComment, postDTO));
 
         return commentMapper.toSaveDTO(savedComment);
     }

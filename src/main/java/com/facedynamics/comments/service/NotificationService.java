@@ -9,6 +9,7 @@ import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.feign.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class NotificationService {
 
     private final CommentRepository commentRepository;
     private final PostsClient postsClient;
+    private final KafkaTemplate<String, NotificationDTO> kafkaTemplate;
 
     public NotificationDTO create(Comment comment, PostDTO postDTO) {
         NotificationDTO notification;
@@ -32,6 +34,9 @@ public class NotificationService {
 
     public NotificationDTO create(Reaction reaction) {
         return createReactionNotification(reaction);
+    }
+    public void sendToKafka(NotificationDTO notificationDTO) {
+        kafkaTemplate.send("notifications", notificationDTO);
     }
 
     private NotificationDTO createReactionNotification(Reaction reaction) {

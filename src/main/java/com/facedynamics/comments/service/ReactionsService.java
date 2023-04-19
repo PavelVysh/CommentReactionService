@@ -23,7 +23,6 @@ public class ReactionsService {
     private final ReactionsRepository repository;
     private final CommentRepository commentRepository;
     private final NotificationService notificationService;
-    private final NotificationsClient notificationsClient;
     private final ReactionMapper reactionsMapper = Mappers.getMapper(ReactionMapper.class);
 
     public ReactionSaveDTO save(Reaction reaction) {
@@ -31,7 +30,7 @@ public class ReactionsService {
             throw new NotFoundException(reaction.getEntityType() + " with id - " + reaction.getEntityId() + " doesn't exist");
         }
         if (!notificationNotRequired(reaction)) {
-            notificationsClient.send(notificationService.create(reaction));
+            notificationService.sendToKafka(notificationService.create(reaction));
         }
         return reactionsMapper.toSaveDTO(repository.save(reaction));
     }
