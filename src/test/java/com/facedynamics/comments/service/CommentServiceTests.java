@@ -7,7 +7,7 @@ import com.facedynamics.comments.dto.comment.CommentSaveDTO;
 import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.PostsClient;
+import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;

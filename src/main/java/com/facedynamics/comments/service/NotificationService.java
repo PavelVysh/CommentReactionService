@@ -6,7 +6,7 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.PostsClient;
+import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

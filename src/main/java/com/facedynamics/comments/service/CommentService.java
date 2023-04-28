@@ -8,7 +8,7 @@ import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.PostsClient;
+import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import feign.FeignException;
@@ -29,7 +29,8 @@ public class CommentService {
     private NotificationService notificationService;
 
     public CommentSaveDTO save(Comment comment) {
-        PostDTO postDTO;
+        PostDTO postDTO = new PostDTO();
+        postDTO.setUserId(1);
         try {
             postDTO = postsClient.getPostById(comment.getPostId());
         } catch (FeignException exc) {

@@ -1,4 +1,4 @@
-package com.facedynamics.comments.security;
+package com.facedynamics.comments.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

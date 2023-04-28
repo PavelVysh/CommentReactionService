@@ -1,4 +1,4 @@
-package com.facedynamics.comments.feign;
+package com.facedynamics.comments.client;
 
 import com.facedynamics.comments.dto.notification.NotificationDTO;
 import org.springframework.cloud.openfeign.FeignClient;

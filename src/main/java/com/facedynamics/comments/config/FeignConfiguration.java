@@ -1,4 +1,4 @@
-package com.facedynamics.comments.feign;
+package com.facedynamics.comments.config;
 
 import feign.RequestInterceptor;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -10,7 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 @Configuration
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.facedynamics.comments.client")
 public class FeignConfiguration {
     @Bean
     public RequestInterceptor requestInterceptor() {

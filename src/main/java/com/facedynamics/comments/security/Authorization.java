@@ -2,7 +2,7 @@ package com.facedynamics.comments.security;
 
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.feign.PostsClient;
+import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;

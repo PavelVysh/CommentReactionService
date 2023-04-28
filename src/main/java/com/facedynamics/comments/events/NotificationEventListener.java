@@ -1,6 +1,6 @@
 package com.facedynamics.comments.events;
 
-import com.facedynamics.comments.feign.NotificationsClient;
+import com.facedynamics.comments.client.NotificationsClient;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
