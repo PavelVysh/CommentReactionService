@@ -29,8 +29,7 @@ public class CommentService {
     private NotificationService notificationService;
 
     public CommentSaveDTO save(Comment comment) {
-        PostDTO postDTO = new PostDTO();
-        postDTO.setUserId(1);
+        PostDTO postDTO;
         try {
             postDTO = postsClient.getPostById(comment.getPostId());
         } catch (FeignException exc) {
