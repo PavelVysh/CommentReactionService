@@ -5,6 +5,7 @@ import com.facedynamics.comments.dto.CommentMapper;
 import com.facedynamics.comments.dto.ReactionMapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
+import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
 import com.facedynamics.comments.repository.CommentRepository;
@@ -57,7 +58,12 @@ public class CommentServiceTests {
         comment.setPostId(321);
         comment.setId(1);
 
+        PostDTO post = new PostDTO();
+        post.setUserId(2);
+        post.setText("sample");
+
         when(commentRepository.save(comment)).thenReturn(comment);
+        when(postsClient.getPostById(321)).thenReturn(post);
 
         CommentSaveDTO savedComment = commentService.save(comment);
 

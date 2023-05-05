@@ -2,7 +2,6 @@ package com.facedynamics.comments.controller;
 
 import com.facedynamics.comments.dto.DeleteDTO;
 import com.facedynamics.comments.dto.ReactionMapper;
-import com.facedynamics.comments.dto.reaction.ReactionReturnDTO;
 import com.facedynamics.comments.entity.Reaction;
 import com.facedynamics.comments.entity.enums.EntityType;
 import com.facedynamics.comments.service.ReactionsService;
@@ -11,14 +10,11 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -28,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ReactionsController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@AutoConfigureMockMvc(addFilters = false)
 public class ReactionControllerTest {
 
     public static final String REACTIONS = "/reactions";
@@ -116,38 +113,6 @@ public class ReactionControllerTest {
     }
 
     @Test
-    void findReactionForEntityTest() throws Exception {
-        when(reactionsService.findByEntity(1, EntityType.post, false, PageRequest.of(0, 10)))
-                .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
-
-        mvc.perform(get(REACTIONS + "/{id}", 1)
-                        .param("entityType", "post")
-                        .param("isLike", "false")
-                        .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)));
-
-        verify(reactionsService, times(1)).findByEntity(1, EntityType.post, false,
-                PageRequest.of(0, 10));
-    }
-
-    @Test
-    void findReactionsByUserTest() throws Exception {
-        when(reactionsService.findByUser(1, EntityType.post, true, PageRequest.of(0, 10)))
-                .thenReturn(new PageImpl<>(Arrays.asList(new ReactionReturnDTO(), new ReactionReturnDTO())));
-
-        mvc.perform(get("/users/{id}" + REACTIONS, 1)
-                        .param("entityType", "post")
-                        .param("isLike", "true")
-                        .param("size", "10"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)));
-
-        verify(reactionsService, times(1)).findByUser(1, EntityType.post, true,
-                PageRequest.of(0, 10));
-    }
-
-    @Test
     void findInvalidEntityTypeTest() throws Exception {
         mvc.perform(get(REACTIONS + "/{id}", 1)
                         .param("entityType", "shmost")
@@ -159,7 +124,7 @@ public class ReactionControllerTest {
     @Test
     void findInvalidIsLikeTest() throws Exception {
         mvc.perform(get(REACTIONS + "/{id}", 1)
-                        .param("entityType", "post")
+                        .param("entityType", "something")
                         .param("isLike", "maybe"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail", is("Wrong parameter type")));

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = CommentController.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@AutoConfigureMockMvc(addFilters = false)
 public class CommentControllerTest {
     public static final String COMMENTS = "/comments";
     @MockBean
@@ -135,7 +137,7 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.content[0].likes").value(2))
                 .andExpect(jsonPath("$.content[0].dislikes").value(3))
                 .andExpect(jsonPath("$.content[0].postId").value(5))
-                .andExpect(jsonPath("$.content[0].comments", hasSize(2)));
+                .andExpect(jsonPath("$.content[0].replies", hasSize(2)));
 
         verify(commentService, times(1)).findCommentsByPostId(1, Pageable.ofSize(10));
     }
