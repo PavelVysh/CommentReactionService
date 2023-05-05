@@ -1,13 +1,12 @@
 package com.facedynamics.comments.service;
 
+import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.dto.CommentMapper;
-import com.facedynamics.comments.dto.DeleteDTO;
+import com.facedynamics.comments.dto.ReactionMapper;
 import com.facedynamics.comments.dto.comment.CommentReturnDTO;
 import com.facedynamics.comments.dto.comment.CommentSaveDTO;
-import com.facedynamics.comments.dto.post.PostDTO;
 import com.facedynamics.comments.entity.Comment;
 import com.facedynamics.comments.exeption.NotFoundException;
-import com.facedynamics.comments.client.PostsClient;
 import com.facedynamics.comments.repository.CommentRepository;
 import com.facedynamics.comments.repository.ReactionsRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,91 +36,80 @@ public class CommentServiceTests {
     @Mock
     private static ReactionsRepository reactionsRepository;
     @Mock
-    private static PostsClient feignClient;
+    private static PostsClient postsClient;
     @Mock
-    private NotificationService notification;
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
+    private static NotificationService notificationService;
 
     private static CommentService commentService;
-    private final CommentMapper mapper = Mappers.getMapper(CommentMapper.class);
+    private final CommentMapper commentMapper = Mappers.getMapper(CommentMapper.class);
+    public static final String SAMPLE_TEXT = "sample Text";
 
     @BeforeEach
     void init() {
-        commentService = new CommentService(
-                commentRepository,
-                reactionsRepository,
-                feignClient,
-                mapper,
-                notification);
+        commentService = new CommentService(commentRepository, reactionsRepository,postsClient, commentMapper, notificationService);
     }
 
     @Test
     void saveCommentTest() {
         Comment comment = new Comment();
-        comment.setText("sample");
+        comment.setText(SAMPLE_TEXT);
         comment.setUserId(123);
         comment.setPostId(321);
         comment.setId(1);
 
-        PostDTO postDTO = new PostDTO();
-        postDTO.setUserId(3);
-
         when(commentRepository.save(comment)).thenReturn(comment);
-        when(feignClient.getPostById(321)).thenReturn(postDTO);
 
         CommentSaveDTO savedComment = commentService.save(comment);
 
-        assertEquals("text of saved comment if off", comment.getText(), savedComment.getText());
-        assertEquals("id doesn't equals", 1, savedComment.getId());
+        assertEquals("text of saved comment differs with posted comment", comment.getText(), savedComment.getText());
+        assertEquals("id of saved comment differs with posted comment", comment.getId(), savedComment.getId());
+        assertEquals("userId of saved comment differs with posted comment", comment.getUserId(), savedComment.getUserId());
+        assertEquals("text of saved comment differs with posted comment", comment.getText(), savedComment.getText());
+
+        verify(commentRepository, times(1)).save(comment);
+    }
+
+    @Test
+    void saveReplyToNonExistingComment() {
+        Comment comment = new Comment();
+        comment.setText(SAMPLE_TEXT);
+        comment.setUserId(123);
+        comment.setPostId(321);
+        comment.setId(1);
+        comment.setParentId(654);
+
+        when(commentRepository.save(comment)).thenReturn(comment);
+
+        assertThrows(NotFoundException.class, () -> commentService.save(comment));
+
+        verify(commentRepository, times(1)).findById(654);
     }
 
     @Test
     void findByIdSuccessfulTest() {
         Comment comment = new Comment();
         comment.setId(2);
-        comment.setText("test text");
+        comment.setText(SAMPLE_TEXT);
 
         when(commentRepository.findById(2)).thenReturn(Optional.of(comment));
 
-        CommentReturnDTO status = commentService.findById(
-                2);
+        CommentReturnDTO returnDTO = commentService.findById(2);
 
-        assertEquals("didn't find an existing comment", "test text", status.getText());
+        assertEquals("text of comment didn't return", SAMPLE_TEXT, returnDTO.getText());
+        assertEquals("git comment with different id", 2, returnDTO.getId());
+
+        verify(commentRepository, times(1)).findById(2);
     }
 
     @Test
     void findByIdUnSuccessfulTest() {
+
         when(commentRepository.findById(3)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> commentService.findById(3),
                 "Should throw NotFoundException");
-    }
 
-    @Test
-    void deleteByIDSuccessfulTest() {
-        when(commentRepository.deleteById(1)).thenReturn(1);
-
-        DeleteDTO response = commentService.deleteByCommentId(1);
-
-        assertEquals("Deletion of a comment by id", 1, response.getRowsAffected());
-
-    }
-
-    @Test
-    void deleteByIdNotSuccessfulTest() {
-        when(commentRepository.deleteByPostId(666)).thenReturn(0);
-
-        assertEquals("should say that 0 been deleted", 0,
-                commentService.deleteByCommentId(666).getRowsAffected());
-    }
-
-    @Test
-    void deleteByPostIDNotSuccessfulTest() {
-        when(commentRepository.deleteByPostId(2)).thenReturn(0);
-
-        assertEquals("should say 0 been deleted",
-                0, commentService.deleteByPostId(2).getRowsAffected());
+        verify(commentRepository, times(1)).findById(3);
     }
 
     @Test
@@ -137,6 +124,8 @@ public class CommentServiceTests {
                 .getContent();
 
         assertEquals("should have found two comments", 2, commentsFound.size());
+
+        verify(commentRepository, times(1)).findCommentsByPostId(anyInt(), any());
     }
 
     @Test
@@ -145,17 +134,40 @@ public class CommentServiceTests {
 
         assertThrows(NotFoundException.class, () -> commentService.findCommentsByPostId(666, Pageable.ofSize(5)),
                 "Should throw NotFoundException");
+
+        verify(commentRepository, times(1)).findCommentsByPostId( eq(666), any(Pageable.class));
     }
 
     @Test
-    void absentParentTest() {
-        Comment comment = new Comment();
-        comment.setParentId(2);
-        comment.setPostId(3);
+    void deleteByIDSuccessfulTest() {
+        when(commentRepository.deleteById(1)).thenReturn(1);
 
-        when(commentRepository.findById(2)).thenReturn(Optional.empty());
+        int response = commentService.deleteByCommentId(1).getRowsAffected();
 
-        assertThrows(NotFoundException.class, () -> commentService.save(comment));
+        assertEquals("Deletion of a comment by id", 1, response);
+
+        verify(commentRepository, times(1)).deleteById(1);
+
+    }
+
+    @Test
+    void deleteByIdNotSuccessfulTest() {
+        when(commentRepository.deleteById(666)).thenReturn(0);
+
+        assertEquals("should say that 0 been deleted", 0,
+                commentService.deleteByCommentId(666).getRowsAffected());
+
+        verify(commentRepository, times(1)).deleteById(666);
+    }
+
+    @Test
+    void deleteByPostIDNotSuccessfulTest() {
+        when(commentRepository.deleteByPostId(2)).thenReturn(0);
+
+        assertEquals("should say 0 been deleted",
+                0, commentService.deleteByPostId(2).getRowsAffected());
+
+        verify(commentRepository, times(1)).deleteByPostId(2);
     }
 
 }
